@@ -13,6 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- spring版本号 -->
 		<spring.version>4.0.4.RELEASE</spring.version>
+		<jackson.version>2.4.4</jackson.version>
 	</properties>
 
 
@@ -34,29 +35,21 @@
 				<groupId>org.mybatis.generator</groupId>
 				<artifactId>mybatis-generator-maven-plugin</artifactId>
 				<version>1.3.2</version>
-				<executions>
-					<execution>
-						<id>Generate MyBatis Files</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<phase>generate</phase>
-						<configuration>
-							<verbose>true</verbose>
-							<overwrite>true</overwrite>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+					<verbose>true</verbose>
+					<overwrite>true</overwrite>
+					<configurationFile>${basedir}/src/main/resources/mybatis/generatorConfig.xml</configurationFile>
+				</configuration>
 				<dependencies>
 					<dependency>
-						<groupId>MySQL</groupId>
-						<artifactId>mysql-connector-Java</artifactId>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
 						<version>5.1.38</version>
 					</dependency>
 					<dependency>
 						<groupId>org.mybatis.generator</groupId>
 						<artifactId>mybatis-generator-core</artifactId>
-						<version>1.3.5</version>
+						<version>1.3.2</version>
 					</dependency>
 					<dependency>
 						<groupId>org.mybatis</groupId>
@@ -65,6 +58,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+
 		</plugins>
 	</build>
 
@@ -198,7 +192,36 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- mybatis类型支持扩展包，支持LocalDateTime -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-typehandlers-jsr310</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		
+		<!-- jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		
 	</dependencies>
 </project>
 
