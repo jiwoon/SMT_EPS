@@ -10,20 +10,28 @@
 		<meta charset="UTF-8">
 		<title>上传排位表</title>
 		<script src="static/js/jquery-2.1.1.js" ></script>
-		<script src="static/js/ajaxfileupload.js" ></script>
 		<script type="text/javascript">
 			function upload(){
-				$.ajaxFileUpload({
-					fileElementId:"file",
-					type:"post",
-					url:"<%=basePath%>program/upload",
-					error:function(){
-						alert("上传失败");
-					},
-					success:function(data){
-						alert(data.result);
-					}
-				});
+				var formData = new FormData($("#file")[0]);  
+				$.ajax({
+				     url: '<%=basePath%>program/upload',
+				     type: 'POST',  
+				     data: formData,  
+				     async: false,  
+				     cache: false,  
+				     contentType: false,  
+				     processData: false,  
+				     success: function (returndata) {  
+				         if(returndata.result == "succeed"){
+							alert("上传成功");
+						 }else{
+							 alert(returndata.result);
+						 }
+				     },  
+				     error: function (returndata) {  
+				         alert("上传失败");
+				     }  
+				});  
 			}
 		</script>
 	</head>
@@ -31,7 +39,7 @@
 		上传排位表文件（Excel文件）
 		<br />
 		<form id="file">  
-    	  	<input type="file"/>
+    	  	<input type="file" name="programFile"/>
 		</form>  
 		<br />
 		<button onclick="upload()">上传</button>

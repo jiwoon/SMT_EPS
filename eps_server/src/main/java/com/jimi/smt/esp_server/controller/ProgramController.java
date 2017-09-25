@@ -25,7 +25,14 @@ public class ProgramController {
 	@ResponseBody
 	@RequestMapping("/upload")
 	public ResultJSON  upload(MultipartFile  programFile) {
-		System.out.println(programFile);
+		System.out.println(programFile.getContentType());
+		System.out.println(programFile.getName());
+		System.out.println(programFile.getOriginalFilename());
+		System.out.println(programFile.getSize());
+		String originalFileName = programFile.getOriginalFilename();
+		if(!originalFileName.endsWith(".xls")){
+			return new ResultJSON("上传失败，必须为xls格式的文件");
+		}
 		return new ResultJSON("succeed");
 	}
 	
