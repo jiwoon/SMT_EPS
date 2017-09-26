@@ -32,7 +32,11 @@ CREATE TABLE `operation` (
   `scanlineseat` varchar(32) NOT NULL COMMENT '扫描的站位',
   `remark` varchar(32) NOT NULL COMMENT '操作失败原因或是其它备注',
   PRIMARY KEY (`id`)
+<<<<<<< .mine
 ) ENGINE=InnoDB AUTO_INCREMENT=635 DEFAULT CHARSET=utf8;
+=======
+) ENGINE=InnoDB AUTO_INCREMENT=629 DEFAULT CHARSET=utf8;
+>>>>>>> .theirs
 
 /*Table structure for table `program` */
 

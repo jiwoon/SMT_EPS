@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Adapter/FeedMaterialAdapter.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/ChangeMaterialFragment.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/CheckAllMaterialFragment.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/EPS_MainActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/FeedMaterialFragment.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Func/DBOpenHelper.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Func/DBService.java" charset="UTF-8" />
+  </component>
+</project>
