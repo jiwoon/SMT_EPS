@@ -21,7 +21,7 @@ USE `smt_eps`;
 DROP TABLE IF EXISTS `operation`;
 
 CREATE TABLE `operation` (
-  `id` varchar(32) NOT NULL,
+  `id` bigint(32) unsigned NOT NULL AUTO_INCREMENT,
   `operator` varchar(32) NOT NULL COMMENT '操作者',
   `time` datetime NOT NULL COMMENT '操作时间',
   `type` int(11) NOT NULL COMMENT '0:上料 1:换料 2:检查 3:全料检查',
@@ -29,8 +29,10 @@ CREATE TABLE `operation` (
   `lineseat` varchar(32) NOT NULL COMMENT '操作站位',
   `material_no` varchar(32) NOT NULL COMMENT '操作料号',
   `old_material_no` varchar(32) DEFAULT NULL COMMENT '旧的操作料号',
+  `scanlineseat` varchar(32) NOT NULL COMMENT '扫描的站位',
+  `remark` varchar(32) NOT NULL COMMENT '操作失败原因或是其它备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=629 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `program` */
 

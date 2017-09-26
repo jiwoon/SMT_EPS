@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget30"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="1dip"
+    android:background="#ffcccccc"
+    android:orientation="vertical">
+    <!--android:background="@drawable/view_shape"  -->
+    <TableRow
+        android:id="@+id/widget40"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0.5dip"
+        android:background="#ffffcc99"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/widget41"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Login Name"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/widget42"
+            android:layout_width="141px"
+            android:layout_height="wrap_content"
+            android:background="#ffffffff"
+            android:textColor="#ff000000"
+            android:textSize="18sp"></EditText>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/widget43"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0.5dip"
+        android:background="#ffffcc99"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/widget44"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/widget45"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ffffffff"
+            android:textColor="#ff000000"
+            android:textSize="18sp"></EditText>
+    </TableRow>
+
+    <Button
+        android:id="@+id/widget46"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dip"
+        android:background="#ffffcc33"
+        android:text="Login"
+        android:textColor="#ff000000"
+        android:textStyle="bold">
+        <!--android:background="@drawable/view_shape"  -->
+    </Button>
+</TableLayout>
