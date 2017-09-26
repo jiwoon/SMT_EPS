@@ -12,16 +12,19 @@
 		<script src="static/js/jquery-2.1.1.js" ></script>
 		<script type="text/javascript">
 			function upload(){
+				$("#upload-btn").text("请稍等....30秒左右");
+				$("#upload-btn").attr("disabled","disabled");
 				var formData = new FormData($("#file")[0]);  
 				$.ajax({
 				     url: '<%=basePath%>program/upload',
 				     type: 'POST',  
 				     data: formData,  
-				     async: false,  
 				     cache: false,  
 				     contentType: false,  
 				     processData: false,  
-				     success: function (returndata) {  
+				     success: function (returndata) {
+				    	 $("#upload-btn").removeAttr("disabled");
+				    	 $("#upload-btn").text("上传");
 				         if(returndata.result == "succeed"){
 							alert("上传成功");
 						 }else{
@@ -29,7 +32,9 @@
 						 }
 				     },  
 				     error: function (returndata) {  
-				         alert("上传失败");
+				    	 $("#upload-btn").removeAttr("disabled");
+				    	 $("#upload-btn").text("上传");
+				         alert("上传失败，请检查网络");
 				     }  
 				});  
 			}
@@ -42,6 +47,6 @@
     	  	<input type="file" name="programFile"/>
 		</form>  
 		<br />
-		<button onclick="upload()">上传</button>
+		<button id="upload-btn" onclick="upload()">上传</button>
 	</body>
 </html>
