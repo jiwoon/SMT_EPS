@@ -32,11 +32,7 @@ CREATE TABLE `operation` (
   `scanlineseat` varchar(32) NOT NULL COMMENT '扫描的站位',
   `remark` varchar(32) NOT NULL COMMENT '操作失败原因或是其它备注',
   PRIMARY KEY (`id`)
-<<<<<<< .mine
-) ENGINE=InnoDB AUTO_INCREMENT=635 DEFAULT CHARSET=utf8;
-=======
-) ENGINE=InnoDB AUTO_INCREMENT=629 DEFAULT CHARSET=utf8;
->>>>>>> .theirs
+) ENGINE=InnoDB AUTO_INCREMENT=1370 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `program` */
 
@@ -91,8 +87,8 @@ CREATE TABLE `program_item` (
   `lineseat` varchar(32) NOT NULL COMMENT '站位',
   `alternative` bit(1) NOT NULL COMMENT '是否属于替补料',
   `material_no` varchar(32) NOT NULL COMMENT '料号',
-  `specitification` varchar(128) DEFAULT NULL COMMENT '规格',
-  `position` varchar(128) DEFAULT NULL COMMENT '单板位置',
+  `specitification` varchar(1024) DEFAULT NULL COMMENT '规格',
+  `position` varchar(1024) DEFAULT NULL COMMENT '单板位置',
   `quantity` int(11) DEFAULT NULL COMMENT '数量',
   PRIMARY KEY (`program_id`,`lineseat`,`alternative`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -106,8 +102,8 @@ CREATE TABLE `program_item_backup` (
   `lineseat` varchar(32) NOT NULL COMMENT '站位',
   `alternative` bit(1) NOT NULL COMMENT '是否属于替补料',
   `material_no` varchar(32) NOT NULL COMMENT '料号',
-  `specitification` varchar(128) DEFAULT NULL COMMENT '规格',
-  `position` varchar(128) DEFAULT NULL COMMENT '单板位置',
+  `specitification` varchar(1024) DEFAULT NULL COMMENT '规格',
+  `position` varchar(1024) DEFAULT NULL COMMENT '单板位置',
   `quantity` int(11) DEFAULT NULL COMMENT '数量',
   PRIMARY KEY (`program_id`,`lineseat`,`alternative`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

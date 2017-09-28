@@ -1,5 +1,8 @@
 package com.jimi.smt.esp_server.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +35,10 @@ public class ResultUtil {
 	}
 	
 	public static ResultUtil failed(String result, Exception e) {
-		logger.error(e.getMessage());
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(bos);
+		e.printStackTrace(printStream);
+		logger.error(new String(bos.toByteArray()));
 		return new ResultUtil(result);
 	}
 
