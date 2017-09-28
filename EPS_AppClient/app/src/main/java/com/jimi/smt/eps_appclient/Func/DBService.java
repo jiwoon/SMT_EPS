@@ -51,7 +51,7 @@ public class DBService {
         //结果存放集合
         List<MaterialItem> list=new ArrayList<MaterialItem>();
         //MySQL 语句
-        String sql="select program_item.lineseat,program_item.material_no from program_item,program where program_id=id and program_no='"+strLineNo+"'";
+        String sql="select program_item.lineseat as lineseat,program_item.material_no as material from program_item,program where program_id=id and line='"+strLineNo+"'";
         //获取链接数据库对象
         conn= DBOpenHelper.getConn();
         try {
@@ -62,6 +62,8 @@ public class DBService {
                     if(rs!=null){
                         while(rs.next()){
                             MaterialItem materialItem=new MaterialItem();
+                            materialItem.setOrgLineSeat(rs.getString("lineseat"));
+                            materialItem.setOrgMaterial(rs.getString("material"));
 //                            u.setId(rs.getString("id"));
 //                            u.setName(rs.getString("name"));
 //                            u.setPhone(rs.getString("phone"));

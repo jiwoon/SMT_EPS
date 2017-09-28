@@ -1,6 +1,9 @@
 package com.jimi.smt.eps_appclient;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -70,13 +73,35 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_GETMATERIAL:
-                    Log.i(TAG,"MSG_GETMATERIAL");
+                    Log.i(TAG, "MSG_GETMATERIAL");
                     progressDialog.dismiss();
                     dialog.dismiss();
 
-                    initViews();//初始化控件
-                    initEvents();//初始化事件
-                    initDatas();//初始化数据
+                    if (globalData.getMaterialItems().size()>0){
+                        initViews();//初始化控件
+                        initEvents();//初始化事件
+                        initDatas();//初始化数据
+                    }
+                    else{
+                        //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
+                        AlertDialog.Builder builder = new AlertDialog.Builder(EPS_MainActivity.this);
+                        //设置Title的图标
+                        builder.setIcon(android.R.drawable.ic_dialog_info);
+                        //设置Title的内容
+                        builder.setTitle("提示");
+                        builder.setMessage("请确认当前网络是否正常或线号是否正确!!!");
+
+                        //设置一个PositiveButton
+                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                getMaterial();
+                            }
+                        });
+                        //显示出该对话框
+                        builder.show();
+                    }
                     break;
             }
         }
@@ -114,12 +139,17 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
                     @Override
                     public void run() {
                         //获得料号表
-                        List<MaterialItem>materialItems = new DBService().getMaterial(String.valueOf(((EditText) textView).getText()));
+//                        List<MaterialItem>materialItems = new DBService().getMaterial(String.valueOf(((EditText) textView).getText()));
+                        List<MaterialItem> materialItems = new DBService().getMaterial("305");
                         globalData.setMaterialItems(materialItems);
                         Log.i(TAG, "getMaterial finish");
                         Message msg_netData = new Message();
                         msg_netData.what = MSG_GETMATERIAL;
                         mainActivityHandler.sendMessage(msg_netData);
+                        if (materialItems.size() > 0) {
+
+                        }
+
                     }
                 }).start();
                 return false;
@@ -154,52 +184,57 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
     }
 
     private void initDatas() {
-        Log.i(TAG,"initDatas");
-        mFragments = new ArrayList<>();
-        //将四个Fragment加入集合中
-        mFragments.add(new FeedMaterialFragment());
-        mFragments.add(new ChangeMaterialFragment());
-        mFragments.add(new CheckMaterialFragment());
-        mFragments.add(new CheckAllMaterialFragment());
+        try {
+            Log.i(TAG, "initDatas");
+            mFragments = new ArrayList<>();
+            //将四个Fragment加入集合中
+            mFragments.add(new FeedMaterialFragment());
+            mFragments.add(new ChangeMaterialFragment());
+            mFragments.add(new CheckMaterialFragment());
+            mFragments.add(new CheckAllMaterialFragment());
 
-        //初始化适配器
-        mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {//从集合中获取对应位置的Fragment
-                return mFragments.get(position);
-            }
+            //初始化适配器
+            mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+                @Override
+                public Fragment getItem(int position) {//从集合中获取对应位置的Fragment
+                    return mFragments.get(position);
+                }
 
-            @Override
-            public int getCount() {//获取集合中Fragment的总数
-                return mFragments.size();
-            }
+                @Override
+                public int getCount() {//获取集合中Fragment的总数
+                    return mFragments.size();
+                }
 
-        };
-        //不要忘记设置ViewPager的适配器
-        mViewPager.setAdapter(mAdapter);
-        //设置ViewPager的切换监听
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            //页面滚动事件
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            };
+            //不要忘记设置ViewPager的适配器
+            mViewPager.setAdapter(mAdapter);
+            //设置ViewPager的切换监听
+            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                //页面滚动事件
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-            }
+                }
 
-            //页面选中事件
-            @Override
-            public void onPageSelected(int position) {
-                //设置position对应的集合中的Fragment
-                mViewPager.setCurrentItem(position);
-                resetImgs();
-                selectTab(position);
-            }
+                //页面选中事件
+                @Override
+                public void onPageSelected(int position) {
+                    //设置position对应的集合中的Fragment
+                    mViewPager.setCurrentItem(position);
+                    resetImgs();
+                    selectTab(position);
+                }
 
-            @Override
-            //页面滚动状态改变事件
-            public void onPageScrollStateChanged(int state) {
+                @Override
+                //页面滚动状态改变事件
+                public void onPageScrollStateChanged(int state) {
 
-            }
-        });
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -227,6 +262,7 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
 
     private void selectTab(int i) {
         Log.i(TAG,"selectTab:"+i);
+        globalData.setOperType(i);
         //根据点击的Tab设置对应的ImageButton为绿色
         switch (i) {
             case 0:

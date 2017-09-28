@@ -16,18 +16,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.jimi.smt.eps_appclient.Adapter.FeedMaterialAdapter;
-import com.jimi.smt.eps_appclient.Func.DBService;
+import com.jimi.smt.eps_appclient.Adapter.MaterialAdapter;
+import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
-import com.jimi.smt.eps_appclient.Unit.FeedMaterialItem;
-import com.jimi.smt.eps_appclient.Unit.OperLogItem;
+import com.jimi.smt.eps_appclient.Unit.Constants;
+import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-
 /**
  * 类名:FeedMaterialFragment
  * 创建人:Connie
@@ -39,7 +35,9 @@ import java.util.List;
 public class FeedMaterialFragment extends Fragment implements OnEditorActionListener {
     private final String TAG = this.getClass().getSimpleName();
 
-    private static final int DATA_CAPACITY = 2;
+    //全局变量
+    GlobalData globalData;
+
     //上料视图
     private View vFeedMaterialFragment;
     //操作员　站位　料号
@@ -47,13 +45,13 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
     //上料列表
     private ListView lv_FeedMaterial;
-    private List<FeedMaterialItem> lFeedMaterialItem = new ArrayList<FeedMaterialItem>();
-    private FeedMaterialAdapter feedMaterialAdapter;
+    private MaterialAdapter materialAdapter;
 
-    //当前测试项
-    int curTestId = 0;
+    //当前上料时用到的排位料号表
+    private List<MaterialItem> lFeedMaterialItem = new ArrayList<MaterialItem>();
 
-    GlobalData globalData;
+    //当前上料项
+    int curFeedMaterialId = 0;
 
     /**
      * @param inflater
@@ -71,12 +69,18 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         vFeedMaterialFragment = inflater.inflate(R.layout.feedmaterial_layout, container, false);
 
         globalData = (GlobalData) getActivity().getApplication();
+        globalData.setOperType(Constants.FEEDMATERIAL);
         initViews();
         initEvents();
         initData();//初始化数据
         return vFeedMaterialFragment;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        edt_Operation.requestFocus();
+    }
 
     /**
      * @author connie
@@ -111,21 +115,17 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
      */
     private void initData() {
         Log.i(TAG, "initData");
+        curFeedMaterialId=0;
         //填充数据
         lFeedMaterialItem.clear();
-        for (int i = 0; i < DATA_CAPACITY; i++) {
-            FeedMaterialItem feedMaterialItem;
-//            if (i < 10) {
-//                feedMaterialItem = new FeedMaterialItem("306010" + i, "6940105300121", "", "", "", "");
-//            } else {
-//                feedMaterialItem = new FeedMaterialItem("30601" + i, "6940105300121", "", "", "", "");
-//            }
-            feedMaterialItem = new FeedMaterialItem("6940105300121", "6940105300121", "", "", "", "");
+        List<MaterialItem> materialItems = globalData.getMaterialItems();
+        for (MaterialItem materialItem : materialItems) {
+            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
             lFeedMaterialItem.add(feedMaterialItem);
         }
         //设置Adapter
-        feedMaterialAdapter = new FeedMaterialAdapter(this.getActivity(), lFeedMaterialItem);
-        lv_FeedMaterial.setAdapter(feedMaterialAdapter);
+        materialAdapter = new MaterialAdapter(this.getActivity(), lFeedMaterialItem);
+        lv_FeedMaterial.setAdapter(materialAdapter);
     }
 
     /**
@@ -150,7 +150,7 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                     textView.setText(scanValue);
 
                     //将扫描的内容更新至列表中
-                    FeedMaterialItem feedMaterialItem = lFeedMaterialItem.get(curTestId);
+                    MaterialItem feedMaterialItem = lFeedMaterialItem.get(curFeedMaterialId);
                     switch (textView.getId()) {
                         case R.id.edt_Operation:
                             //操作员格式不对
@@ -166,14 +166,16 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 //                            } else {
 //                                feedMaterialItem.setRemark("");
 //                            }
-                            feedMaterialAdapter.notifyDataSetChanged();
+                            materialAdapter.notifyDataSetChanged();
                             break;
                         case R.id.edt_material:
-                            //料号
-                            scanValue=scanValue.substring(0,scanValue.indexOf("@"));
-                            feedMaterialItem.setScanMaterial(scanValue);
-                            textView.setText(scanValue);
+                            //料号,若为二维码则提取@@前的料号
+                            if (scanValue.indexOf("@") != -1) {
+                                scanValue = scanValue.substring(0, scanValue.indexOf("@"));
+                                textView.setText(scanValue);
+                            }
 
+                            feedMaterialItem.setScanMaterial(scanValue);
                             //比对站位和料号是否相等
                             if ((feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) &&
                                     feedMaterialItem.getOrgMaterial().equalsIgnoreCase(feedMaterialItem.getScanMaterial())) {
@@ -186,11 +188,12 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                                     feedMaterialItem.setRemark("料号与排位表不相符");
                                 }
                             }
+                            materialAdapter.notifyDataSetChanged();
 
-                            feedMaterialAdapter.notifyDataSetChanged();
-                            AddLog();
+                            //增加数据库日志
+                            new GlobalFunc().AddDBLog(globalData, lFeedMaterialItem.get(curFeedMaterialId));
 
-                            testNext();
+                            feedNextMaterial();
                             break;
                     }
                     return false;
@@ -204,121 +207,71 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
     /**
      * @author connie
      * @time 2017-9-22
-     * @describe 测试下一项
+     * @describe 上下一个料
      */
-    private void testNext() {
-        Log.i(TAG, "testNext:" + curTestId);
-        lv_FeedMaterial.setSelection(curTestId);
-        if (curTestId < lFeedMaterialItem.size() - 1) {
-            curTestId++;
+    private void feedNextMaterial() {
+        Log.i(TAG, "feedNextMaterial:" + curFeedMaterialId);
+        //显示最新的上料结果
+        lv_FeedMaterial.setSelection(curFeedMaterialId);
+        //循环上料
+        if (curFeedMaterialId < lFeedMaterialItem.size() - 1) {
+//        if (curFeedMaterialId < 2) {
+            curFeedMaterialId++;
             clearLineSeatMaterialScan();
             edt_Operation.requestFocus();
-        } else {
-            boolean feedResult=true;
-            for (FeedMaterialItem feedMaterialItem:lFeedMaterialItem){
-                if (!feedMaterialItem.getResult().equalsIgnoreCase("PASS")){
-                    feedResult=false;
-                }
-            }
-//    通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            //    设置Title的图标
-            builder.setIcon(android.R.drawable.ic_dialog_info);
-            View view = View.inflate(getActivity(), R.layout.materialresult_dialog, null);
-            builder.setView(view);
-            final EditText etResult = (EditText) view.findViewById(R.id.et_result);
-
-
-            //    设置Title的内容
-            builder.setTitle("上料结果");
-            //    设置Content来显示一个信息
-            if(feedResult){
-                etResult.setText("PASS");
-                etResult.setBackgroundColor(Color.GREEN);
-
-            }
-            else{
-                etResult.setText("FAIL");
-                etResult.setBackgroundColor(Color.RED);
-            }
-
-            //    设置一个PositiveButton
-            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    dialog.dismiss();
-                    resetTestPar();
-                }
-            });
-            //    设置一个NegativeButton
-            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    resetTestPar();
-                }
-            });
-            //    显示出该对话框
-            builder.show();
         }
+        //上料结束,显示结果
+        else {
+            showFeedMaterialResult();
+        }
+    }
+
+    private void showFeedMaterialResult() {
+        //默认上料结果是PASS
+        boolean feedResult = true;
+        for (MaterialItem feedMaterialItem : lFeedMaterialItem) {
+            if (!feedMaterialItem.getResult().equalsIgnoreCase("PASS")) {
+                feedResult = false;
+            }
+        }
+
+
+        //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        //设置Title的图标
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        //设置Title的内容
+        builder.setTitle("上料结果");
+        View view = View.inflate(getActivity(), R.layout.materialresult_dialog, null);
+        builder.setView(view);
+        final EditText etResult = (EditText) view.findViewById(R.id.et_result);
+
+        //设置Content来显示一个信息
+        if (feedResult) {
+            etResult.setText("PASS");
+            etResult.setBackgroundColor(Color.GREEN);
+
+        } else {
+            etResult.setText("FAIL");
+            etResult.setBackgroundColor(Color.RED);
+        }
+
+        //设置一个PositiveButton
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                clearLineSeatMaterialScan();
+                initData();
+                edt_LineSeat.requestFocus();
+            }
+        });
+        //显示出该对话框
+        builder.show();
     }
 
     private void clearLineSeatMaterialScan() {
         edt_LineSeat.setText("");
         edt_Material.setText("");
-    }
-
-    private void resetTestPar() {
-        clearLineSeatMaterialScan();
-        edt_LineSeat.requestFocus();
-        curTestId = 0;
-        initData();
-    }
-
-    //    private void AddAllLog() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                List<OperLogItem> operLogItems = new ArrayList<OperLogItem>();
-//                for (FeedMaterialItem feedMaterialItem:mList)
-//                {
-//                    OperLogItem operLogItem = new OperLogItem();
-//                    operLogItem.setOperator("124325");
-//                    operLogItem.setTime(new Timestamp(System.currentTimeMillis()));
-//                    operLogItem.setType(0);
-//                    operLogItem.setResult("PASS");
-//                    operLogItem.setLineseat(feedMaterialItem.getScanLineSeat());
-//                    operLogItem.setMaterial_no(feedMaterialItem.getScanMaterial());
-//                    operLogItem.setOld_material_no(feedMaterialItem.getOrgMaterial());
-//                    operLogItems.add(operLogItem);
-//                }
-//                new DBService().inserOpertLog(operLogItems);
-//            }
-//        }).start();
-//    }
-    private void AddLog() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<OperLogItem> operLogItems = new ArrayList<OperLogItem>();
-                FeedMaterialItem feedMaterialItem = lFeedMaterialItem.get(curTestId);
-//                for (FeedMaterialItem feedMaterialItem:mList)
-                {
-                    OperLogItem operLogItem = new OperLogItem();
-                    operLogItem.setOperator(globalData.getOperator());
-                    operLogItem.setTime(new Timestamp(System.currentTimeMillis()));
-                    operLogItem.setType(0);
-                    operLogItem.setResult(feedMaterialItem.getResult());
-                    operLogItem.setLineseat(feedMaterialItem.getScanLineSeat());
-                    operLogItem.setMaterial_no(feedMaterialItem.getScanMaterial());
-                    operLogItem.setOld_material_no(feedMaterialItem.getOrgMaterial());
-                    operLogItem.setScanLineseat(feedMaterialItem.getScanLineSeat());
-                    operLogItem.setRemark(feedMaterialItem.getRemark());
-                    operLogItems.add(operLogItem);
-                }
-                new DBService().inserOpertLog(operLogItems);
-            }
-        }).start();
     }
 }

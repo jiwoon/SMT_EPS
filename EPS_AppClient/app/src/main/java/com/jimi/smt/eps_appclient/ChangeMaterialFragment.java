@@ -10,11 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
-import com.jimi.smt.eps_appclient.Unit.FeedMaterialItem;
+import com.jimi.smt.eps_appclient.Unit.Constants;
+import com.jimi.smt.eps_appclient.Unit.MaterialItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by caobotao on 16/1/4.
@@ -22,18 +26,34 @@ import com.jimi.smt.eps_appclient.Unit.FeedMaterialItem;
 public class ChangeMaterialFragment extends Fragment implements TextView.OnEditorActionListener {
     private final String TAG = this.getClass().getSimpleName();
 
+    //全局变量
+    GlobalData globalData;
+
+    //换料视图
     View vChangeMaterialFragment;
     //操作员　站位　料号
     private EditText edt_Operation, edt_LineSeat, edt_OrgMaterial, edt_ChgMaterial;
     private TextView tv_Result;
 
+    //当前上料时用到的排位料号表
+    private List<MaterialItem> lChangeMaterialItem = new ArrayList<MaterialItem>();
+
+    //当前换料项
+    int curChangeMaterialId = -1;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
         vChangeMaterialFragment = inflater.inflate(R.layout.changematerial_layout, container, false);
+
+        globalData = (GlobalData) getActivity().getApplication();
+        globalData.setOperType(Constants.CHANGEMATERIAL);
 
         initViews();
         initEvents();
+        initData();
+
         return vChangeMaterialFragment;
     }
 
@@ -63,12 +83,31 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         edt_OrgMaterial.setOnEditorActionListener(this);
         edt_ChgMaterial.setOnEditorActionListener(this);
 
+        //点击结果后换下一个料
         tv_Result.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                testAgain();
+                changeNextMaterial();
             }
         });
+    }
+
+    /**
+     * @author connie
+     * @time 2017-9-22
+     * @describe 初始化数据
+     */
+    private void initData() {
+        Log.i(TAG, "initData");
+        curChangeMaterialId = -1;
+        //填充数据
+        lChangeMaterialItem.clear();
+        List<MaterialItem> materialItems = globalData.getMaterialItems();
+        for (MaterialItem materialItem : materialItems) {
+            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
+            lChangeMaterialItem.add(feedMaterialItem);
+        }
+
     }
 
     @Override
@@ -89,21 +128,38 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                     //将扫描的内容更新至列表中
                     switch (textView.getId()) {
                         case R.id.edt_Operation:
+                            globalData.setOperator(strValue);
                             break;
                         case R.id.edt_lineseat:
                             //站位
+                            for (int j = 0; j < lChangeMaterialItem.size(); j++) {
+                                MaterialItem materialItem = lChangeMaterialItem.get(j);
+                                if (materialItem.getOrgLineSeat().equalsIgnoreCase(strValue)) {
+                                    curChangeMaterialId = j;
+                                }
+                            }
+                            if (curChangeMaterialId < 0) {
+                                displayResult(1);
+                            }
                             break;
                         case R.id.edt_OrgMaterial:
-                            //线上料号
+                            //比对线上料号
+                            if (curChangeMaterialId >= 0) {
+                                MaterialItem materialItem = lChangeMaterialItem.get(curChangeMaterialId);
+                                //线上的料号与排位表的值不对时显示结果
+                                if (!materialItem.getOrgMaterial().equalsIgnoreCase(strValue)) {
+                                    displayResult(1);
+                                }
+                            }
                             break;
                         case R.id.edt_ChgMaterial:
-                            //更换料号
-                            if (edt_ChgMaterial.getText().toString().equals(edt_OrgMaterial.getText().toString())) {
-                                tv_Result.setBackgroundColor(Color.GREEN);
-                                tv_Result.setText("PASS");
-                            } else {
-                                tv_Result.setBackgroundColor(Color.RED);
-                                tv_Result.setText("FAIL");
+                            //比对更换料号
+                            if (curChangeMaterialId >= 0) {
+                                if (edt_ChgMaterial.getText().toString().equals(edt_OrgMaterial.getText().toString())) {
+                                    displayResult(0);
+                                } else {
+                                    displayResult(1);
+                                }
                             }
                             break;
                     }
@@ -116,17 +172,47 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     }
 
     /**
+     * @param i
+     */
+    private void displayResult(int i) {
+        Log.i(TAG, "displayResult");
+        String Result = "";
+        switch (i) {
+            case 0:
+                tv_Result.setBackgroundColor(Color.GREEN);
+                Result = "PASS";
+                break;
+            case 1:
+                tv_Result.setBackgroundColor(Color.RED);
+                Result = "FAIL";
+
+                break;
+        }
+        tv_Result.setText(Result);
+        new GlobalFunc().AddDBLog(globalData,
+                new MaterialItem("",
+                        String.valueOf(edt_OrgMaterial.getText()),
+                        String.valueOf(edt_LineSeat.getText()),
+                        String.valueOf(edt_ChgMaterial.getText()),
+                        Result,
+                        ""));
+
+    }
+
+    /**
      * @author connie
      * @time 2017-9-22
      * @describe 测试下一项
      */
-    private void testAgain() {
-        Log.i(TAG, "testAgain");
-        tv_Result.setText("");
+    private void changeNextMaterial() {
+        Log.i(TAG, "changeNextMaterial");
         tv_Result.setBackgroundColor(Color.TRANSPARENT);
+        tv_Result.setText("");
         edt_LineSeat.setText("");
         edt_OrgMaterial.setText("");
         edt_ChgMaterial.setText("");
         edt_LineSeat.requestFocus();
     }
+
+
 }

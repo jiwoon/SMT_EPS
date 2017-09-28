@@ -3,6 +3,7 @@ package com.jimi.smt.eps_appclient;
 import android.app.Application;
 import android.content.Context;
 
+import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 
 import java.util.ArrayList;
@@ -49,5 +50,16 @@ public class GlobalData extends Application {
 
     public void setOperator(String operator) {
         Operator = operator;
+    }
+
+    //操作类型
+    int OperType= Constants.FEEDMATERIAL;
+
+    public int getOperType() {
+        return OperType;
+    }
+
+    public void setOperType(int operType) {
+        OperType = operType;
     }
 }

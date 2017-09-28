@@ -2,52 +2,38 @@ package com.jimi.smt.eps_appclient.Adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.jimi.smt.eps_appclient.Func.DBService;
 import com.jimi.smt.eps_appclient.R;
-import com.jimi.smt.eps_appclient.Unit.FeedMaterialItem;
-import com.jimi.smt.eps_appclient.Unit.OperLogItem;
+import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by think on 2017/9/20.
  */
-public class FeedMaterialAdapter extends BaseAdapter {
-    private static final String TAG = "FeedMaterialAdapter";
+public class MaterialAdapter extends BaseAdapter {
     private ViewHolder mViewHolder;
     private LayoutInflater mLayoutInflater;
-    private List<FeedMaterialItem> feedMaterialItems;
+    private List<MaterialItem> materialItems;
 
-    public FeedMaterialAdapter(Context context, List<FeedMaterialItem> list) {
+    public MaterialAdapter(Context context, List<MaterialItem> list) {
         mLayoutInflater = LayoutInflater.from(context);
-        feedMaterialItems = list;
+        materialItems = list;
     }
 
     @Override
     public int getCount() {
-        return feedMaterialItems.size();
+        return materialItems.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return feedMaterialItems.get(position);
+        return materialItems.get(position);
     }
 
     @Override
@@ -73,13 +59,13 @@ public class FeedMaterialAdapter extends BaseAdapter {
         }
 
         //显示相关测试结果
-        FeedMaterialItem feedMaterialItem = feedMaterialItems.get(position);
-        mViewHolder.tv_orgLineSeat.setText(feedMaterialItem.getOrgLineSeat());
-        mViewHolder.tv_orgMaterial.setText(feedMaterialItem.getOrgMaterial());
-        mViewHolder.tv_scanLineSeat.setText(feedMaterialItem.getScanLineSeat());
-        mViewHolder.tv_scanMaterial.setText(feedMaterialItem.getScanMaterial());
-        mViewHolder.tv_Result.setText(feedMaterialItem.getResult());
-        mViewHolder.tv_Remark.setText(feedMaterialItem.getRemark());
+        MaterialItem materialItem = materialItems.get(position);
+        mViewHolder.tv_orgLineSeat.setText(materialItem.getOrgLineSeat());
+        mViewHolder.tv_orgMaterial.setText(materialItem.getOrgMaterial());
+        mViewHolder.tv_scanLineSeat.setText(materialItem.getScanLineSeat());
+        mViewHolder.tv_scanMaterial.setText(materialItem.getScanMaterial());
+        mViewHolder.tv_Result.setText(materialItem.getResult());
+        mViewHolder.tv_Remark.setText(materialItem.getRemark());
 
         if (mViewHolder.tv_Result.getText().equals("PASS")) {
             mViewHolder.tv_Result.setBackgroundColor(Color.GREEN);
