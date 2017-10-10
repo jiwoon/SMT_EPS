@@ -39,7 +39,7 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
     //上料视图
     private View vCheckAllMaterialFragment;
     //操作员　站位　料号
-    private EditText edt_Operation, edt_LineSeat, edt_ScanMaterial;
+    private EditText edt_Operation, /*edt_LineSeat,*/ edt_ScanMaterial;
 
     //上料列表
     private ListView lv_CheckAllMaterial;
@@ -73,7 +73,7 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
     private void initViews() {
         Log.i(TAG, "initViews");
         edt_Operation = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_Operation);
-        edt_LineSeat = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_Lineseat);
+        //edt_LineSeat = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_Lineseat);
         edt_ScanMaterial = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_material);
 
         lv_CheckAllMaterial = (ListView) vCheckAllMaterialFragment.findViewById(R.id.list_view);
@@ -87,7 +87,7 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
     private void initEvents() {
         Log.i(TAG,"initEvents");
         edt_Operation.setOnEditorActionListener(this);
-        edt_LineSeat.setOnEditorActionListener(this);
+        //edt_LineSeat.setOnEditorActionListener(this);
         edt_ScanMaterial.setOnEditorActionListener(this);
     }
 
@@ -142,16 +142,17 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                             }
                             globalData.setOperator(scanValue);
                             break;
-                        case R.id.edt_Lineseat:
-                            //站位
-                            checkAllMaterialItem.setScanLineSeat(scanValue);
-//                            if (edt_LineSeat.length() != 7) {
-//                                feedMaterialItem.setRemark("站位长度不正确");
-//                            } else {
-//                                feedMaterialItem.setRemark("");
-//                            }
-                            materialAdapter.notifyDataSetChanged();
-                            break;
+//                        case R.id.edt_Lineseat:
+//                            //站位
+//                            //String scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
+//                            checkAllMaterialItem.setScanLineSeat(scanValue);
+////                            if (edt_LineSeat.length() != 7) {
+////                                feedMaterialItem.setRemark("站位长度不正确");
+////                            } else {
+////                                feedMaterialItem.setRemark("");
+////                            }
+//                            materialAdapter.notifyDataSetChanged();
+//                            break;
                         case R.id.edt_material:
                             //料号,若为二维码则提取@@前的料号
                             if (scanValue.indexOf("@")!=-1) {
@@ -161,14 +162,14 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
 
                             checkAllMaterialItem.setScanMaterial(scanValue);
                             //比对站位和料号是否相等
-                            if ((checkAllMaterialItem.getOrgLineSeat().equalsIgnoreCase(checkAllMaterialItem.getScanLineSeat())) &&
+                            if (/*(checkAllMaterialItem.getOrgLineSeat().equalsIgnoreCase(checkAllMaterialItem.getScanLineSeat())) &&*/
                                     checkAllMaterialItem.getOrgMaterial().equalsIgnoreCase(checkAllMaterialItem.getScanMaterial())) {
                                 checkAllMaterialItem.setResult("PASS");
                             } else {
                                 checkAllMaterialItem.setResult("FAIL");
-                                if (!checkAllMaterialItem.getOrgLineSeat().equalsIgnoreCase(checkAllMaterialItem.getScanLineSeat())) {
+                                /*if (!checkAllMaterialItem.getOrgLineSeat().equalsIgnoreCase(checkAllMaterialItem.getScanLineSeat())) {
                                     checkAllMaterialItem.setRemark("站位不相符");
-                                } else if (!checkAllMaterialItem.getOrgMaterial().equalsIgnoreCase(checkAllMaterialItem.getScanMaterial())) {
+                                } else*/ if (!checkAllMaterialItem.getOrgMaterial().equalsIgnoreCase(checkAllMaterialItem.getScanMaterial())) {
                                     checkAllMaterialItem.setRemark("料号与排位表不相符");
                                 }
                             }
@@ -250,13 +251,14 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
      */
     private void clearMaterialInfo() {
         clearLineSeatMaterialScan();
-        edt_LineSeat.requestFocus();
+//        edt_LineSeat.requestFocus();
+        edt_ScanMaterial.requestFocus();
         curCheckId = 0;
         initData();
     }
 
     private void clearLineSeatMaterialScan() {
-        edt_LineSeat.setText("");
+//        edt_LineSeat.setText("");
         edt_ScanMaterial.setText("");
     }
 }

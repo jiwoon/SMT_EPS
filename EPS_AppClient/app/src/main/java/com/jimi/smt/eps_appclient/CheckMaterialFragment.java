@@ -33,7 +33,9 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
 
     //操作员　站位　料号
     private EditText edt_Operation, edt_LineSeat, edt_Material;
-    private TextView tv_Result,tv_Remark;
+    private TextView tv_Result,tv_Remark,tv_LastInfo;
+
+    String curLineSeat,curMaterial;
 
     //当前检料时用到的排位料号表
     List<MaterialItem> lCheckMaterialItems = new ArrayList<MaterialItem>();
@@ -69,6 +71,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
         edt_Material = (EditText) vCheckMaterialFragment.findViewById(R.id.edt_material);
         tv_Result= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_Result);
         tv_Remark= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_Remark);
+        tv_LastInfo= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_LastInfo);
     }
 
     /**
@@ -104,6 +107,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
             MaterialItem feedMaterialItem = new MaterialItem(materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
             lCheckMaterialItems.add(feedMaterialItem);
         }
+        curCheckMaterialId=-1;
     }
 
     /**
@@ -134,21 +138,25 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                             if (scanValue.length() != 10) {
                             }
                             globalData.setOperator(scanValue);
+                            //edt_Operation.setEnabled(false);
                             break;
                         case R.id.edt_lineseat:
                             //站位
+                            //String scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
                             //feedMaterialItem.setScanLineSeat(scanValue);
 //                            if (edt_LineSeat.length() != 7) {
 //                                feedMaterialItem.setRemark("站位长度不正确");
 //                            } else {
 //                                feedMaterialItem.setRemark("");
 //                            }
+                            checkAgain();
                             for (int j = 0; j < lCheckMaterialItems.size(); j++) {
                                 MaterialItem materialItem = lCheckMaterialItems.get(j);
                                 if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanValue)) {
                                     curCheckMaterialId = j;
                                 }
                             }
+                            curLineSeat=scanValue;
                             break;
                         case R.id.edt_material:
                             //料号
@@ -157,6 +165,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                                 textView.setText(scanValue);
                             }
 
+                            curMaterial=scanValue;
                             String Remark="";
                             if (curCheckMaterialId != -1) {
 
@@ -169,12 +178,12 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                                     showCheckMaterialResult(0,"");
                                 } else {
                                     checkMaterialItem.setResult("FAIL");
+                                    showCheckMaterialResult(1, "");
                                     if (!checkMaterialItem.getOrgMaterial().equalsIgnoreCase(checkMaterialItem.getScanMaterial())) {
                                         Remark="料号与排位表不相符";
                                         checkMaterialItem.setRemark(Remark);
                                         showCheckMaterialResult(1, Remark);
                                     }
-                                    showCheckMaterialResult(1,"");
                                 }
                             }
                             else{
@@ -206,6 +215,15 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
         tv_Remark.setText(strRemark);
         tv_Result.setText(Result);
 
+        //自动清空站位和料号以便下一项检测
+        tv_LastInfo.setText("扫描结果\r\n站位:"+curLineSeat+"\r\n"+
+            "料号:"+curMaterial);
+        Log.i(TAG,"扫描结果\r\n站位:"+curLineSeat+"\r\n"+
+                "料号:"+curMaterial);
+        edt_LineSeat.setText("");
+        edt_Material.setText("");
+        edt_Operation.requestFocus();
+
         //保存至数据库日志
         MaterialItem materialItem;
         if (curCheckMaterialId >-1) {
@@ -233,8 +251,10 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
         tv_Remark.setText("");
         tv_Result.setText("");
         tv_Result.setBackgroundColor(Color.TRANSPARENT);
-        edt_LineSeat.setText("");
+        curLineSeat="";
+        curMaterial="";
+        //edt_LineSeat.setText("");
         edt_Material.setText("");
-        edt_LineSeat.requestFocus();
+        //edt_LineSeat.requestFocus();
     }
 }

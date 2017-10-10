@@ -139,8 +139,12 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
                     @Override
                     public void run() {
                         //获得料号表
-//                        List<MaterialItem>materialItems = new DBService().getMaterial(String.valueOf(((EditText) textView).getText()));
-                        List<MaterialItem> materialItems = new DBService().getMaterial("305");
+                        String LineNo="";
+                        LineNo= String.valueOf(((EditText) textView).getText());
+                        LineNo=LineNo.substring(0, 3);
+//                        LineNo=((EditText) textView).getText()
+//                        List<MaterialItem>materialItems = new DBService().getMaterial(LineNo);
+                        List<MaterialItem> materialItems = new DBService().getMaterial("308");
                         globalData.setMaterialItems(materialItems);
                         Log.i(TAG, "getMaterial finish");
                         Message msg_netData = new Message();

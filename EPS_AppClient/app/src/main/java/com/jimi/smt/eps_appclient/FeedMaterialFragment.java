@@ -160,7 +160,13 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                             break;
                         case R.id.edt_lineseat:
                             //站位
-                            feedMaterialItem.setScanLineSeat(scanValue);
+                            Log.i(TAG, "lineseat:" + scanValue);
+                            String scanLineSeat=scanValue;
+                            if (scanValue.length()>=8){
+                                scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
+                            }
+
+                            feedMaterialItem.setScanLineSeat(scanLineSeat);
 //                            if (edt_LineSeat.length() != 7) {
 //                                feedMaterialItem.setRemark("站位长度不正确");
 //                            } else {

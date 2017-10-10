@@ -33,9 +33,11 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     View vChangeMaterialFragment;
     //操作员　站位　料号
     private EditText edt_Operation, edt_LineSeat, edt_OrgMaterial, edt_ChgMaterial;
-    private TextView tv_Result;
+    private TextView tv_Result,tv_Remark,tv_lastInfo;
 
-    //当前上料时用到的排位料号表
+    String curLineSeat,curOrgMaterial,curChgMaterial;
+
+    //当前上料时用到的排位料号表x
     private List<MaterialItem> lChangeMaterialItem = new ArrayList<MaterialItem>();
 
     //当前换料项
@@ -69,6 +71,8 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         edt_OrgMaterial = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_OrgMaterial);
         edt_ChgMaterial = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_ChgMaterial);
         tv_Result = (TextView) vChangeMaterialFragment.findViewById(R.id.tv_Result);
+        tv_lastInfo= (TextView) vChangeMaterialFragment.findViewById(R.id.tv_LastInfo);
+        tv_Remark= (TextView) vChangeMaterialFragment.findViewById(R.id.tv_Remark);
     }
 
     /**
@@ -131,7 +135,9 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                             globalData.setOperator(strValue);
                             break;
                         case R.id.edt_lineseat:
+                            changeNextMaterial();
                             //站位
+                            //String scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
                             for (int j = 0; j < lChangeMaterialItem.size(); j++) {
                                 MaterialItem materialItem = lChangeMaterialItem.get(j);
                                 if (materialItem.getOrgLineSeat().equalsIgnoreCase(strValue)) {
@@ -139,28 +145,42 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                 }
                             }
                             if (curChangeMaterialId < 0) {
-                                displayResult(1);
+                                displayResult(1,"排位表不存在此站位！");
                             }
+                            curLineSeat=strValue;
+
                             break;
                         case R.id.edt_OrgMaterial:
+                            if (strValue.indexOf("@") != -1) {
+                                strValue = strValue.substring(0, strValue.indexOf("@"));
+                                textView.setText(strValue);
+                            }
+                            curOrgMaterial=strValue;
                             //比对线上料号
                             if (curChangeMaterialId >= 0) {
                                 MaterialItem materialItem = lChangeMaterialItem.get(curChangeMaterialId);
                                 //线上的料号与排位表的值不对时显示结果
                                 if (!materialItem.getOrgMaterial().equalsIgnoreCase(strValue)) {
-                                    displayResult(1);
+                                    displayResult(1,"原始料号与排位表不相符！");
                                 }
                             }
+
                             break;
                         case R.id.edt_ChgMaterial:
+                            if (strValue.indexOf("@") != -1) {
+                                strValue = strValue.substring(0, strValue.indexOf("@"));
+                                textView.setText(strValue);
+                            }
+                            curChgMaterial=strValue;
                             //比对更换料号
                             if (curChangeMaterialId >= 0) {
                                 if (edt_ChgMaterial.getText().toString().equals(edt_OrgMaterial.getText().toString())) {
-                                    displayResult(0);
+                                    displayResult(0,"");
                                 } else {
-                                    displayResult(1);
+                                    displayResult(1,"更换的料号与线上料号不相符！");
                                 }
                             }
+
                             break;
                     }
                     return false;
@@ -174,7 +194,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     /**
      * @param i
      */
-    private void displayResult(int i) {
+    private void displayResult(int i,String remark) {
         Log.i(TAG, "displayResult");
         String Result = "";
         switch (i) {
@@ -189,6 +209,14 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                 break;
         }
         tv_Result.setText(Result);
+        tv_Remark.setText(remark);
+        tv_lastInfo.setText("扫描结果: 站位:"+curLineSeat+"\r\n原始料号:"+curOrgMaterial+"\r\n替换料号:"+curChgMaterial);
+
+        edt_LineSeat.setText("");
+        edt_OrgMaterial.setText("");
+        edt_ChgMaterial.setText("");
+        edt_Operation.requestFocus();
+
         new GlobalFunc().AddDBLog(globalData,
                 new MaterialItem("",
                         String.valueOf(edt_OrgMaterial.getText()),
@@ -208,10 +236,13 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         Log.i(TAG, "changeNextMaterial");
         tv_Result.setBackgroundColor(Color.TRANSPARENT);
         tv_Result.setText("");
-        edt_LineSeat.setText("");
-        edt_OrgMaterial.setText("");
-        edt_ChgMaterial.setText("");
-        edt_LineSeat.requestFocus();
+        tv_Remark.setText("");
+        tv_lastInfo.setText("");
+        curLineSeat="";
+        curOrgMaterial="";
+        curChgMaterial="";
+        curChangeMaterialId=-1;
+
     }
 
 
