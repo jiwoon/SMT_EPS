@@ -144,6 +144,7 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                             break;
                         case R.id.edt_Lineseat:
                             //站位
+                            //String scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
                             checkAllMaterialItem.setScanLineSeat(scanValue);
 //                            if (edt_LineSeat.length() != 7) {
 //                                feedMaterialItem.setRemark("站位长度不正确");
