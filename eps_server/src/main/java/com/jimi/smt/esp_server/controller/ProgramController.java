@@ -46,7 +46,7 @@ public class ProgramController {
 			return ResultUtil.failed("上传失败，解析文件时出错，请确保是标准的排班表文件",e);
 		}
 		if(num == 0) {
-			return ResultUtil.failed("上传失败，请检查表格第10行是否为空，若为空则去掉该行再重试");
+			return ResultUtil.failed("上传失败，请检查表格内是否有空行，若有去掉该行再重试");
 		}
 		return ResultUtil.succeed("上传成功，共上传"+num+"张表");
 	}

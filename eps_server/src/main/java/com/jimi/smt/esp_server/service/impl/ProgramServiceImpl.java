@@ -3,6 +3,7 @@ package com.jimi.smt.esp_server.service.impl;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -96,7 +97,7 @@ public class ProgramServiceImpl implements ProgramService {
 		int num = workbook.getNumberOfSheets();
 		for(int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			sheet = workbook.getSheetAt(i);
-			for(int j = 9; j < sheet.getLastRowNum() - 4; j++) {
+			for(int j = 9; j < sheet.getLastRowNum() - 3; j++) {
 				ProgramItem programItem = new ProgramItem();
 				programItem.setProgramId(program.getId());
 				//空表判断
@@ -120,10 +121,14 @@ public class ProgramServiceImpl implements ProgramService {
 
 	
 	private String formatLineseat(String in) {
-		String[] array = in.split("-");
-		array[0] = Integer.valueOf(array[0]) <= 9 ? "0" + array[0] : array[0];
-		array[1] = Integer.valueOf(array[1]) <= 9 ? "0" + array[1] : array[1];
-		return array[0] + "-" + array[1];
+		try {
+			String[] array = in.split("-");
+			array[0] = Integer.valueOf(array[0]) <= 9 ? "0" + array[0] : array[0];
+			array[1] = Integer.valueOf(array[1]) <= 9 ? "0" + array[1] : array[1];
+			return array[0] + "-" + array[1];
+		}catch (NumberFormatException | PatternSyntaxException e) {
+			return in;
+		}
 	}
 	
 }
