@@ -52,6 +52,7 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
     //当前上料项
     int curFeedMaterialId = 0;
+    int matchFeedMaterialId = -1;
 
     /**
      * @param inflater
@@ -73,13 +74,17 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         initViews();
         initEvents();
         initData();//初始化数据
+
+        edt_LineSeat.requestFocus();
         return vFeedMaterialFragment;
+
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        edt_Operation.requestFocus();
+//        edt_Operation.requestFocus();
     }
 
     /**
@@ -94,6 +99,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         edt_Material = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_material);
 
         lv_FeedMaterial = (ListView) vFeedMaterialFragment.findViewById(R.id.list_view);
+
+
     }
 
     /**
@@ -126,6 +133,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         //设置Adapter
         materialAdapter = new MaterialAdapter(this.getActivity(), lFeedMaterialItem);
         lv_FeedMaterial.setAdapter(materialAdapter);
+
+        matchFeedMaterialId=-1;
     }
 
     /**
@@ -137,12 +146,17 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         Log.i(TAG, "onEditorAction");
+        Log.i(TAG,"keyEvent:"+keyEvent.getAction());
         //回车键
+//        if (i == EditorInfo.IME_ACTION_UNSPECIFIED) {
+//            // do something
+////        }
+////
         if (i == EditorInfo.IME_ACTION_SEND ||
                 (keyEvent != null && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER)) {
             switch (keyEvent.getAction()) {
                 //按下
-                case KeyEvent.ACTION_DOWN:
+                case KeyEvent.ACTION_UP:
                     //扫描内容
                     String scanValue = String.valueOf(((EditText) textView).getText());
                     scanValue = scanValue.replaceAll("\r", "");
@@ -150,13 +164,14 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                     textView.setText(scanValue);
 
                     //将扫描的内容更新至列表中
-                    MaterialItem feedMaterialItem = lFeedMaterialItem.get(curFeedMaterialId);
+                    //MaterialItem feedMaterialItem = lFeedMaterialItem.get(curFeedMaterialId);
                     switch (textView.getId()) {
                         case R.id.edt_Operation:
                             //操作员格式不对
                             if (scanValue.length() != 10) {
                             }
                             globalData.setOperator(scanValue);
+                            edt_LineSeat.requestFocus();
                             break;
                         case R.id.edt_lineseat:
                             //站位
@@ -165,14 +180,36 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                             if (scanValue.length()>=8){
                                 scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
                             }
+                            scanValue=scanLineSeat;
 
-                            feedMaterialItem.setScanLineSeat(scanLineSeat);
+
+                            for (int j = 0; j < lFeedMaterialItem.size(); j++) {
+                                MaterialItem materialItem = lFeedMaterialItem.get(j);
+                                if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanValue)) {
+                                    matchFeedMaterialId = j;
+
+                                }
+                            }
+                            if (matchFeedMaterialId<0){
+                                feedNextMaterial();
+                                return true;
+                            }
+                            else{
+                                MaterialItem feedMaterialItem = lFeedMaterialItem.get(matchFeedMaterialId);
+                                feedMaterialItem.setScanLineSeat(scanLineSeat);
+                                materialAdapter.notifyDataSetChanged();
+                                edt_Material.requestFocus();
+                            }
+
+
+
 //                            if (edt_LineSeat.length() != 7) {
 //                                feedMaterialItem.setRemark("站位长度不正确");
 //                            } else {
 //                                feedMaterialItem.setRemark("");
 //                            }
-                            materialAdapter.notifyDataSetChanged();
+
+
                             break;
                         case R.id.edt_material:
                             //料号,若为二维码则提取@@前的料号
@@ -180,12 +217,17 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                                 scanValue = scanValue.substring(0, scanValue.indexOf("@"));
                                 textView.setText(scanValue);
                             }
-
+                            if (matchFeedMaterialId<0){
+                                feedNextMaterial();
+                                return true;
+                            }
+                            MaterialItem feedMaterialItem = lFeedMaterialItem.get(matchFeedMaterialId);
                             feedMaterialItem.setScanMaterial(scanValue);
                             //比对站位和料号是否相等
                             if ((feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) &&
                                     feedMaterialItem.getOrgMaterial().equalsIgnoreCase(feedMaterialItem.getScanMaterial())) {
                                 feedMaterialItem.setResult("PASS");
+                                feedMaterialItem.setRemark("");
                             } else {
                                 feedMaterialItem.setResult("FAIL");
                                 if (!feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) {
@@ -197,14 +239,14 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                             materialAdapter.notifyDataSetChanged();
 
                             //增加数据库日志
-                            new GlobalFunc().AddDBLog(globalData, lFeedMaterialItem.get(curFeedMaterialId));
+                            new GlobalFunc().AddDBLog(globalData, lFeedMaterialItem.get(matchFeedMaterialId));
 
                             feedNextMaterial();
                             break;
                     }
-                    return false;
+                    return true;
                 default:
-                    return false;
+                    return true;
             }
         }
         return false;
@@ -216,15 +258,39 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
      * @describe 上下一个料
      */
     private void feedNextMaterial() {
-        Log.i(TAG, "feedNextMaterial:" + curFeedMaterialId);
+        Log.i(TAG, "feedNextMaterial:" + matchFeedMaterialId);
         //显示最新的上料结果
-        lv_FeedMaterial.setSelection(curFeedMaterialId);
+        if (matchFeedMaterialId>=0) {
+            lv_FeedMaterial.setSelection(matchFeedMaterialId);
+            matchFeedMaterialId = -1;
+        }
+        else{
+            curFeedMaterialId--;
+            //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            //设置Title的图标
+            builder.setIcon(android.R.drawable.ic_dialog_alert);
+            //设置Title的内容
+            builder.setTitle("提示");
+            builder.setMessage("排位表不存在此站位!!!");
+
+            //设置一个PositiveButton
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    //getMaterial();
+                }
+            });
+            //显示出该对话框
+            builder.show();
+        }
         //循环上料
         if (curFeedMaterialId < lFeedMaterialItem.size() - 1) {
 //        if (curFeedMaterialId < 2) {
             curFeedMaterialId++;
             clearLineSeatMaterialScan();
-            edt_Operation.requestFocus();
+            edt_LineSeat.requestFocus();
         }
         //上料结束,显示结果
         else {
@@ -269,6 +335,7 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                 dialog.dismiss();
                 clearLineSeatMaterialScan();
                 initData();
+                edt_LineSeat.requestFocus();
                 edt_LineSeat.requestFocus();
             }
         });

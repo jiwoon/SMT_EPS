@@ -73,6 +73,8 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         tv_Result = (TextView) vChangeMaterialFragment.findViewById(R.id.tv_Result);
         tv_lastInfo= (TextView) vChangeMaterialFragment.findViewById(R.id.tv_LastInfo);
         tv_Remark= (TextView) vChangeMaterialFragment.findViewById(R.id.tv_Remark);
+
+        edt_LineSeat.requestFocus();
     }
 
     /**
@@ -122,7 +124,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                 (keyEvent != null && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER)) {
             switch (keyEvent.getAction()) {
                 //按下
-                case KeyEvent.ACTION_DOWN:
+                case KeyEvent.ACTION_UP:
                     //扫描内容
                     String strValue = String.valueOf(((EditText) textView).getText());
                     strValue = strValue.replaceAll("\r", "");
@@ -133,9 +135,15 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                     switch (textView.getId()) {
                         case R.id.edt_Operation:
                             globalData.setOperator(strValue);
+                            edt_LineSeat.requestFocus();
                             break;
                         case R.id.edt_lineseat:
                             changeNextMaterial();
+                            String scanLineSeat=strValue;
+                            if (strValue.length()>=8){
+                                scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
+                            }
+                            strValue=scanLineSeat;
                             //站位
                             //String scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
                             for (int j = 0; j < lChangeMaterialItem.size(); j++) {
@@ -146,9 +154,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                             }
                             if (curChangeMaterialId < 0) {
                                 displayResult(1,"排位表不存在此站位！");
+                                return true;
                             }
                             curLineSeat=strValue;
-
+                            edt_OrgMaterial.requestFocus();
                             break;
                         case R.id.edt_OrgMaterial:
                             if (strValue.indexOf("@") != -1) {
@@ -162,8 +171,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                 //线上的料号与排位表的值不对时显示结果
                                 if (!materialItem.getOrgMaterial().equalsIgnoreCase(strValue)) {
                                     displayResult(1,"原始料号与排位表不相符！");
+                                    return true;
                                 }
                             }
+                            edt_ChgMaterial.requestFocus();
 
                             break;
                         case R.id.edt_ChgMaterial:
@@ -180,12 +191,13 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     displayResult(1,"更换的料号与线上料号不相符！");
                                 }
                             }
+                            edt_LineSeat.requestFocus();
 
                             break;
                     }
-                    return false;
+                    return true;
                 default:
-                    return false;
+                    return true;
             }
         }
         return false;
@@ -215,7 +227,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         edt_LineSeat.setText("");
         edt_OrgMaterial.setText("");
         edt_ChgMaterial.setText("");
-        edt_Operation.requestFocus();
+        edt_LineSeat.requestFocus();
 
         new GlobalFunc().AddDBLog(globalData,
                 new MaterialItem("",

@@ -129,8 +129,16 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
         View view = View.inflate(this, R.layout.inputline_dialog, null);
         final EditText etLineNo = (EditText) view.findViewById(R.id.et_LineNo);
+//        final EditText edtOperation= (EditText) view.findViewById(R.id.edt_Operation);
         builder.setView(view);
         builder.setIcon(android.R.drawable.ic_dialog_info);
+//        edtOperation.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+//                globalData.setOperator(String.valueOf(((EditText) textView).getText()));
+//                return false;
+//            }
+//        });
         etLineNo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView textView, int i, KeyEvent keyEvent) {
@@ -166,6 +174,7 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
     private void initViews() {
         Log.i(TAG,"initViews");
         mViewPager = (ViewPager) findViewById(R.id.id_viewpager);
+        mViewPager.setOffscreenPageLimit(4);
 
         mTabFeedMaterial = (LinearLayout) findViewById(R.id.id_tab_FeedMaterial);
         mTabChangeMaterial = (LinearLayout) findViewById(R.id.id_tab_ChangeMaterial);

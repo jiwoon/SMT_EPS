@@ -72,6 +72,8 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
         tv_Result= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_Result);
         tv_Remark= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_Remark);
         tv_LastInfo= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_LastInfo);
+
+        edt_LineSeat.requestFocus();
     }
 
     /**
@@ -124,7 +126,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                 (keyEvent != null && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER)) {
             switch (keyEvent.getAction()) {
                 //按下
-                case KeyEvent.ACTION_DOWN:
+                case KeyEvent.ACTION_UP:
                     //扫描内容
                     String scanValue = String.valueOf(((EditText) textView).getText());
                     scanValue = scanValue.replaceAll("\r", "");
@@ -138,6 +140,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                             if (scanValue.length() != 10) {
                             }
                             globalData.setOperator(scanValue);
+                            edt_LineSeat.requestFocus();
                             //edt_Operation.setEnabled(false);
                             break;
                         case R.id.edt_lineseat:
@@ -149,6 +152,11 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
 //                            } else {
 //                                feedMaterialItem.setRemark("");
 //                            }
+                            String scanLineSeat=scanValue;
+                            if (scanValue.length()>=8){
+                                scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
+                            }
+                            scanValue=scanLineSeat;
                             checkAgain();
                             for (int j = 0; j < lCheckMaterialItems.size(); j++) {
                                 MaterialItem materialItem = lCheckMaterialItems.get(j);
@@ -156,7 +164,12 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                                     curCheckMaterialId = j;
                                 }
                             }
+                            if (curCheckMaterialId < 0) {
+                                showCheckMaterialResult(1,"排位表不存在此站位！");
+                                return true;
+                            }
                             curLineSeat=scanValue;
+                            edt_Material.requestFocus();
                             break;
                         case R.id.edt_material:
                             //料号
@@ -192,9 +205,9 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                             }
                             break;
                     }
-                    return false;
+                    return true;
                 default:
-                    return false;
+                    return true;
             }
         }
         return false;
@@ -222,7 +235,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                 "料号:"+curMaterial);
         edt_LineSeat.setText("");
         edt_Material.setText("");
-        edt_Operation.requestFocus();
+        edt_LineSeat.requestFocus();
 
         //保存至数据库日志
         MaterialItem materialItem;
