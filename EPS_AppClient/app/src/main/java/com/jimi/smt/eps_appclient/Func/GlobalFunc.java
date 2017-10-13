@@ -42,6 +42,7 @@ public class GlobalFunc {
                 operLogItem.setOld_material_no(materialItem.getOrgMaterial());
                 operLogItem.setScanLineseat(materialItem.getScanLineSeat());
                 operLogItem.setRemark(materialItem.getRemark());
+                operLogItem.setFileId(materialItem.getFileId());
                 operLogItems.add(operLogItem);
                 new DBService().inserOpertLog(operLogItems);
             }

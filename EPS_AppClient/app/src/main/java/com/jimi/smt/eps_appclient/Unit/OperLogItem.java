@@ -7,6 +7,7 @@ import java.sql.Timestamp;
  * Created by think on 2017/9/25.
  */
 public class OperLogItem {
+
     String Operator;
     Timestamp Time;
     int Type;
@@ -16,6 +17,7 @@ public class OperLogItem {
     String Old_material_no;
     String ScanLineseat;
     String Remark;
+    String FileId;
 
     public OperLogItem() {
     }
@@ -90,5 +92,13 @@ public class OperLogItem {
 
     public void setRemark(String remark) {
         Remark = remark;
+    }
+
+    public String getFileId() {
+        return FileId;
+    }
+
+    public void setFileId(String fileId) {
+        FileId = fileId;
     }
 }
