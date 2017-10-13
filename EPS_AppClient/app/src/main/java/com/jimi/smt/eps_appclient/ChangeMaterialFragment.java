@@ -222,12 +222,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         }
         tv_Result.setText(Result);
         tv_Remark.setText(remark);
-        tv_lastInfo.setText("扫描结果: 站位:"+curLineSeat+"\r\n原始料号:"+curOrgMaterial+"\r\n替换料号:"+curChgMaterial);
-
-        edt_LineSeat.setText("");
-        edt_OrgMaterial.setText("");
-        edt_ChgMaterial.setText("");
-        edt_LineSeat.requestFocus();
+        tv_lastInfo.setText("扫描结果: 站位:" + curLineSeat + "\r\n原始料号:" + curOrgMaterial + "\r\n替换料号:" + curChgMaterial);
 
         new GlobalFunc().AddDBLog(globalData,
                 new MaterialItem("",
@@ -237,6 +232,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                         Result,
                         ""));
 
+        edt_LineSeat.setText("");
+        edt_OrgMaterial.setText("");
+        edt_ChgMaterial.setText("");
+        edt_LineSeat.requestFocus();
     }
 
     /**
