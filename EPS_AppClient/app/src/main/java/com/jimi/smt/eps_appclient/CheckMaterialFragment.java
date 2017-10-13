@@ -42,6 +42,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
 
     //当前检料项
     int curCheckMaterialId = -1;
+    String FileId;
 
     @Nullable
     @Override
@@ -106,7 +107,8 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
         lCheckMaterialItems.clear();
         List<MaterialItem> materialItems = globalData.getMaterialItems();
         for (MaterialItem materialItem : materialItems) {
-            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
+            FileId=materialItem.getFileId();
+            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getFileId(),materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
             lCheckMaterialItems.add(feedMaterialItem);
         }
         curCheckMaterialId=-1;
@@ -243,7 +245,9 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
             materialItem = lCheckMaterialItems.get(curCheckMaterialId);
         }
         else{
-            materialItem = new MaterialItem("",
+            materialItem = new MaterialItem(
+                    FileId,
+                    "",
                     String.valueOf(""),
                     String.valueOf(edt_LineSeat.getText()),
                     String.valueOf(String.valueOf(edt_Material.getText())),

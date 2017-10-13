@@ -52,7 +52,10 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
     //当前上料项
     int curFeedMaterialId = 0;
+    //匹配的站位表项
     int matchFeedMaterialId = -1;
+    //上料结果
+    boolean feedResult = true;
 
     /**
      * @param inflater
@@ -127,7 +130,7 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         lFeedMaterialItem.clear();
         List<MaterialItem> materialItems = globalData.getMaterialItems();
         for (MaterialItem materialItem : materialItems) {
-            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
+            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getFileId(),materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
             lFeedMaterialItem.add(feedMaterialItem);
         }
         //设置Adapter
@@ -146,16 +149,12 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         Log.i(TAG, "onEditorAction");
-        Log.i(TAG,"keyEvent:"+keyEvent.getAction());
         //回车键
-//        if (i == EditorInfo.IME_ACTION_UNSPECIFIED) {
-//            // do something
-////        }
-////
         if (i == EditorInfo.IME_ACTION_SEND ||
                 (keyEvent != null && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER)) {
+            Log.i(TAG, "keyEvent:" + keyEvent.getAction());
             switch (keyEvent.getAction()) {
-                //按下
+                //抬上
                 case KeyEvent.ACTION_UP:
                     //扫描内容
                     String scanValue = String.valueOf(((EditText) textView).getText());
@@ -176,70 +175,87 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                         case R.id.edt_lineseat:
                             //站位
                             Log.i(TAG, "lineseat:" + scanValue);
+                            //转化成站位表站位格式
                             String scanLineSeat=scanValue;
                             if (scanValue.length()>=8){
                                 scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
                             }
                             scanValue=scanLineSeat;
 
-
                             for (int j = 0; j < lFeedMaterialItem.size(); j++) {
                                 MaterialItem materialItem = lFeedMaterialItem.get(j);
                                 if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanValue)) {
                                     matchFeedMaterialId = j;
-
+                                    break;
                                 }
                             }
+                            //无匹配的站位
                             if (matchFeedMaterialId<0){
                                 feedNextMaterial();
                                 return true;
                             }
+                            //更新显示
                             else{
                                 MaterialItem feedMaterialItem = lFeedMaterialItem.get(matchFeedMaterialId);
                                 feedMaterialItem.setScanLineSeat(scanLineSeat);
                                 materialAdapter.notifyDataSetChanged();
                                 edt_Material.requestFocus();
                             }
-
-
-
-//                            if (edt_LineSeat.length() != 7) {
-//                                feedMaterialItem.setRemark("站位长度不正确");
-//                            } else {
-//                                feedMaterialItem.setRemark("");
-//                            }
-
-
                             break;
                         case R.id.edt_material:
                             //料号,若为二维码则提取@@前的料号
+                            //checkMaterial
+                            //提取有效料号
                             if (scanValue.indexOf("@") != -1) {
                                 scanValue = scanValue.substring(0, scanValue.indexOf("@"));
                                 textView.setText(scanValue);
+                            }
+                            //站位不存在
+                            if (matchFeedMaterialId<0){
+                                feedNextMaterial();
+                                return true;
+                            }
+
+                            //比对料号，包含替代料
+                            matchFeedMaterialId=-1;
+                            for (int j = 0; j < lFeedMaterialItem.size(); j++) {
+                                MaterialItem feedMaterialItem = lFeedMaterialItem.get(j);
+                                //料号存在
+                                if (feedMaterialItem.getOrgMaterial().equalsIgnoreCase(scanValue)) {
+                                    matchFeedMaterialId = j;
+                                    if (feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) {
+                                        feedMaterialItem.setResultRemark("PASS", "");
+                                        break;
+                                    } else {
+                                        feedMaterialItem.setResultRemark("FAIL", "料号与排位表不相符");
+                                    }
+                                    feedMaterialItem.setScanMaterial(scanValue);
+
+                                }
+
                             }
                             if (matchFeedMaterialId<0){
                                 feedNextMaterial();
                                 return true;
                             }
-                            MaterialItem feedMaterialItem = lFeedMaterialItem.get(matchFeedMaterialId);
-                            feedMaterialItem.setScanMaterial(scanValue);
                             //比对站位和料号是否相等
-                            if ((feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) &&
-                                    feedMaterialItem.getOrgMaterial().equalsIgnoreCase(feedMaterialItem.getScanMaterial())) {
-                                feedMaterialItem.setResult("PASS");
-                                feedMaterialItem.setRemark("");
-                            } else {
-                                feedMaterialItem.setResult("FAIL");
-                                if (!feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) {
-                                    feedMaterialItem.setRemark("站位不相符");
-                                } else if (!feedMaterialItem.getOrgMaterial().equalsIgnoreCase(feedMaterialItem.getScanMaterial())) {
-                                    feedMaterialItem.setRemark("料号与排位表不相符");
-                                }
-                            }
-                            materialAdapter.notifyDataSetChanged();
+//                                if (/*(feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) &&*/
+//                                        feedMaterialItem.getOrgMaterial().equalsIgnoreCase(feedMaterialItem.getScanMaterial())) {
+//                                    feedMaterialItem.setResultRemark("PASS", "");
+//                                } else {
+//                                /*if (!feedMaterialItem.getOrgLineSeat().equalsIgnoreCase(feedMaterialItem.getScanLineSeat())) {
+//                                    feedMaterialItem.setResultRemark("FAIL","站位不相符");
+//                                } else */
+//                                    if (!feedMaterialItem.getOrgMaterial().equalsIgnoreCase(feedMaterialItem.getScanMaterial())) {
+//                                        feedMaterialItem.setResultRemark("FAIL","料号与排位表不相符");
+//                                    }
+//                                }
 
-                            //增加数据库日志
-                            new GlobalFunc().AddDBLog(globalData, lFeedMaterialItem.get(matchFeedMaterialId));
+                    materialAdapter.notifyDataSetChanged();
+                                //增加数据库日志
+                                new GlobalFunc().AddDBLog(globalData, lFeedMaterialItem.get(matchFeedMaterialId));
+
+
 
                             feedNextMaterial();
                             break;
@@ -272,14 +288,13 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
             builder.setIcon(android.R.drawable.ic_dialog_alert);
             //设置Title的内容
             builder.setTitle("提示");
-            builder.setMessage("排位表不存在此站位!!!");
+            builder.setMessage("排位表不存在此站位或料号!!!");
 
             //设置一个PositiveButton
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    //getMaterial();
                 }
             });
             //显示出该对话框
@@ -290,7 +305,6 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 //        if (curFeedMaterialId < 2) {
             curFeedMaterialId++;
             clearLineSeatMaterialScan();
-            edt_LineSeat.requestFocus();
         }
         //上料结束,显示结果
         else {
@@ -300,20 +314,20 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
     private void showFeedMaterialResult() {
         //默认上料结果是PASS
-        boolean feedResult = true;
+        feedResult = true;
         for (MaterialItem feedMaterialItem : lFeedMaterialItem) {
             if (!feedMaterialItem.getResult().equalsIgnoreCase("PASS")) {
                 feedResult = false;
+                break;
             }
         }
-
 
         //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         //设置Title的图标
         builder.setIcon(android.R.drawable.ic_dialog_info);
         //设置Title的内容
-        builder.setTitle("上料结果");
+
         View view = View.inflate(getActivity(), R.layout.materialresult_dialog, null);
         builder.setView(view);
         final EditText etResult = (EditText) view.findViewById(R.id.et_result);
@@ -322,21 +336,27 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         if (feedResult) {
             etResult.setText("PASS");
             etResult.setBackgroundColor(Color.GREEN);
+            builder.setTitle("上料结果");
 
         } else {
             etResult.setText("FAIL");
             etResult.setBackgroundColor(Color.RED);
+            builder.setTitle("上料失败，请检查！");
         }
 
         //设置一个PositiveButton
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                clearLineSeatMaterialScan();
-                initData();
-                edt_LineSeat.requestFocus();
-                edt_LineSeat.requestFocus();
+                if (feedResult) {
+                    dialog.dismiss();
+                    clearLineSeatMaterialScan();
+                    initData();
+                }
+                //只是取消对话框，等待操作员重扫
+                else{
+                    dialog.dismiss();
+                }
             }
         });
         //显示出该对话框
@@ -346,5 +366,7 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
     private void clearLineSeatMaterialScan() {
         edt_LineSeat.setText("");
         edt_Material.setText("");
+        edt_LineSeat.requestFocus();
     }
+
 }

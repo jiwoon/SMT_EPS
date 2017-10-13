@@ -35,6 +35,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     private EditText edt_Operation, edt_LineSeat, edt_OrgMaterial, edt_ChgMaterial;
     private TextView tv_Result,tv_Remark,tv_lastInfo;
 
+    //当前的站位，线上料号，更换料号
     String curLineSeat,curOrgMaterial,curChgMaterial;
 
     //当前上料时用到的排位料号表x
@@ -42,6 +43,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
 
     //当前换料项
     int curChangeMaterialId = -1;
+    String FileId;
 
     @Nullable
     @Override
@@ -109,8 +111,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         //填充数据
         lChangeMaterialItem.clear();
         List<MaterialItem> materialItems = globalData.getMaterialItems();
+
         for (MaterialItem materialItem : materialItems) {
-            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
+            FileId=materialItem.getFileId();
+            MaterialItem feedMaterialItem = new MaterialItem(materialItem.getFileId(),materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
             lChangeMaterialItem.add(feedMaterialItem);
         }
 
@@ -225,17 +229,16 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         tv_lastInfo.setText("扫描结果: 站位:" + curLineSeat + "\r\n原始料号:" + curOrgMaterial + "\r\n替换料号:" + curChgMaterial);
 
         new GlobalFunc().AddDBLog(globalData,
-                new MaterialItem("",
+                new MaterialItem(
+                        FileId,
+                        "",
                         String.valueOf(edt_OrgMaterial.getText()),
                         String.valueOf(edt_LineSeat.getText()),
                         String.valueOf(edt_ChgMaterial.getText()),
                         Result,
-                        ""));
+                        remark));
 
-        edt_LineSeat.setText("");
-        edt_OrgMaterial.setText("");
-        edt_ChgMaterial.setText("");
-        edt_LineSeat.requestFocus();
+        clearAndSetFocus();
     }
 
     /**
@@ -246,14 +249,19 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     private void changeNextMaterial() {
         Log.i(TAG, "changeNextMaterial");
         tv_Result.setBackgroundColor(Color.TRANSPARENT);
-        tv_Result.setText("");
-        tv_Remark.setText("");
-        tv_lastInfo.setText("");
+        clearAndSetFocus();
+    }
+
+    private void clearAndSetFocus(){
+        edt_LineSeat.setText("");
+        edt_OrgMaterial.setText("");
+        edt_ChgMaterial.setText("");
+        edt_LineSeat.requestFocus();
+
         curLineSeat="";
         curOrgMaterial="";
         curChgMaterial="";
         curChangeMaterialId=-1;
-
     }
 
 
