@@ -9,5 +9,8 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/FeedMaterialFragment.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Func/DBOpenHelper.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Func/DBService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Func/GlobalFunc.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Unit/Constants.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/jimi/smt/eps_appclient/Unit/MaterialItem.java" charset="UTF-8" />
   </component>
 </project>

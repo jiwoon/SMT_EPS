@@ -91,12 +91,13 @@ public class DBService {
             //获取链接数据库对象
             conn= DBOpenHelper.getConn();
             //MySQL 语句
-            String sql="INSERT INTO operation (operator,time,type,result,lineseat,material_no,old_material_no,scanlineseat,remark) VALUES (?,?,?,?,?,?,?,?,?)";
+            String sql="INSERT INTO operation (operator,time,type,result,lineseat,material_no,old_material_no,scanlineseat,remark,fileid) VALUES (?,?,?,?,?,?,?,?,?,?)";
             try {
                 boolean closed=conn.isClosed();
                 if((conn!=null)&&(!closed)){
                     for(OperLogItem operLogItem:list){
                         ps= (PreparedStatement) conn.prepareStatement(sql);
+                        String FileId=operLogItem.getFileId();
                         String Operator=operLogItem.getOperator();
                         Timestamp Time=operLogItem.getTime();
                         int Type=operLogItem.getType();
@@ -106,6 +107,7 @@ public class DBService {
                         String oldMaterialNo=operLogItem.getOld_material_no();
                         String ScanLineseat=operLogItem.getScanLineseat();
                         String Remark=operLogItem.getRemark();
+
                         ps.setString(1, Operator);//第一个参数 name 规则同上
                         ps.setTimestamp(2, Time);
                         ps.setInt(3, Type);
@@ -115,6 +117,7 @@ public class DBService {
                         ps.setString(7,oldMaterialNo);//第四个参数 state 规则同上
                         ps.setString(8,ScanLineseat);
                         ps.setString(9,Remark);
+                        ps.setString(10,FileId);
                         result=ps.executeUpdate();//返回1 执行成功
                     }
                 }

@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.jimi.smt.eps_appclient.Func.DBService;
+import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 
@@ -77,30 +78,15 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
                     progressDialog.dismiss();
                     dialog.dismiss();
 
-                    if (globalData.getMaterialItems().size()>0){
+                    //获得到站位表
+                    if (globalData.getMaterialItems().size() > 0) {
                         initViews();//初始化控件
                         initEvents();//初始化事件
                         initDatas();//初始化数据
                     }
-                    else{
-                        //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
-                        AlertDialog.Builder builder = new AlertDialog.Builder(EPS_MainActivity.this);
-                        //设置Title的图标
-                        builder.setIcon(android.R.drawable.ic_dialog_info);
-                        //设置Title的内容
-                        builder.setTitle("提示");
-                        builder.setMessage("请确认当前网络是否正常或线号是否正确!!!");
-
-                        //设置一个PositiveButton
-                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                getMaterial();
-                            }
-                        });
-                        //显示出该对话框
-                        builder.show();
+                    //获取站位表失败，再次获取。
+                    else {
+                        showInfo("提示", "请确认当前网络是否正常或线号是否正确!!!");
                     }
                     break;
             }
@@ -121,39 +107,48 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
     /**
      * @author connie
      * @time 2017-9-25
-    * @describe  接收线号并根据该线号获得相应的料号表
+     * @describe 接收线号并根据该线号获得相应的料号表
      */
     private void getMaterial() {
-        Log.i(TAG,"getMaterial");
-        //弹出对话框
+        Log.i(TAG, "getMaterial");
+        //弹出输入线号对话框
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
         View view = View.inflate(this, R.layout.inputline_dialog, null);
         final EditText etLineNo = (EditText) view.findViewById(R.id.et_LineNo);
+//        final EditText edtOperation= (EditText) view.findViewById(R.id.edt_Operation);
         builder.setView(view);
         builder.setIcon(android.R.drawable.ic_dialog_info);
+//        edtOperation.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+//                globalData.setOperator(String.valueOf(((EditText) textView).getText()));
+//                return false;
+//            }
+//        });
         etLineNo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView textView, int i, KeyEvent keyEvent) {
+                //获取站位表
+                Log.i(TAG, "getMaterial start");
                 progressDialog = ProgressDialog.show(EPS_MainActivity.this, "请稍等...", "获取数据中...", true);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         //获得料号表
-                        String LineNo="";
-                        LineNo= String.valueOf(((EditText) textView).getText());
-                        LineNo=LineNo.substring(0, 3);
-//                        LineNo=((EditText) textView).getText()
+                        String LineNo = "";
+                        LineNo = String.valueOf(((EditText) textView).getText());
+                        //对的线号
+                        if (new GlobalFunc().checkLine(LineNo)){
 //                        List<MaterialItem>materialItems = new DBService().getMaterial(LineNo);
-                        List<MaterialItem> materialItems = new DBService().getMaterial("308");
-                        globalData.setMaterialItems(materialItems);
-                        Log.i(TAG, "getMaterial finish");
-                        Message msg_netData = new Message();
-                        msg_netData.what = MSG_GETMATERIAL;
-                        mainActivityHandler.sendMessage(msg_netData);
-                        if (materialItems.size() > 0) {
+                            List<MaterialItem> materialItems = new DBService().getMaterial("308");
+                            //保存站位表信息
+                            globalData.setMaterialItems(materialItems);
+                            Log.i(TAG, "getMaterial finish");
 
+                            Message msg_netData = new Message();
+                            msg_netData.what = MSG_GETMATERIAL;
+                            mainActivityHandler.sendMessage(msg_netData);
                         }
-
                     }
                 }).start();
                 return false;
@@ -162,10 +157,12 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
         dialog = builder.create();
         dialog.show();
     }
+
     //初始化控件
     private void initViews() {
-        Log.i(TAG,"initViews");
+        Log.i(TAG, "initViews");
         mViewPager = (ViewPager) findViewById(R.id.id_viewpager);
+        //mViewPager.setOffscreenPageLimit(4);
 
         mTabFeedMaterial = (LinearLayout) findViewById(R.id.id_tab_FeedMaterial);
         mTabChangeMaterial = (LinearLayout) findViewById(R.id.id_tab_ChangeMaterial);
@@ -179,7 +176,7 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
     }
 
     private void initEvents() {
-        Log.i(TAG,"initEvents");
+        Log.i(TAG, "initEvents");
         //设置四个Tab的点击事件
         mTabFeedMaterial.setOnClickListener(this);
         mTabChangeMaterial.setOnClickListener(this);
@@ -235,15 +232,14 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
 
                 }
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void onClick(View v) {
-        Log.i(TAG,"onClick");
+        Log.i(TAG, "onClick");
         //先将四个ImageButton置为灰色
         resetImgs();
 
@@ -265,7 +261,8 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
     }
 
     private void selectTab(int i) {
-        Log.i(TAG,"selectTab:"+i);
+        Log.i(TAG, "selectTab:" + i);
+        //设置操作类型
         globalData.setOperType(i);
         //根据点击的Tab设置对应的ImageButton为绿色
         switch (i) {
@@ -288,10 +285,32 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
 
     //将四个ImageButton设置为灰色
     private void resetImgs() {
-        Log.i(TAG,"resetImgs");
+        Log.i(TAG, "resetImgs");
         mImgFeedMaterial.setImageResource(R.mipmap.btn_feedmaterial_normal);
         mImgChangeMaterial.setImageResource(R.mipmap.btn_changematerial_normal);
         mImgCheckMaterial.setImageResource(R.mipmap.btn_checkmaterial_normal);
         mImgCheckAllMaterial.setImageResource(R.mipmap.btn_checkallmaterial_normal);
+    }
+
+    public boolean showInfo(String title,String message){
+        //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
+        AlertDialog.Builder builder = new AlertDialog.Builder(EPS_MainActivity.this);
+        //设置Title的图标
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        //设置Title的内容
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        //设置一个PositiveButton
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                getMaterial();
+            }
+        });
+        //显示出该对话框
+        builder.show();
+        return true;
     }
 }
