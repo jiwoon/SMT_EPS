@@ -25,11 +25,7 @@
 				     success: function (returndata) {
 				    	 $("#upload-btn").removeAttr("disabled");
 				    	 $("#upload-btn").text("上传");
-				         if(returndata.result == "succeed"){
-							alert("上传成功");
-						 }else{
-							 alert(returndata.result);
-						 }
+						 alert(returndata.result);
 				     },  
 				     error: function (returndata) {  
 				    	 $("#upload-btn").removeAttr("disabled");
