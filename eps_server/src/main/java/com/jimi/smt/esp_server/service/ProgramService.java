@@ -1,8 +1,11 @@
 package com.jimi.smt.esp_server.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
+
+import com.jimi.smt.esp_server.entity.Program;
 
 /**
  * 排位表业务接口
@@ -19,4 +22,18 @@ public interface ProgramService {
 	 */
 	int upload(MultipartFile programFile) throws IOException, RuntimeException;
 	
+	
+	/**
+	 * 列出所有线上的排位表
+	 * @return
+	 */
+	List<Program> list();
+	
+	
+	/**
+	 * 根据id删除
+	 * @param id
+	 * @return
+	 */
+	boolean delete(String id);
 }

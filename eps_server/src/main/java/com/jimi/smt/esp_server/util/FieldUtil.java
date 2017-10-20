@@ -14,7 +14,7 @@ public class FieldUtil {
 	
 	
 	/**
-	 * 根据各属性计算MD5,相同的对象将会得出相同的MD5值
+	 * 根据各属性计算MD5,相同的对象将会得出相同的MD5值，仅限Entity对象，需要get方法
 	 * @param object
 	 * @return
 	 */

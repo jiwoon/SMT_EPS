@@ -1,6 +1,7 @@
 package com.jimi.smt.esp_server.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jimi.smt.esp_server.entity.Program;
 import com.jimi.smt.esp_server.service.ProgramService;
 import com.jimi.smt.esp_server.util.ResultUtil;
 
@@ -31,6 +33,24 @@ public class ProgramController {
 	
 	
 	@ResponseBody
+	@RequestMapping("/list")
+	public List<Program> list() {
+		return programService.list();
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/delete")
+	public ResultUtil delete(String id) {
+		if(programService.delete(id)) {
+			return ResultUtil.succeed();
+		}else {
+			return ResultUtil.failed();
+		}
+	}
+	
+	
+	@ResponseBody
 	@RequestMapping("/upload")
 	public ResultUtil  upload(MultipartFile  programFile) {
 		String originalFileName = programFile.getOriginalFilename();
@@ -47,6 +67,8 @@ public class ProgramController {
 		}
 		if(num == 0) {
 			return ResultUtil.failed("上传失败，请检查表格内是否有空行，若有去掉该行再重试");
+		}else if(num < 0){
+			return ResultUtil.failed("该排位表已存在，无需上传");
 		}
 		return ResultUtil.succeed("上传成功，共上传"+num+"张表");
 	}

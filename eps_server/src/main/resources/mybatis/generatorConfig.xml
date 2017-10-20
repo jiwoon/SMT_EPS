@@ -38,5 +38,6 @@
 		<table tableName="program_backup" domainObjectName="ProgramBackup" />
 		<table tableName="program_item_backup" domainObjectName="ProgramItemBackup" />
 		<table tableName="operation" domainObjectName="Operation" />
+		<table tableName="user" domainObjectName="User" />
 	</context>
 </generatorConfiguration>

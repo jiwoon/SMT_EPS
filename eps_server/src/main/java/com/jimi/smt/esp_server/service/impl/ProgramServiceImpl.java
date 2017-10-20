@@ -1,6 +1,7 @@
 package com.jimi.smt.esp_server.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
@@ -16,17 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.jimi.smt.esp_server.entity.Program;
 import com.jimi.smt.esp_server.entity.ProgramBackup;
-import com.jimi.smt.esp_server.entity.ProgramExample;
 import com.jimi.smt.esp_server.entity.ProgramItem;
 import com.jimi.smt.esp_server.entity.ProgramItemBackup;
-import com.jimi.smt.esp_server.entity.ProgramItemExample;
 import com.jimi.smt.esp_server.mapper.ProgramBackupMapper;
 import com.jimi.smt.esp_server.mapper.ProgramItemBackupMapper;
 import com.jimi.smt.esp_server.mapper.ProgramItemMapper;
 import com.jimi.smt.esp_server.mapper.ProgramMapper;
 import com.jimi.smt.esp_server.service.ProgramService;
 import com.jimi.smt.esp_server.util.FieldUtil;
-import com.jimi.smt.esp_server.util.UuidUtil;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
@@ -57,7 +55,6 @@ public class ProgramServiceImpl implements ProgramService {
 		}
 		//填充表头
 		Program program = new Program();
-		program.setId(UuidUtil.get32UUID());
 		program.setClient(sheet.getRow(2).getCell(1).getStringCellValue());
 		program.setMachineName(sheet.getRow(2).getCell(4).getStringCellValue());
 		program.setVersion(sheet.getRow(2).getCell(6).getStringCellValue());
@@ -69,37 +66,35 @@ public class ProgramServiceImpl implements ProgramService {
 		program.setBom(sheet.getRow(5).getCell(1).getStringCellValue());
 		program.setProgramName(sheet.getRow(6).getCell(1).getStringCellValue());
 		program.setAuditor(sheet.getRow(7).getCell(4).getStringCellValue().substring(3));
-		program.setCreateTime(new Date());
 		program.setFileName(programFile.getOriginalFilename());
-		//转移表
-		ProgramExample programExample = new ProgramExample();
-		programExample.createCriteria().andLineEqualTo(program.getLine());
-		List<Program> programs = programMapper.selectByExample(programExample);
-		for (Program p : programs) {
-			ProgramItemExample programItemExample = new ProgramItemExample();
-			programItemExample.createCriteria().andProgramIdEqualTo(p.getId());
-			List<ProgramItem> programItems = programItemMapper.selectByExample(programItemExample);
-			for (ProgramItem pi : programItems) {
-				ProgramItemBackup pib = new ProgramItemBackup();
-				BeanUtils.copyProperties(pi, pib);
-				programItemBackupMapper.insert(pib);
-				programItemMapper.deleteByPrimaryKey(pi);
-			}
-			ProgramBackup pb = new ProgramBackup();
-			BeanUtils.copyProperties(p, pb);
-			programBackupMapper.insert(pb);
-			programMapper.deleteByPrimaryKey(p.getId());
-		}
-		//插入新表
-		programMapper.insert(program);
-		FieldUtil.print(program);
+//		//转移表
+//		ProgramExample programExample = new ProgramExample();
+//		programExample.createCriteria().andLineEqualTo(program.getLine());
+//		List<Program> programs = programMapper.selectByExample(programExample);
+//		for (Program p : programs) {
+//			ProgramItemExample programItemExample = new ProgramItemExample();
+//			programItemExample.createCriteria().andProgramIdEqualTo(p.getId());
+//			List<ProgramItem> programItems = programItemMapper.selectByExample(programItemExample);
+//			for (ProgramItem pi : programItems) {
+//				ProgramItemBackup pib = new ProgramItemBackup();
+//				BeanUtils.copyProperties(pi, pib);
+//				programItemBackupMapper.insert(pib);
+//				programItemMapper.deleteByPrimaryKey(pi);
+//			}
+//			ProgramBackup pb = new ProgramBackup();
+//			BeanUtils.copyProperties(p, pb);
+//			programBackupMapper.insert(pb);
+//			programMapper.deleteByPrimaryKey(p.getId());
+//		}
+		
+		List<ProgramItem> programItems = new ArrayList<ProgramItem>();
+		
 		//填充表项
 		int num = workbook.getNumberOfSheets();
 		for(int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			sheet = workbook.getSheetAt(i);
 			for(int j = 9; j < sheet.getLastRowNum() - 3; j++) {
 				ProgramItem programItem = new ProgramItem();
-				programItem.setProgramId(program.getId());
 				//空表判断
 				if(sheet.getRow(j).getCell(0).getStringCellValue().equals("")) {
 					num--;
@@ -111,15 +106,69 @@ public class ProgramServiceImpl implements ProgramService {
 				programItem.setSpecitification(sheet.getRow(j).getCell(3).getStringCellValue());
 				programItem.setPosition(sheet.getRow(j).getCell(4).getStringCellValue());
 				programItem.setQuantity((int) sheet.getRow(j).getCell(5).getNumericCellValue());
-				//插入表项
-				programItemMapper.insert(programItem);
-				FieldUtil.print(programItem);
+				programItems.add(programItem);
 			}
 		}
+		
+		//重复文件校验
+		StringBuffer sb = new StringBuffer();
+		sb.append(FieldUtil.md5(program));
+		for (ProgramItem programItem : programItems) {
+			sb.append(FieldUtil.md5(programItem));
+		}
+		Program temp = new Program();
+		temp.setId(sb.toString());
+		String uuid = FieldUtil.md5(temp);
+		if(programMapper.selectByPrimaryKey(uuid) != null) {
+			return num = -1;
+		}else {
+			//设置id
+			program.setId(uuid);
+			//设置时间
+			program.setCreateTime(new Date());
+		}
+		
+		//插入新表
+		programMapper.insert(program);
+		//备份表
+		ProgramBackup programBackup = new ProgramBackup();
+		BeanUtils.copyProperties(program, programBackup);
+		programBackupMapper.insert(programBackup);
+		//打印到控制台
+		FieldUtil.print(program);
+		for (ProgramItem programItem : programItems) {
+			//设置programId
+			programItem.setProgramId(program.getId());
+			//插入表项
+			programItemMapper.insert(programItem);
+			//备份表项
+			ProgramItemBackup programItemBackup = new ProgramItemBackup();
+			BeanUtils.copyProperties(programItem, programItemBackup);
+			programItemBackupMapper.insert(programItemBackup);
+			//打印到控制台
+			FieldUtil.print(programItem);
+		}
+		
 		return num;
 	}
 
 	
+	@Override
+	public List<Program> list() {
+		return programMapper.selectByExample(null);
+	}
+
+
+	@Override
+	public boolean delete(String id) {
+		if(programMapper.deleteByPrimaryKey(id) == 1) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+
 	private String formatLineseat(String in) {
 		try {
 			String[] array = in.split("-");
