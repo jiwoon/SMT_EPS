@@ -1,9 +1,10 @@
 package com.jimi.smt.esp_server.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -12,19 +13,23 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.jimi.smt.esp_server.entity.Program;
 import com.jimi.smt.esp_server.entity.ProgramBackup;
+import com.jimi.smt.esp_server.entity.ProgramExample;
 import com.jimi.smt.esp_server.entity.ProgramItem;
 import com.jimi.smt.esp_server.entity.ProgramItemBackup;
+import com.jimi.smt.esp_server.entity.ProgramItemExample;
 import com.jimi.smt.esp_server.mapper.ProgramBackupMapper;
 import com.jimi.smt.esp_server.mapper.ProgramItemBackupMapper;
 import com.jimi.smt.esp_server.mapper.ProgramItemMapper;
 import com.jimi.smt.esp_server.mapper.ProgramMapper;
 import com.jimi.smt.esp_server.service.ProgramService;
 import com.jimi.smt.esp_server.util.FieldUtil;
+import com.jimi.smt.esp_server.util.UuidUtil;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
@@ -39,7 +44,7 @@ public class ProgramServiceImpl implements ProgramService {
 	private ProgramItemBackupMapper programItemBackupMapper;
 	
 	@Override
-	public int upload(MultipartFile programFile) throws IOException,RuntimeException {
+	public Map<String, Object> upload(MultipartFile programFile, Integer boardType) throws IOException {
 		Workbook workbook = null;
 		//判断格式
 		if(programFile.getOriginalFilename().endsWith(".xlsx")){
@@ -49,9 +54,9 @@ public class ProgramServiceImpl implements ProgramService {
 		}
 		Sheet sheet = workbook.getSheetAt(0);
 		//校验
-		final String header = "Uni skill Electronics(Huizhou)Co.,Ltd";
-		if(!header.equals(sheet.getRow(0).getCell(0).getStringCellValue())) {
-			throw new RuntimeException("头部错误：没有找到\"Uni skill Electronics(Huizhou)Co.,Ltd\"标记");
+		final String header = "SMT FEEDER LIST";
+		if(!header.equals(sheet.getRow(1).getCell(0).getStringCellValue())) {
+			throw new RuntimeException("头部错误：没有找到\"SMT FEEDER LIST\"标题栏");
 		}
 		//填充表头
 		Program program = new Program();
@@ -67,6 +72,12 @@ public class ProgramServiceImpl implements ProgramService {
 		program.setProgramName(sheet.getRow(6).getCell(1).getStringCellValue());
 		program.setAuditor(sheet.getRow(7).getCell(4).getStringCellValue().substring(3));
 		program.setFileName(programFile.getOriginalFilename());
+		program.setId(UuidUtil.get32UUID());
+		program.setCreateTime(new Date());
+		program.setBoardType(boardType);
+		//工单暂时用程序名代替
+		program.setWorkOrder(program.getProgramName());
+		
 //		//转移表
 //		ProgramExample programExample = new ProgramExample();
 //		programExample.createCriteria().andLineEqualTo(program.getLine());
@@ -86,18 +97,22 @@ public class ProgramServiceImpl implements ProgramService {
 //			programBackupMapper.insert(pb);
 //			programMapper.deleteByPrimaryKey(p.getId());
 //		}
-		
-		List<ProgramItem> programItems = new ArrayList<ProgramItem>();
+		//初始化结果
+		Map<String, Object> result = new HashMap<String , Object>();
+		int sum = workbook.getNumberOfSheets();
+		result.put("real_parse_num", sum);
+		result.put("plan_parse_num", sum);
+		result.put("action_name", "上传");
 		
 		//填充表项
-		int num = workbook.getNumberOfSheets();
 		for(int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			sheet = workbook.getSheetAt(i);
 			for(int j = 9; j < sheet.getLastRowNum() - 3; j++) {
 				ProgramItem programItem = new ProgramItem();
 				//空表判断
 				if(sheet.getRow(j).getCell(0).getStringCellValue().equals("")) {
-					num--;
+					int temp = (int) result.get("real_parse_num");
+					result.put("real_parse_num", temp--);
 					break;
 				}
 				programItem.setLineseat(formatLineseat(sheet.getRow(j).getCell(0).getStringCellValue()));
@@ -106,26 +121,36 @@ public class ProgramServiceImpl implements ProgramService {
 				programItem.setSpecitification(sheet.getRow(j).getCell(3).getStringCellValue());
 				programItem.setPosition(sheet.getRow(j).getCell(4).getStringCellValue());
 				programItem.setQuantity((int) sheet.getRow(j).getCell(5).getNumericCellValue());
-				programItems.add(programItem);
+				//设置programId
+				programItem.setProgramId(program.getId());
+				//忽略重复项
+				try {
+					//插入表项
+					programItemMapper.insert(programItem);
+					//备份表项
+					ProgramItemBackup programItemBackup = new ProgramItemBackup();
+					BeanUtils.copyProperties(programItem, programItemBackup);
+					programItemBackupMapper.insert(programItemBackup);
+					//打印到控制台
+					FieldUtil.print(programItem);
+				}catch (DuplicateKeyException e) {
+				}
 			}
 		}
 		
-		//重复文件校验
-		StringBuffer sb = new StringBuffer();
-		sb.append(FieldUtil.md5(program));
-		for (ProgramItem programItem : programItems) {
-			sb.append(FieldUtil.md5(programItem));
-		}
-		Program temp = new Program();
-		temp.setId(sb.toString());
-		String uuid = FieldUtil.md5(temp);
-		if(programMapper.selectByPrimaryKey(uuid) != null) {
-			return num = -1;
-		}else {
-			//设置id
-			program.setId(uuid);
-			//设置时间
-			program.setCreateTime(new Date());
+		//重复文件移除（根据工单和板面类型）
+		ProgramExample programExample = new ProgramExample();
+		programExample.createCriteria()
+			.andWorkOrderEqualTo(program.getWorkOrder())
+			.andBoardTypeEqualTo(program.getBoardType());
+		List<Program> programs = programMapper.selectByExample(programExample);
+		if(!programs.isEmpty()) {
+			Program p = programs.get(0);
+			programMapper.deleteByPrimaryKey(p.getId());
+			ProgramItemExample programItemExample = new ProgramItemExample();
+			programItemExample.createCriteria().andProgramIdEqualTo(p.getId());
+			programItemMapper.deleteByExample(programItemExample);
+			result.put("action_name", "覆盖");
 		}
 		
 		//插入新表
@@ -136,20 +161,8 @@ public class ProgramServiceImpl implements ProgramService {
 		programBackupMapper.insert(programBackup);
 		//打印到控制台
 		FieldUtil.print(program);
-		for (ProgramItem programItem : programItems) {
-			//设置programId
-			programItem.setProgramId(program.getId());
-			//插入表项
-			programItemMapper.insert(programItem);
-			//备份表项
-			ProgramItemBackup programItemBackup = new ProgramItemBackup();
-			BeanUtils.copyProperties(programItem, programItemBackup);
-			programItemBackupMapper.insert(programItemBackup);
-			//打印到控制台
-			FieldUtil.print(programItem);
-		}
 		
-		return num;
+		return result;
 	}
 
 	
@@ -162,7 +175,13 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	public boolean delete(String id) {
 		if(programMapper.deleteByPrimaryKey(id) == 1) {
-			return true;
+			ProgramItemExample programItemExample = new ProgramItemExample();
+			programItemExample.createCriteria().andProgramIdEqualTo(id);
+			if(programItemMapper.deleteByExample(programItemExample) != 0) {
+				return true;
+			}else {
+				return false;
+			}
 		}else {
 			return false;
 		}

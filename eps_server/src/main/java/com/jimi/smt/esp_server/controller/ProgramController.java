@@ -2,6 +2,7 @@ package com.jimi.smt.esp_server.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,12 @@ public class ProgramController {
 	}
 	
 	
+	@RequestMapping("/goManage")
+	public ModelAndView goManage() {
+		return new ModelAndView("program/goManage");
+	}
+	
+	
 	@ResponseBody
 	@RequestMapping("/list")
 	public List<Program> list() {
@@ -52,25 +59,35 @@ public class ProgramController {
 	
 	@ResponseBody
 	@RequestMapping("/upload")
-	public ResultUtil  upload(MultipartFile  programFile) {
+	public ResultUtil  upload(MultipartFile  programFile, Integer boardType) {
+		//文件名检查
 		String originalFileName = programFile.getOriginalFilename();
 		if(!originalFileName.endsWith(".xls") && !originalFileName.endsWith(".xlsx")){
 			return ResultUtil.failed("上传失败，必须为xls\\xlsx格式的文件");
 		}
-		int num = 0;
+		
+		Map<String, Object> result = null;
+		
+		//格式检查
 		try {
-			num = programService.upload(programFile);
+			result = programService.upload(programFile, boardType);
 		} catch (IOException e) {
 			return ResultUtil.failed("上传失败，IO错误，请重试，或联系开发者",e);
 		} catch (RuntimeException e) {
-			return ResultUtil.failed("上传失败，解析文件时出错，请确保是标准的排班表文件",e);
+			return ResultUtil.failed("上传失败，解析文件时出错，请参考排位表标准格式规范：http://39.108.231.15/eps_server/static/standard.docx",e);
 		}
-		if(num == 0) {
-			return ResultUtil.failed("上传失败，请检查表格内是否有空行，若有去掉该行再重试");
-		}else if(num < 0){
-			return ResultUtil.failed("该排位表已存在，无需上传");
+		
+		//结果检查
+		int realParseNum = (int)result.get("real_parse_num");
+		int planParseNum = (int)result.get("plan_parse_num");
+		String actionName = (String)result.get("action_name");
+		if(realParseNum == 0) {
+			return ResultUtil.failed("操作失败，请检查表格内是否有空行，若有去掉该行再重试");
+		}else if(realParseNum < planParseNum){
+			return ResultUtil.failed(actionName + "完成，共检测到"+ planParseNum +"张表，但只解析成功"+ realParseNum +"张表，请检查是否有空表或表中是否有空行");
+		}else {
+			return ResultUtil.succeed(actionName + "完成，共解析到"+ realParseNum +"张表");
 		}
-		return ResultUtil.succeed("上传成功，共上传"+num+"张表");
 	}
 	
 	

@@ -41,8 +41,17 @@
 		<br />
 		<form id="file">  
     	  	<input type="file" name="programFile"/>
+    	  	<select name="boardType">
+    	  		<option value="0">默认</option>
+				<option value="1">AB面</option>
+				<option value="2">A面</option>
+				<option value="3">B面</option>
+    	  	</select>
 		</form>  
 		<br />
 		<button id="upload-btn" onclick="upload()">上传</button>
+		<br />
+		<br />
+		<a href="static/standard.docx">点击下载：排位表格式规范文档</a>
 	</body>
 </html>

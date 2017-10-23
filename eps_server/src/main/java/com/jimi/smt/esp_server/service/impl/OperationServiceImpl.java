@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +30,8 @@ import com.jimi.smt.esp_server.entity.ProgramBackup;
 import com.jimi.smt.esp_server.entity.ProgramBackupExample;
 import com.jimi.smt.esp_server.entity.filler.OperationToClientReportFiller;
 import com.jimi.smt.esp_server.entity.vo.ClientReport;
+import com.jimi.smt.esp_server.entity.vo.DisplayReport;
+import com.jimi.smt.esp_server.entity.vo.DisplayReportItem;
 import com.jimi.smt.esp_server.mapper.OperationMapper;
 import com.jimi.smt.esp_server.mapper.ProgramBackupMapper;
 import com.jimi.smt.esp_server.service.OperationService;
@@ -204,6 +208,67 @@ public class OperationServiceImpl implements OperationService {
 		headers.setContentType(MediaType.parseMediaType("application/x-xls")); 
 		//返回流
 		return new ResponseEntity<byte[]>(bos.toByteArray(), headers, HttpStatus.CREATED);    
+	}
+
+	
+	@Override
+	public DisplayReport listDisplayReport(String line) {
+		DisplayReport displayReport = new DisplayReport();
+		//日期筛选（过去24小时）
+		OperationExample operationExample = new OperationExample();
+		LocalDateTime today = LocalDateTime.now();
+		LocalDateTime yesterday = today.plusDays(-1);
+		Date t = Date.from(today.atZone(ZoneId.systemDefault()).toInstant());
+		Date y = Date.from(yesterday.atZone(ZoneId.systemDefault()).toInstant());
+		operationExample.createCriteria()
+			.andTimeGreaterThanOrEqualTo(y)
+			.andTimeLessThanOrEqualTo(t);
+		List<Operation> operations = operationMapper.selectByExample(operationExample);
+		//线别筛选
+		List<Operation> operations2 = new ArrayList<Operation>(operations.size());
+		ProgramBackupExample programBackupExample = new ProgramBackupExample();
+		programBackupExample.createCriteria().andLineEqualTo(line);
+		List<ProgramBackup> programBackups = programBackupMapper.selectByExample(programBackupExample);
+		for (Operation operation : operations) {
+			for (ProgramBackup programBackup : programBackups) {
+				if(programBackup.getId().equals(operation.getFileid())) {
+					operations2.add(operation);
+					break;
+				}
+			}
+		}
+		//遍历
+		for (Operation operation : operations2) {
+			DisplayReportItem item = null;
+			int hour = new Date().getHours() - operation.getTime().getHours();
+			if(hour < 0){
+				hour = 24 + hour;
+			}
+			switch (operation.getType()) {
+			case 0:
+				item = displayReport.getFeed().get(hour);
+				break;
+			case 1:
+				item = displayReport.getChanges().get(hour);
+				break;
+			case 2:
+				item = displayReport.getSomes().get(hour);
+				break;
+			case 3:
+				item = displayReport.getAlls().get(hour);
+				break;
+			default:
+				break;
+			}
+			if(operation.getResult().equals("PASS")) {
+				item.setSuc(item.getSuc()+1);
+			}else {
+				item.setFail(item.getFail()+1);
+			}
+			item.setTotal(item.getTotal()+1);
+		}
+		
+		return displayReport;
 	}
 
 

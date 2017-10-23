@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import com.jimi.smt.esp_server.entity.vo.ClientReport;
+import com.jimi.smt.esp_server.entity.vo.DisplayReport;
 
 /**
  * 操作日志服务接口
@@ -28,5 +29,12 @@ public interface OperationService {
 	 * @throws IOException 
 	 */
 	ResponseEntity<byte[]> downloadClientReport(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime) throws ParseException, IOException;
+
+	/**
+	 * 根据线号显示实时展示报表
+	 * @param line
+	 * @return
+	 */
+	DisplayReport listDisplayReport(String line);
 	
 }

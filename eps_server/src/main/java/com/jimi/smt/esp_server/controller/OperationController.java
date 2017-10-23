@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jimi.smt.esp_server.entity.vo.ClientReport;
+import com.jimi.smt.esp_server.entity.vo.DisplayReport;
 import com.jimi.smt.esp_server.service.OperationService;
 import com.jimi.smt.esp_server.util.ResultUtil;
 
@@ -29,7 +30,25 @@ public class OperationController {
 	
 	@RequestMapping("/goClientReport")
 	public ModelAndView goClientReport() {
-		return new ModelAndView("client-report");
+		return new ModelAndView("operation/goClientReport");
+	}
+	
+	
+	@RequestMapping("/goIPQCReport")
+	public ModelAndView goIPQCReport() {
+		return new ModelAndView("operation/goIPQCReport");
+	}
+	
+	
+	@RequestMapping("/goStoreReport")
+	public ModelAndView goStoreReport() {
+		return new ModelAndView("operation/goStoreReport");
+	}
+	
+	
+	@RequestMapping("/goDisplayReport")
+	public ModelAndView goDisplayReport() {
+		return new ModelAndView("operation/goDisplayReport");
 	}
 	
 	
@@ -55,6 +74,12 @@ public class OperationController {
 			ResultUtil.failed("IO异常", e);
 		}
 		return null;
+	}
+	
+	
+	@RequestMapping("/listDisplayReport")
+	public DisplayReport listDisplayReport(String line) {
+		return operationService.listDisplayReport(line);
 	}
 	
 	
