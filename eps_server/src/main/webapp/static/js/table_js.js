@@ -28,40 +28,41 @@ $(function(){
         $(".third:eq("+i+") td").addClass("fail");
         $(".four:eq("+i+") td").addClass("total");
     }
-
-    console.log($(".second td").length/5);
+    //
+    //console.log($(".second td").length/5);
     getDataAndShow();     //先执行一次，显示初始内容
 
-    //$.ajax({
-    //    url:"abc.php",
-    //    type:"get",
-    //    dataType:"json",
-    //    success:function(data){
-    //        console.log(data.time[0]);
-    //    },
-    //    error:function(e){
-    //        console.log(e);
-    //    }
-    //});
+    $.ajax({
+        url:"abc.php",
+        type:"get",
+        dataType:"json",
+        success:function(data){
+            console.log(data.feed[0].qwe);
+        },
+        error:function(e){
+            console.log(e);
+        }
+    });
     var timer=null;
     timer = setInterval(getDataAndShow,3000);
 
     //获取数据以及展示
     function getDataAndShow(){
         $.ajax({
-            url:"http://10.10.11.110:8080/eps_server/operation/listDisplayReport?line=308",
+            url:"abc.php",
             type:"get",
             dataType:"json",
             success:function(data){
+               console.log(data.feed[0].qwe);
                 var feeds  = data.feed;    //获得上料数组
                 var changes = data.changes;    //获得换料数组
                 var some   = data.somes;     //获得抽检数组
                 var alls   = data.alls;        //获得全检数组
-                var times  = data.time;
-                console.log(times[0]);
-                $("#span").text("("+ times[0]+")");
+                var times  = feeds[0].time;
+                console.log(times);
+                $("#span").text("("+ times+")");
                 for( var i = 0 ; i <$(".first").length;i++){
-                    $(".time").eq(i).text(times[i+1]);
+                    //$(".time").eq(i).text(feeds[i+1].time);
                     $(".second:eq("+i+") td").eq(1).text(feeds[i].suc).end() //将上料数组的第i个元素即第i时间的成功数填入表格
                                             .eq(2).text(changes[i].suc).end()  //将换料数组的第i个元素即第i时间的成功数填入表格
                                             .eq(3).text(some[i].suc).end()   //将抽检数组的第i个元素即第i时间的成功数填入表格
