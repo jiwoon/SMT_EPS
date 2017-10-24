@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.jimi.smt.esp_server.entity.Program;
+import com.jimi.smt.esp_server.entity.vo.ProgramVO;
 
 /**
  * 排位表业务接口
@@ -18,7 +18,7 @@ public interface ProgramService {
 	 * 列出所有线上的排位表
 	 * @return
 	 */
-	List<Program> list();
+	List<ProgramVO> list();
 	
 	
 	/**

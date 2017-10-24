@@ -23,6 +23,8 @@ import com.jimi.smt.esp_server.entity.ProgramExample;
 import com.jimi.smt.esp_server.entity.ProgramItem;
 import com.jimi.smt.esp_server.entity.ProgramItemBackup;
 import com.jimi.smt.esp_server.entity.ProgramItemExample;
+import com.jimi.smt.esp_server.entity.filler.ProgramToProgramVOFiller;
+import com.jimi.smt.esp_server.entity.vo.ProgramVO;
 import com.jimi.smt.esp_server.mapper.ProgramBackupMapper;
 import com.jimi.smt.esp_server.mapper.ProgramItemBackupMapper;
 import com.jimi.smt.esp_server.mapper.ProgramItemMapper;
@@ -42,6 +44,8 @@ public class ProgramServiceImpl implements ProgramService {
 	private ProgramBackupMapper programBackupMapper;
 	@Autowired
 	private ProgramItemBackupMapper programItemBackupMapper;
+	@Autowired
+	private ProgramToProgramVOFiller filler;
 	
 	@Override
 	public Map<String, Object> upload(MultipartFile programFile, Integer boardType) throws IOException {
@@ -75,8 +79,7 @@ public class ProgramServiceImpl implements ProgramService {
 		program.setId(UuidUtil.get32UUID());
 		program.setCreateTime(new Date());
 		program.setBoardType(boardType);
-		//工单暂时用程序名代替
-		program.setWorkOrder(program.getProgramName());
+		program.setWorkOrder(sheet.getRow(4).getCell(6).getStringCellValue());
 		
 //		//转移表
 //		ProgramExample programExample = new ProgramExample();
@@ -167,8 +170,8 @@ public class ProgramServiceImpl implements ProgramService {
 
 	
 	@Override
-	public List<Program> list() {
-		return programMapper.selectByExample(null);
+	public List<ProgramVO> list() {
+		return filler.fill(programMapper.selectByExample(null));
 	}
 
 

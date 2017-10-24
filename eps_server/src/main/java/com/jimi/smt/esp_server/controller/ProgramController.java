@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jimi.smt.esp_server.entity.Program;
+import com.jimi.smt.esp_server.entity.vo.ProgramVO;
 import com.jimi.smt.esp_server.service.ProgramService;
 import com.jimi.smt.esp_server.util.ResultUtil;
 
@@ -41,7 +41,7 @@ public class ProgramController {
 	
 	@ResponseBody
 	@RequestMapping("/list")
-	public List<Program> list() {
+	public List<ProgramVO> list() {
 		return programService.list();
 	}
 	

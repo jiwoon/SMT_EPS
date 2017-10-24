@@ -30,7 +30,7 @@ public class DisplayReport {
 			 if(t < 0){
 				 t = 24 + t;
 			 }
-			String time = t <= 9 ? "0" + t : t + "";
+			String time = (t <= 9 ? "0" + t : t + "") + ":00";
 			changes.add(new DisplayReportItem(time));
 			feed.add(new DisplayReportItem(time));
 			alls.add(new DisplayReportItem(time));

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jimi.smt.esp_server.annotation.Open;
 import com.jimi.smt.esp_server.entity.vo.ClientReport;
 import com.jimi.smt.esp_server.entity.vo.DisplayReport;
 import com.jimi.smt.esp_server.service.OperationService;
@@ -46,6 +47,7 @@ public class OperationController {
 	}
 	
 	
+	@Open
 	@RequestMapping("/goDisplayReport")
 	public ModelAndView goDisplayReport() {
 		return new ModelAndView("operation/goDisplayReport");
@@ -77,6 +79,8 @@ public class OperationController {
 	}
 	
 	
+	@Open
+	@ResponseBody
 	@RequestMapping("/listDisplayReport")
 	public DisplayReport listDisplayReport(String line) {
 		return operationService.listDisplayReport(line);

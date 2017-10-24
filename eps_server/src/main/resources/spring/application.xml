@@ -20,8 +20,18 @@
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
+	
 	<mvc:annotation-driven />
+	
+	
+	<mvc:interceptors>
+		<!-- 国际化拦截器 -->
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+		<!-- 登录拦截器 -->
+		<bean class="com.jimi.smt.esp_server.interceptor.LoginInterceptor"/>
+	</mvc:interceptors>
 
+	
 	<!-- 放行静态资源 -->
 	<mvc:resources mapping="/static/**" location="/static/" />
 

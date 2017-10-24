@@ -49,7 +49,7 @@ $(function(){
     //获取数据以及展示
     function getDataAndShow(){
         $.ajax({
-            url:"abc.php",
+            url:"operation/listDisplayReport?line=308",
             type:"get",
             dataType:"json",
             success:function(data){
@@ -62,7 +62,7 @@ $(function(){
                 console.log(times);
                 $("#span").text("("+ times+")");
                 for( var i = 0 ; i <$(".first").length;i++){
-                    //$(".time").eq(i).text(feeds[i+1].time);
+                    $(".time").eq(i).text(feeds[i+1].time);
                     $(".second:eq("+i+") td").eq(1).text(feeds[i].suc).end() //将上料数组的第i个元素即第i时间的成功数填入表格
                                             .eq(2).text(changes[i].suc).end()  //将换料数组的第i个元素即第i时间的成功数填入表格
                                             .eq(3).text(some[i].suc).end()   //将抽检数组的第i个元素即第i时间的成功数填入表格
