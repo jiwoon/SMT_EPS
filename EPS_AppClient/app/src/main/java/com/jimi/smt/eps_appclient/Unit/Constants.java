@@ -10,4 +10,5 @@ public class Constants {
     public static final int CHANGEMATERIAL =1;          //换料
     public static final int CHECKMATERIAL =2;           //检料
     public static final int CHECKALLMATERIAL =3;        //全检
+    public static final int STORE_ISSUE = 4;            //发料
 }

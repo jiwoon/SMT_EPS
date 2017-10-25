@@ -10,12 +10,12 @@
 
     <EditText
         android:id="@+id/et_result"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="10"
         android:singleLine="true"
         android:text="PASS"
         android:gravity="center"
-        android:textSize="60dp"
+        android:textSize="60sp"
         android:enabled="false"
         android:layout_width="match_parent" />
 

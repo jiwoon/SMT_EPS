@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="mytransparent">#00ffffff</color>
+    <color name="dialog_negative">#FFE4E2E2</color>
+
+</resources>

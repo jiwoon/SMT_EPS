@@ -67,12 +67,17 @@ public class MaterialAdapter extends BaseAdapter {
         mViewHolder.tv_Result.setText(materialItem.getResult());
         mViewHolder.tv_Remark.setText(materialItem.getRemark());
 
+        mViewHolder.tv_Result.setBackgroundColor(Color.TRANSPARENT);
+
         if (mViewHolder.tv_Result.getText().equals("PASS")) {
             mViewHolder.tv_Result.setBackgroundColor(Color.GREEN);
+            mViewHolder.tv_Remark.setTextColor(Color.argb(255,102,153,0));
         } else if (mViewHolder.tv_Result.getText().equals("ERROR")) {
             mViewHolder.tv_Result.setBackgroundColor(Color.YELLOW);
+            mViewHolder.tv_Remark.setTextColor(Color.YELLOW);
         } else if (mViewHolder.tv_Result.getText().equals("FAIL")) {
             mViewHolder.tv_Result.setBackgroundColor(Color.RED);
+            mViewHolder.tv_Remark.setTextColor(Color.RED);
         } else {
             mViewHolder.tv_Result.setBackgroundColor(Color.TRANSPARENT);
         }

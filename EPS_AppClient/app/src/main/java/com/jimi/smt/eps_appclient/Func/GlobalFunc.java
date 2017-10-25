@@ -1,9 +1,6 @@
 package com.jimi.smt.eps_appclient.Func;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-
 import com.jimi.smt.eps_appclient.GlobalData;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Unit.OperLogItem;

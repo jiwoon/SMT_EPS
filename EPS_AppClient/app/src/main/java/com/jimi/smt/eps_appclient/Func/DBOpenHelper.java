@@ -12,7 +12,7 @@ import java.sql.SQLException;
  */
 public class DBOpenHelper {
     private static String driver = "com.mysql.jdbc.Driver";//MySQL 驱动
-    private static String url = "jdbc:mysql://39.108.231.15:3306/smt_eps";//MYSQL数据库连接Url
+    private static String url = "jdbc:mysql://39.108.231.15:3306/smt_eps";//MYSQL测试数据库连接Url
     private static String user = "root";//用户名
     private static String password = "newttl!@#$1234";//密码
 

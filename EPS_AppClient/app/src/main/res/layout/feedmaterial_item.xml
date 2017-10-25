@@ -71,7 +71,7 @@
                 android:textSize="14dp"
                 android:id="@+id/tv_Remark"
                 android:text=""
-                android:textColor="#f00" />
+                />
 
             <!--<View-->
                 <!--android:layout_height="match_parent"-->

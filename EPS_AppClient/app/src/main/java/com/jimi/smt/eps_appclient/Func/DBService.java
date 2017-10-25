@@ -2,6 +2,8 @@ package com.jimi.smt.eps_appclient.Func;
 
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Unit.OperLogItem;
+import com.jimi.smt.eps_appclient.Unit.Operator;
+import com.jimi.smt.eps_appclient.Unit.Program;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.ResultSet;
@@ -44,31 +46,31 @@ public class DBService {
 
 
     /**
-     * 获取要发送短信的患者信息    查
-     * */
+     * 获取获取对应工单号的料号表
+     * @param programID
+     * @return List<MaterialItem>
+     */
 
-    public List<MaterialItem> getMaterial(String strLineNo){
+    public List<MaterialItem> getMaterial(String programID){
         //结果存放集合
         List<MaterialItem> list=new ArrayList<MaterialItem>();
-        //MySQL 语句
-        String sql="select program_item.lineseat as lineseat,program_item.material_no as material from program_item,program where program_id=id and line='"+strLineNo+"'";
+        //MySQL 语句 22ee4c9f99c9421cb48920d37acd4590
+//        String sql="select program_item.program_id, program_item.lineseat as lineseat,program_item.material_no as material from program_item,program where program_id=id and line='"+strLineNo+"'";
+        String sql="select program_item.program_id, program_item.lineseat, program_item.material_no from program_item where program_id=?";
         //获取链接数据库对象
         conn= DBOpenHelper.getConn();
         try {
-            if(conn!=null&&(!conn.isClosed())){
+            if(conn!=null && (!conn.isClosed())){
                 ps= (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1,programID);
                 if(ps!=null){
                     rs= (ResultSet) ps.executeQuery();
                     if(rs!=null){
                         while(rs.next()){
                             MaterialItem materialItem=new MaterialItem();
+                            materialItem.setFileId(rs.getString("program_id"));
                             materialItem.setOrgLineSeat(rs.getString("lineseat"));
-                            materialItem.setOrgMaterial(rs.getString("material"));
-//                            u.setId(rs.getString("id"));
-//                            u.setName(rs.getString("name"));
-//                            u.setPhone(rs.getString("phone"));
-//                            u.setContent(rs.getString("content"));
-//                            u.setState(rs.getString("state"));
+                            materialItem.setOrgMaterial(rs.getString("material_no"));
                             list.add(materialItem);
                         }
                     }
@@ -81,10 +83,12 @@ public class DBService {
         DBOpenHelper.closeAll(conn,ps,rs);//关闭相关操作
         return list;
     }
-    /**
-     * 批量向数据库插入数据   增
-     * */
 
+    /**
+     *插入日志到数据库
+     * @param list
+     * @return　int
+     */
     public int inserOpertLog(List<OperLogItem> list){
         int result=-1;
         if((list!=null)&&(list.size()>0)){
@@ -127,6 +131,72 @@ public class DBService {
         }
         DBOpenHelper.closeAll(conn,ps);//关闭相关操作
         return result;
+    }
+
+    /**
+     * @author Liang GuoChang
+     * @描述 根据操作员ID 查找该操作员
+     * @param operatorId 操作员ID
+     * @return 操作员
+     */
+    public Operator getCurOperator(String operatorId){
+        Operator operator=null;
+        String sqlStr="SELECT * from user WHERE id=?";
+        conn=DBOpenHelper.getConn();
+        if ((conn != null) && !(conn.isClosed())){
+            try {
+                ps= (PreparedStatement) conn.prepareStatement(sqlStr);
+                if (ps != null){
+                    ps.setString(1,operatorId);
+                    rs= (ResultSet) ps.executeQuery();
+                    if (rs != null){
+                        while (rs.next()){
+                            operator=new Operator();
+                            operator.setId(rs.getString("id"));
+                            operator.setEnabled(rs.getBytes("enabled")[0]);
+                            operator.setName(rs.getString("name"));
+                            operator.setType(rs.getInt("type"));
+                            operator.setPwd(rs.getString("password"));
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
+        return operator;
+    }
+
+    /**
+     * 获取所有工单号
+     * @return List<Program>
+     */
+    public List<Program> getProgramOrder(){
+        List<Program> programList=new ArrayList<Program>();
+        String sql="select program.id,program.work_order from program";
+        conn=DBOpenHelper.getConn();
+        try {
+            if (conn != null && !(conn.isClosed())) {
+                ps = (PreparedStatement) conn.prepareStatement(sql);
+                if (ps != null){
+                    rs = (ResultSet) ps.executeQuery();
+                    if (rs != null){
+                        while (rs.next()){
+                            Program program=new Program();
+                            program.setProgramID(rs.getString("id"));
+                            program.setWork_order(rs.getString("work_order"));
+                            programList.add(program);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return programList;
     }
 
     /**

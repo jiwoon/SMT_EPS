@@ -1,8 +1,7 @@
 package com.jimi.smt.eps_appclient;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +23,8 @@ import com.jimi.smt.eps_appclient.Func.DBService;
 import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
+import com.jimi.smt.eps_appclient.Views.InfoDialog;
+import com.jimi.smt.eps_appclient.Views.InputDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,8 @@ import java.util.List;
  */
 public class EPS_MainActivity extends FragmentActivity implements OnClickListener {
     private final String TAG = this.getClass().getSimpleName();
+
+    public static Context context;
 
     //声明ViewPager
     private ViewPager mViewPager;
@@ -65,6 +68,8 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
     //进度框
     private ProgressDialog progressDialog = null;
     android.app.AlertDialog dialog = null;
+    //弹出输入框
+    private InputDialog inputDialog;
 
     private final int MSG_GETMATERIAL = 1;          //获得料号列表
     GlobalData globalData;
@@ -74,9 +79,11 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_GETMATERIAL:
+
                     Log.i(TAG, "MSG_GETMATERIAL");
                     progressDialog.dismiss();
-                    dialog.dismiss();
+//                    dialog.dismiss();
+                    inputDialog.dismiss();
 
                     //获得到站位表
                     if (globalData.getMaterialItems().size() > 0) {
@@ -86,7 +93,7 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
                     }
                     //获取站位表失败，再次获取。
                     else {
-                        showInfo("提示", "请确认当前网络是否正常或线号是否正确!!!");
+                        showInfo("提示", "请确认当前网络是否正常\n或线号是否正确!!!");
                     }
                     break;
             }
@@ -98,6 +105,8 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_eps__main);
+
+        context=this.getApplicationContext();
 
         //获得全局变量
         globalData = (GlobalData) getApplication();
@@ -112,50 +121,8 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
     private void getMaterial() {
         Log.i(TAG, "getMaterial");
         //弹出输入线号对话框
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        View view = View.inflate(this, R.layout.inputline_dialog, null);
-        final EditText etLineNo = (EditText) view.findViewById(R.id.et_LineNo);
-//        final EditText edtOperation= (EditText) view.findViewById(R.id.edt_Operation);
-        builder.setView(view);
-        builder.setIcon(android.R.drawable.ic_dialog_info);
-//        edtOperation.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-//                globalData.setOperator(String.valueOf(((EditText) textView).getText()));
-//                return false;
-//            }
-//        });
-        etLineNo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(final TextView textView, int i, KeyEvent keyEvent) {
-                //获取站位表
-                Log.i(TAG, "getMaterial start");
-                progressDialog = ProgressDialog.show(EPS_MainActivity.this, "请稍等...", "获取数据中...", true);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //获得料号表
-                        String LineNo = "";
-                        LineNo = String.valueOf(((EditText) textView).getText());
-                        //对的线号
-                        if (new GlobalFunc().checkLine(LineNo)){
-//                        List<MaterialItem>materialItems = new DBService().getMaterial(LineNo);
-                            List<MaterialItem> materialItems = new DBService().getMaterial("308");
-                            //保存站位表信息
-                            globalData.setMaterialItems(materialItems);
-                            Log.i(TAG, "getMaterial finish");
-
-                            Message msg_netData = new Message();
-                            msg_netData.what = MSG_GETMATERIAL;
-                            mainActivityHandler.sendMessage(msg_netData);
-                        }
-                    }
-                }).start();
-                return false;
-            }
-        });
-        dialog = builder.create();
-        dialog.show();
+//        showLineNoDialog();
+        showLineNoDialog("请扫描当前线号");
     }
 
     //初始化控件
@@ -292,7 +259,9 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
         mImgCheckAllMaterial.setImageResource(R.mipmap.btn_checkallmaterial_normal);
     }
 
+    //弹出消息窗口
     public boolean showInfo(String title,String message){
+        /*
         //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
         AlertDialog.Builder builder = new AlertDialog.Builder(EPS_MainActivity.this);
         //设置Title的图标
@@ -311,6 +280,112 @@ public class EPS_MainActivity extends FragmentActivity implements OnClickListene
         });
         //显示出该对话框
         builder.show();
+        */
+        //对话框所有控件id
+        int itemResIds[]=new int[]{R.id.dialog_title_view,
+                R.id.dialog_title,R.id.tv_alert_info,R.id.info_trust};
+        //标题和内容
+        String titleMsg[]=new String[]{title,message};
+        //内容的样式
+        int msgStype[]=new int[]{22,Color.RED};
+        InfoDialog infoDialog=new InfoDialog(this,
+                R.layout.info_dialog_layout,itemResIds,titleMsg,msgStype);
+
+        infoDialog.setOnDialogItemClickListener(new InfoDialog.OnDialogItemClickListener() {
+            @Override
+            public void OnDialogItemClick(InfoDialog dialog, View view) {
+                switch (view.getId()){
+                    case R.id.info_trust:
+                        dialog.dismiss();
+                        getMaterial();
+                        break;
+                }
+            }
+        });
+        infoDialog.show();
+
         return true;
     }
+
+
+    //弹出输入线号对话框
+    private void showLineNoDialog(){
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        View view = View.inflate(this, R.layout.inputline_dialog, null);
+        final EditText etLineNo = (EditText) view.findViewById(R.id.et_LineNo);
+        builder.setView(view);
+
+        etLineNo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(final TextView textView, int i, KeyEvent keyEvent) {
+                //获取站位表
+                Log.i(TAG, "getMaterial start");
+                progressDialog = ProgressDialog.show(EPS_MainActivity.this, "请稍等...", "获取数据中...", true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //获得料号表
+                        String LineNo = "";
+                        LineNo = String.valueOf(((EditText) textView).getText());
+                        //对的线号
+                        if (new GlobalFunc().checkLine(LineNo)){
+//                        List<MaterialItem>materialItems = new DBService().getMaterial(LineNo);
+                            List<MaterialItem> materialItems = new DBService().getMaterial("308");
+                            //保存站位表信息
+                            globalData.setMaterialItems(materialItems);
+                            Log.i(TAG, "getMaterial finish");
+
+                            Message msg_netData = new Message();
+                            msg_netData.what = MSG_GETMATERIAL;
+                            mainActivityHandler.sendMessage(msg_netData);
+                        }
+                    }
+                }).start();
+                return false;
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    //弹出输入线号对话框
+    private void showLineNoDialog(String title){
+        inputDialog = new InputDialog(this, R.layout.input_dialog_layout,
+                new int[]{R.id.input_dialog_title,R.id.et_input},title);
+        inputDialog.setOnDialogEditorActionListener(new InputDialog.OnDialogEditorActionListener() {
+            @Override
+            public boolean OnDialogEditorAction(InputDialog inputDialog, final TextView v,
+                                                int actionId, KeyEvent event) {
+
+                //获取站位表
+                Log.i(TAG, "getMaterial start");
+                progressDialog = ProgressDialog.show(EPS_MainActivity.this, "请稍等...", "获取数据中...", true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //获得料号表
+                        String LineNo = "";
+                        LineNo = String.valueOf(((EditText) v).getText());
+                        //对的线号
+                        if (new GlobalFunc().checkLine(LineNo)){
+//                        List<MaterialItem>materialItems = new DBService().getMaterial(LineNo);
+                            List<MaterialItem> materialItems = new DBService().getMaterial("308");
+                            //保存站位表信息
+                            globalData.setMaterialItems(materialItems);
+                            Log.i(TAG, "getMaterial finish");
+
+                            Message msg_netData = new Message();
+                            msg_netData.what = MSG_GETMATERIAL;
+                            mainActivityHandler.sendMessage(msg_netData);
+                        }
+                    }
+                }).start();
+                return false;
+            }
+        });
+
+        inputDialog.show();
+    }
+
 }

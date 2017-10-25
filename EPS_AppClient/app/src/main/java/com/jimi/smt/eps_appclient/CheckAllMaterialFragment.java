@@ -1,7 +1,9 @@
 package com.jimi.smt.eps_appclient;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,6 +23,7 @@ import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
+import com.jimi.smt.eps_appclient.Views.InputDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +34,16 @@ import java.util.List;
 public class CheckAllMaterialFragment extends Fragment implements TextView.OnEditorActionListener {
     private final String TAG = this.getClass().getSimpleName();
 
+    private Context context;
+
     //全局变量
-    GlobalData globalData;
+    private GlobalData globalData;
 
     //上料视图
     private View vCheckAllMaterialFragment;
     //操作员　站位　料号
-    private EditText edt_Operation, /*edt_LineSeat,*/
-            edt_ScanMaterial;
+    private TextView edt_Operation; /*edt_LineSeat,*/
+    private EditText edt_ScanMaterial;
 
     //上料列表
     private ListView lv_CheckAllMaterial;
@@ -48,10 +53,12 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
     private List<MaterialItem> lCheckAllMaterialItem = new ArrayList<MaterialItem>();
 
     //当前检料项
-    int curCheckId = 0;
-    android.app.AlertDialog dialog = null;
+    private int curCheckId = 0;
+    private android.app.AlertDialog dialog = null;
     //长按时选择的行
-    int selectRow=-1;
+    private int selectRow=-1;
+
+
 
     @Nullable
     @Override
@@ -59,10 +66,17 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         Log.i(TAG, "onCreateView");
         vCheckAllMaterialFragment = inflater.inflate(R.layout.checkallmaterial_layout, container, false);
 
+        context=EPS_MainActivity.context;
+        //获取工单号和操作员
+        Intent intent=getActivity().getIntent();
+        savedInstanceState=intent.getExtras();
+        Log.i(TAG,"curOderNum::"+savedInstanceState.getString("orderNum")+" -- curOperatorNUm::"+savedInstanceState.getString("operatorNum"));
+
         globalData = (GlobalData) getActivity().getApplication();
         globalData.setOperType(Constants.CHECKALLMATERIAL);
+        globalData.setOperator(savedInstanceState.getString("operatorNum"));
 
-        initViews();
+        initViews(savedInstanceState);
         initEvents();
         initData();//初始化数据
         return vCheckAllMaterialFragment;
@@ -73,15 +87,15 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
      * @time 2017-9-22
      * @describe 初始化控件
      */
-    private void initViews() {
+    private void initViews(Bundle bundle) {
         Log.i(TAG, "initViews");
-        edt_Operation = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_Operation);
-        //edt_LineSeat = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_Lineseat);
+        TextView tv_checkAll_order= (TextView) vCheckAllMaterialFragment.findViewById(R.id.tv_checkAll_order);
+        edt_Operation = (TextView) vCheckAllMaterialFragment.findViewById(R.id.tv_checkAll_Operation);
         edt_ScanMaterial = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_material);
-
         lv_CheckAllMaterial = (ListView) vCheckAllMaterialFragment.findViewById(R.id.list_view);
-
-        edt_Operation.requestFocus();
+        tv_checkAll_order.setText(bundle.getString("orderNum"));
+        edt_Operation.setText(bundle.getString("operatorNum"));
+        edt_ScanMaterial.requestFocus();
     }
 
     /**
@@ -91,8 +105,6 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
      */
     private void initEvents() {
         Log.i(TAG, "initEvents");
-        edt_Operation.setOnEditorActionListener(this);
-        //edt_LineSeat.setOnEditorActionListener(this);
         edt_ScanMaterial.setOnEditorActionListener(this);
 
         lv_CheckAllMaterial.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -100,145 +112,59 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int row, long l) {
                 //弹出对话框
                 selectRow=row;
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
-                View view1 = View.inflate(getActivity(), R.layout.inputmaterial_dialog, null);
-                final EditText etMaterial = (EditText) view1.findViewById(R.id.et_Material);
-                builder.setView(view1);
-                builder.setIcon(android.R.drawable.ic_dialog_info);
-                etMaterial.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(final TextView textView, int i, KeyEvent keyEvent) {
-                        if (i == EditorInfo.IME_ACTION_SEND ||
-                                (keyEvent != null && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER)) {
-                            switch (keyEvent.getAction()) {
-                                //按下
-                                case KeyEvent.ACTION_DOWN:
-                                    //扫描内容
-                                    String scanValue = String.valueOf(((EditText) textView).getText());
-                                    if (scanValue.indexOf("@") != -1) {
-                                        scanValue = scanValue.substring(0, scanValue.indexOf("@"));
-                                        MaterialItem checkAllMaterialItem = lCheckAllMaterialItem.get(selectRow);
-                                        checkAllMaterialItem.setScanMaterial(scanValue);
-
-                                        //比对料号是否相等
-                                        if (checkAllMaterialItem.getOrgMaterial().equalsIgnoreCase(checkAllMaterialItem.getScanMaterial())) {
-                                            checkAllMaterialItem.setResultRemark("PASS", "");
-                                        } else {
-                                            if (!checkAllMaterialItem.getOrgMaterial().equalsIgnoreCase(checkAllMaterialItem.getScanMaterial())) {
-                                                checkAllMaterialItem.setResultRemark("FAIL","料号与排位表不相符");
-                                            }
-                                        }
-                                        materialAdapter.notifyDataSetChanged();
-
-                                        //增加数据库日志
-                                        new GlobalFunc().AddDBLog(globalData, lCheckAllMaterialItem.get(curCheckId));
-                                        dialog.dismiss();
-                                        edt_Operation.requestFocus();
-                                    }
-                                    return true;
-                                default:
-                                    return false;
-                            }
-                        }
-                        return false;
-                    }
-
-                });
-                dialog = builder.create();
-                dialog.show();
+                showLongClickDialog("请重新扫描新的料号");
                 return true;
             }
             });
     }
 
-
-
-            /**
-             * @author connie
-             * @time 2017-9-22
-             * @describe 初始化数据
-             */
-            private void initData() {
-                Log.i(TAG, "initData");
-                //填充数据
-                curCheckId = 0;
-                lCheckAllMaterialItem.clear();
-                List<MaterialItem> materialItems = globalData.getMaterialItems();
-                for (MaterialItem materialItem : materialItems) {
-                    MaterialItem feedMaterialItem;
-                    feedMaterialItem = new MaterialItem(materialItem.getFileId(),materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
-                    lCheckAllMaterialItem.add(feedMaterialItem);
-                }
-                //设置Adapter
-                materialAdapter = new MaterialAdapter(getActivity(), lCheckAllMaterialItem);
-                lv_CheckAllMaterial.setAdapter(materialAdapter);
-            }
-
-            /**
-             * @param textView 　触发的控件
-             * @param i
-             * @param keyEvent 　key事件
-             * @return
-             */
+    //弹出长按对话框
+    private void showLongClickDialog(String title){
+        InputDialog inputDialog=new InputDialog(getActivity(),
+                R.layout.input_dialog_layout,new int[]{R.id.input_dialog_title,R.id.et_input},title);
+        inputDialog.show();
+        inputDialog.setOnDialogEditorActionListener(new InputDialog.OnDialogEditorActionListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                Log.i(TAG, "onEditorAction");
-                //回车键
-                if (i == EditorInfo.IME_ACTION_SEND ||
-                        (keyEvent != null && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER)) {
-                    switch (keyEvent.getAction()) {
+            public boolean OnDialogEditorAction(InputDialog inputDialog,final TextView v, int actionId, KeyEvent event) {
+
+                if (actionId == EditorInfo.IME_ACTION_SEND ||
+                        (event != null && event.getKeyCode() == event.KEYCODE_ENTER)) {
+
+                    switch (event.getAction()) {
                         //按下
                         case KeyEvent.ACTION_UP:
-                            //扫描内容
-                            String scanValue = String.valueOf(((EditText) textView).getText());
-                            scanValue = scanValue.replaceAll("\r", "");
-                            Log.i(TAG, "scan Value:" + scanValue);
-                            textView.setText(scanValue);
 
-                            //将扫描的内容更新至列表中
-                            MaterialItem checkAllMaterialItem = lCheckAllMaterialItem.get(curCheckId);
-                            switch (textView.getId()) {
-                                case R.id.edt_Operation:
-                                    //操作员格式不对
-                                    if (scanValue.length() != 10) {
-                                    }
-                                    globalData.setOperator(scanValue);
-                                    edt_ScanMaterial.requestFocus();
-                                    break;
-//                        case R.id.edt_Lineseat:
-//                            //站位
-//                            //String scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
-//                            checkAllMaterialItem.setScanLineSeat(scanValue);
-////                            if (edt_LineSeat.length() != 7) {
-////                                feedMaterialItem.setRemark("站位长度不正确");
-////                            } else {
-////                                feedMaterialItem.setRemark("");
-////                            }
-//                            materialAdapter.notifyDataSetChanged();
-//                            break;
-                                case R.id.edt_material:
-                                    //料号,若为二维码则提取@@前的料号
+                            switch (v.getId()){
+                                case R.id.et_input:
+                                    //扫描内容
+                                    String scanValue = String.valueOf(((EditText) v).getText());
                                     if (scanValue.indexOf("@") != -1) {
                                         scanValue = scanValue.substring(0, scanValue.indexOf("@"));
-                                        textView.setText(scanValue);
                                     }
-
+                                    MaterialItem checkAllMaterialItem = lCheckAllMaterialItem.get(selectRow);
                                     checkAllMaterialItem.setScanMaterial(scanValue);
-                                    //比对站位和料号是否相等
+                                    //调用全捡方法
+                                    checkAllItems(checkAllMaterialItem,selectRow,scanValue);
+                                    /*
+                                    //比对料号是否相等
                                     if (checkAllMaterialItem.getOrgMaterial().equalsIgnoreCase(checkAllMaterialItem.getScanMaterial())) {
-                                        checkAllMaterialItem.setResult("PASS");
+                                        checkAllMaterialItem.setResultRemark("PASS", "站位和料号正确!");
                                     } else {
-                                        checkAllMaterialItem.setResult("FAIL");
                                         if (!checkAllMaterialItem.getOrgMaterial().equalsIgnoreCase(checkAllMaterialItem.getScanMaterial())) {
-                                            checkAllMaterialItem.setRemark("料号与排位表不相符");
+                                            checkAllMaterialItem.setResultRemark("FAIL","料号与排位表不相符");
                                         }
                                     }
+*/
+
+
                                     materialAdapter.notifyDataSetChanged();
 
                                     //增加数据库日志
-                                    new GlobalFunc().AddDBLog(globalData, lCheckAllMaterialItem.get(curCheckId));
+                                    new GlobalFunc().AddDBLog(globalData, lCheckAllMaterialItem.get(selectRow));
+//                                dialog.dismiss();
+                                    inputDialog.dismiss();
+                                    edt_ScanMaterial.requestFocus();
 
-                                    checkNextMaterial();
                                     break;
                             }
                             return true;
@@ -248,7 +174,203 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                 }
                 return false;
             }
+        });
+//        inputDialog.show();
+    }
 
+
+    /**
+     * @author connie
+     * @time 2017-9-22
+     * @describe 初始化数据
+     */
+    private void initData() {
+        Log.i(TAG, "initData");
+        //填充数据
+        curCheckId = 0;
+        lCheckAllMaterialItem.clear();
+        List<MaterialItem> materialItems = globalData.getMaterialItems();
+        for (MaterialItem materialItem : materialItems) {
+            MaterialItem feedMaterialItem;
+            feedMaterialItem = new MaterialItem(materialItem.getFileId(),materialItem.getOrgLineSeat(), materialItem.getOrgMaterial(), "", "", "", "");
+            lCheckAllMaterialItem.add(feedMaterialItem);
+        }
+        /*
+        //测试用
+        for (int k=0;k < 10;k++){
+            MaterialItem feedMaterialItem;
+            feedMaterialItem = new MaterialItem(materialItems.get(k).getFileId(),materialItems.get(k).getOrgLineSeat(),
+                    materialItems.get(k).getOrgMaterial(), "", "", "", "");
+            lCheckAllMaterialItem.add(feedMaterialItem);
+        }
+        */
+
+        //设置Adapter
+        materialAdapter = new MaterialAdapter(getActivity(), lCheckAllMaterialItem);
+        lv_CheckAllMaterial.setAdapter(materialAdapter);
+    }
+
+    /**
+     * @param textView 　触发的控件
+     * @param i
+     * @param keyEvent 　key事件
+     * @return
+     */
+    @Override
+    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+        Log.i(TAG, "onEditorAction");
+        Log.i("ACTION_DOWN::onEditorAction-",textView.getText());
+        Log.i("ACTION_DOWN::onEditorAction-",i);
+        //回车键
+        if (i == EditorInfo.IME_ACTION_SEND ||
+                (keyEvent != null && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER)) {
+            switch (keyEvent.getAction()) {
+                //按下
+                case KeyEvent.ACTION_UP:
+                    //扫描内容
+                    String scanValue = String.valueOf(((EditText) textView).getText());
+                    scanValue = scanValue.replaceAll("\r", "");
+                    Log.i(TAG, "scan Value:" + scanValue);
+                    textView.setText(scanValue);
+
+                    //将扫描的内容更新至列表中
+                    MaterialItem checkAllMaterialItem = lCheckAllMaterialItem.get(curCheckId);
+
+                    switch (textView.getId()) {
+                        case R.id.edt_material:
+                            //料号,若为二维码则提取@@前的料号
+                            if (scanValue.indexOf("@") != -1) {
+                                scanValue = scanValue.substring(0, scanValue.indexOf("@"));
+                                textView.setText(scanValue);
+                            }
+                            //当前操作的站位
+                            String curCheckLineSeat = checkAllMaterialItem.getOrgLineSeat();
+                            //相同站位的索引数组
+                            ArrayList<Integer> sameLineSeatIndexs = new ArrayList<Integer>();
+                            //当前操作的位置
+                            int curOperateIndex = curCheckId;
+                            curCheckId=curCheckId-1;
+                            //向上遍历所有相同站位的位置
+                            for (int j = curOperateIndex-1; j >= 0; j--){
+                                if (lCheckAllMaterialItem.get(j).getOrgLineSeat().equalsIgnoreCase(curCheckLineSeat)){
+                                    sameLineSeatIndexs.add(j);
+                                }else {
+                                    break;
+                                }
+                            }
+                            //向下遍历所有相同的站位位置
+                            for (int k = curOperateIndex; k < lCheckAllMaterialItem.size();k++){
+                                if (lCheckAllMaterialItem.get(k).getOrgLineSeat().equalsIgnoreCase(curCheckLineSeat)){
+                                    sameLineSeatIndexs.add(k);
+                                    //将检查的位置往后移
+                                    curCheckId ++;
+                                }
+                            }
+                            //根据站位索引数组检查料号与扫到的料号比对
+                            if (sameLineSeatIndexs.size() == 1){
+                                //只有一个站位
+                                MaterialItem singleMaterialItem = lCheckAllMaterialItem.get(sameLineSeatIndexs.get(0));
+                                singleMaterialItem.setScanMaterial(scanValue);
+                                if (singleMaterialItem.getOrgMaterial().equalsIgnoreCase(singleMaterialItem.getScanMaterial())){
+                                    singleMaterialItem.setResult("PASS");
+                                    singleMaterialItem.setRemark("站位和料号正确");
+                                }else {
+                                    singleMaterialItem.setResult("FAIL");
+                                    singleMaterialItem.setRemark("料号与站位不对应");
+                                }
+                            }else if (sameLineSeatIndexs.size() > 1){
+                                //多个相同的站位,即有替换料
+                                checkMultiItem(sameLineSeatIndexs,scanValue);
+                            }
+
+                            materialAdapter.notifyDataSetChanged();
+
+                            //增加数据库日志
+                            globalData.setOperType(Constants.CHECKALLMATERIAL);
+                            new GlobalFunc().AddDBLog(globalData, lCheckAllMaterialItem.get(curOperateIndex));
+                            //清空站位
+                            sameLineSeatIndexs.clear();
+                            //检查下一个料
+                            checkNextMaterial();
+                            break;
+                    }
+                    return true;
+                default:
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private void checkMultiItem(ArrayList<Integer> integers,String mScanValue){
+        //多个相同的站位,即有替换料
+        for (int z = 0;z < integers.size();z++){
+            MaterialItem multiMaterialItem = lCheckAllMaterialItem.get(integers.get(z));
+            multiMaterialItem.setScanMaterial(mScanValue);
+            if (multiMaterialItem.getOrgMaterial().equalsIgnoreCase(multiMaterialItem.getScanMaterial())){
+                for (int x = 0;x < integers.size();x++){
+                    MaterialItem innerMaterialItem = lCheckAllMaterialItem.get(integers.get(x));
+                    innerMaterialItem.setScanMaterial(mScanValue);
+                    if (x == z){
+                        innerMaterialItem.setResult("PASS");
+                        innerMaterialItem.setRemark("主替有一项成功");
+                    }else {
+                        innerMaterialItem.setResult("PASS");
+                        innerMaterialItem.setRemark("主替有一项成功");
+                    }
+                }
+                //跳出循环
+                return;
+            }else {
+                multiMaterialItem.setResult("FAIL");
+                multiMaterialItem.setRemark("料号与站位不对应");
+            }
+        }
+    }
+
+    private void checkAllItems(MaterialItem materialItem,int curCheckIndex,String mScanValue){
+
+        //当前操作的站位
+        String curCheckLineSeat = materialItem.getOrgLineSeat();
+        //相同站位的索引数组
+        ArrayList<Integer> sameLineSeatIndexs = new ArrayList<Integer>();
+        //当前操作的位置
+        int curOperateIndex = curCheckIndex;
+//        curCheckIndex=curCheckIndex-1;
+        //向上遍历所有相同站位的位置
+        for (int j = curOperateIndex-1; j >= 0; j--){
+            if (lCheckAllMaterialItem.get(j).getOrgLineSeat().equalsIgnoreCase(curCheckLineSeat)){
+                sameLineSeatIndexs.add(j);
+            }else {
+                break;
+            }
+        }
+        //向下遍历所有相同的站位位置
+        for (int k = curOperateIndex; k < lCheckAllMaterialItem.size();k++){
+            if (lCheckAllMaterialItem.get(k).getOrgLineSeat().equalsIgnoreCase(curCheckLineSeat)){
+                sameLineSeatIndexs.add(k);
+                //将检查的位置往后移
+//                curCheckIndex ++;
+            }
+        }
+        //根据站位索引数组检查料号与扫到的料号比对
+        if (sameLineSeatIndexs.size() == 1){
+            //只有一个站位
+            MaterialItem singleMaterialItem = lCheckAllMaterialItem.get(sameLineSeatIndexs.get(0));
+            singleMaterialItem.setScanMaterial(mScanValue);
+            if (singleMaterialItem.getOrgMaterial().equalsIgnoreCase(singleMaterialItem.getScanMaterial())){
+                singleMaterialItem.setResult("PASS");
+                singleMaterialItem.setRemark("站位和料号正确");
+            }else {
+                singleMaterialItem.setResult("FAIL");
+                singleMaterialItem.setRemark("料号与站位不对应");
+            }
+        }else if (sameLineSeatIndexs.size() > 1){
+            //多个相同的站位,即有替换料
+            checkMultiItem(sameLineSeatIndexs,mScanValue);
+        }
+
+    }
 
     /**
      * @author connie
@@ -323,4 +445,5 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         edt_ScanMaterial.setText("");
         edt_ScanMaterial.requestFocus();
     }
+
 }

@@ -14,12 +14,12 @@
             <TextView
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:gravity="right"
-                android:text="操作员:"
+                android:gravity="center"
+                android:text="工单号:"
                 android:textSize="22dp" />
 
-            <EditText
-                android:id="@+id/edt_Operation"
+            <TextView
+                android:id="@+id/tv_feed_order"
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
                 android:singleLine="true"
@@ -33,8 +33,27 @@
             <TextView
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:gravity="right"
-                android:text="站位:"
+                android:gravity="center"
+                android:text="操作员:"
+                android:textSize="22dp" />
+
+            <TextView
+                android:id="@+id/tv_feed_Operation"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:singleLine="true"
+                android:text=""
+                android:textSize="22dp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="站    位:"
                 android:textSize="22dp" />
 
             <EditText
@@ -53,8 +72,8 @@
             <TextView
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:gravity="right"
-                android:text="料号:"
+                android:gravity="center"
+                android:text="料    号:"
                 android:textSize="22dp" />
 
             <EditText

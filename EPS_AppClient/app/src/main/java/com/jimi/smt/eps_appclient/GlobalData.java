@@ -53,7 +53,8 @@ public class GlobalData extends Application {
     }
 
     //操作类型
-    int OperType= Constants.FEEDMATERIAL;
+//    private int OperType= Constants.FEEDMATERIAL;
+    private int OperType;
 
     public int getOperType() {
         return OperType;
