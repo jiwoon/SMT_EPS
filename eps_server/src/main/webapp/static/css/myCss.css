@@ -83,88 +83,147 @@ s, i, em {
     font-style: normal;
     text-decoration: none;
 }
-
-/*页头*/
-.box{
-    height:100%;
-}
-table{
-    width:100%;
-}
-td{
+.nav{
     height:100px;
-    border: 1px solid black;
-    font-size: 50px;
+}
+#nav-left{
+    height:100%;
+    width:12%;
+    float: left;
+}
+#nav-left em{
+    display: block;
+    width:100%;
+    font-size: 16px;
+    text-align: center;
+    padding-top: 15px;
+}
+#nav-left span{
+    display: block;
+    font-size: 40px;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 800;
+    color: #C81623;
+}
+/*制作点击按钮*/
+#click-left,#click-right{
+    float: left;
+    width:6%;
+    height:100px;
+    position: relative;
+
+}
+#click-left em,#click-right em{
+    display: block;
+    width:0;
+    height:0;
+    border-width:30px;
+    border-style:dashed solid  dashed dashed;
+    border-color:transparent #B9B9C8  transparent transparent;
+    position: absolute;
+    top:20px;
+    left:6%;
+    cursor: pointer;
+}
+#click-right em{
+    left:21%;
+    border-style:dashed   dashed dashed solid;
+    border-color:transparent   transparent transparent #B9B9C8;
+}
+#click-left span,#click-right span{
+    display: block;
+    height:50px;
+    width:6px;
+    background-color:#B9B9C8 ;
+    position: absolute;
+    top:25px;
+    left:30px;
+}
+#click-right span{
+    left:54%;
+}
+/*滑动栏*/
+#main{
+    width:68%;
+    margin:0 auto;
+    height:100px;
+    background-color: antiquewhite;
+    float: left;
+    position: relative;
+    overflow: hidden;
+}
+#main div{
+    width:100%;
+    height:100px;
+    background-color: #4DD2FF;
+    color: #ffffff;
+    font-size: 80px;
     text-align: center;
     line-height: 100px;
-    position: relative;
-}
-.current{
-    font-size: 80px;
-    font-weight: 700;
-    position: relative;
-}
-.current span{
-   display: block;
-    font-size: 32px;
-    position: absolute;
-    bottom:9%;
-    left:50%;
-}
-/*制作斜线*/
-.out{
-    border-top:100px #ffffff solid;/*上边框宽度等于表格第一行行高*/
-    border-left:224px #BDBABD solid;/*左边框宽度等于表格第一行第一格宽度*/
-    position:relative;/*让里面的两个子容器绝对定位*/
-}
-.out i,.out em{
-    display:block;
-    font-size:36px;
-    width:80px;
-    height:20px;
-    position:absolute;}
-.out i{
-    top:-122px;
-    right:0;
-}
-.out em{
-    bottom:55px;
-    right:104px;
-}
-
-.common{
+    letter-spacing: 100px;
+    text-indent: 100px;
     position: absolute;
     top:0;
     left:0;
-    border-top:102px #ffffff solid;
-    border-left:224px #BDBABD solid;
-}
-.common i,.common em{
-    display:block;
-    font-size:36px;
-    width:80px;
-    height:20px;
-    position:absolute;
-}
-.common i{
-    top:-116px;
-    right:0;
-}
-.common em{
-    bottom:52px;
-    right:167px;
 }
 
-.suc{
-    color: #006600;
-    font-weight: 800;
+/*暂停开始按键*/
+#nav-right{
+    width:8%;
+    height:100px;
+    background-color: #008C69;
+    float: right;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
 }
-.fail{
-    color:#D90000;
-    font-weight: 800;
+.stop{
+    width:0;
+    height:0;
+    border-width:38px;
+    border-style:dashed dashed dashed solid;
+    border-color:transparent transparent transparent #ffffff;
+    position: absolute;
+    top:8px;
+    left:40%;
 }
-.total{
-    font-weight: 800;
-    color: #000;
+.start{
+    border-left:8px solid #ffffff;
+    border-right:8px solid #ffffff;
+    width:14px;
+    height:60px;
+    position: absolute;
+    top:16px;
+    left:38%;
 }
 
+/*显示框内容*/
+.mainText{
+    position: relative;
+    overflow: hidden;
+}
+.mainText div{
+    width:100%;
+    height:100%;
+    /*position: relative;*/
+}
+.mainText section{
+    width:100%;
+    height:100%;
+    position: absolute;
+    top:0;
+    left:0;
+}
+.clock {
+    display: block;
+    width: 116px;
+    height: 38px;
+    border:3px solid black;
+    position: absolute;
+    top: 16px;
+    left: 32px;
+    line-height: 38px;
+    text-align: center;
+    font-size: 26px;
+}
