@@ -97,10 +97,10 @@ $("#nav-right").on("click",function(){
   timer2 =setInterval(getAndShow,5000);
     function getAndShow() {
         $.ajax({
-            url: "abc.php",
+            url: "operation/listDisplayReport",
             type: "post",
             dataType: "json",
-            data: {},
+            data: {line:"308"},
             success: function (data) {
                 var nameArray = ["feed", "changes", "somes","alls"];
                 //    一、创建舞台
@@ -161,7 +161,7 @@ $("#nav-right").on("click",function(){
                             y: y01 + 10,
                             fontSize: 20,
                             text: data[nameArray[u]][k].time,
-                            width: 7 / 27 * eachWidth,
+                            width: 10 / 27 * eachWidth,
                             Align: "center"
                         });
                         var rect1 = new Konva.Rect({
@@ -205,12 +205,12 @@ $("#nav-right").on("click",function(){
                     //
                     for (var q = 0; q < num - 1; q++) {
                         var totalLine = new Konva.Line({       //总数折线
-                            points: [x01 + q * xWidth, y02 - parseInt(data[nameArray[u]][q].total), x01 + [q + 1] * xWidth, y02 - parseInt(data[nameArray[u]][(q + 1)].total)],
+                            points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].total))*5, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].total))*5],
                             strokeWidth: 3,
                             stroke: "black"
                         });
                         var sucLine = new Konva.Line({       //成功数折线
-                            points: [x01 + q * xWidth, y02 - parseInt(data[nameArray[u]][q].suc), x01 + [q + 1] * xWidth, y02 - parseInt(data[nameArray[u]][(q + 1)].suc)],
+                            points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].suc))*5, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].suc))*5],
                             strokeWidth: 3,
                             stroke: "green"
                         });
@@ -226,19 +226,19 @@ $("#nav-right").on("click",function(){
                     for (var w = 0; w < num; w++) {
                         var toatlNum = new Konva.Text({
                             x: x01 + w * xWidth,
-                            y: y02 - parseInt(data[nameArray[u]][q].total) - 20,
+                            y: y02 - parseInt(data[nameArray[u]][q].total)*5 - 20,
                             fontSize: 18,
                             text: data[nameArray[u]][w].total,
                         });
                         var sucNum = new Konva.Text({
                             x: x01 + w * xWidth,
-                            y: y02 - parseInt(data[nameArray[u]][q].suc) + 5,
+                            y: y02 - parseInt(data[nameArray[u]][q].suc)*5 + 5,
                             fontSize: 18,
                             text: data[nameArray[u]][w].suc,
                         });
                         var failNum = new Konva.Text({
                             x: x01 + w * xWidth,
-                            y: y02 - parseInt(data[nameArray[u]][q].fail) - 15,
+                            y: y02 - parseInt(data[nameArray[u]][q].fail)*5 - 15,
                             fontSize: 18,
                             text: data[nameArray[u]][w].fail,
                         });
