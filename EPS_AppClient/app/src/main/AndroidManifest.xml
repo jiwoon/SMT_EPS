@@ -11,14 +11,16 @@
         android:allowBackup="true"
         android:icon="@mipmap/eps_icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        >
 
         <!-- 主activity -->
         <activity
             android:name=".EPS_MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            >
 
             <!--
             <intent-filter>
@@ -28,7 +30,10 @@
             </intent-filter>
             -->
         </activity>
-        <activity android:name=".Activity.EnterActivity">
+        <activity
+            android:name=".Activity.EnterActivity"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

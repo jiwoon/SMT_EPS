@@ -169,6 +169,8 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
                         sucIssueCount++;
                         //TODO: 2017/10/21 将其置顶？
                         lv_ware_materials.setSelection(i);
+                        //刷新数据
+                        wareHouseAdapter.notifyDataSetChanged();
                     }
                 }
                 if (lineSeatIndexs.size() > 0){
