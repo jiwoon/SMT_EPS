@@ -64,7 +64,7 @@ $("#nav-right").on("click",function(){
 
 //   自动播放
 
-    timer1 = setInterval(autoPlay,3000);
+    timer1 = setInterval(autoPlay,10000);
     function autoPlay(){
         $("#main div").eq(key).animate({"left":-mainWidth},500);
         $(".mainText section").eq(key).animate({"left":-screenWidth},500);
@@ -94,13 +94,13 @@ $("#nav-right").on("click",function(){
 
 //往画布填充内容
     getAndShow();
-  timer2 =setInterval(getAndShow,5000);
+  timer2 =setInterval(getAndShow,1000);
     function getAndShow() {
         $.ajax({
-            url: "abc.php",
+            url: "operation/listDisplayReport",
             type: "post",
             dataType: "json",
-            data: {},
+            data: {line:"308"},
             success: function (data) {
                 var nameArray = ["feed", "changes", "somes","alls"];
                 //    一、创建舞台
@@ -126,6 +126,7 @@ $("#nav-right").on("click",function(){
                     var width1 = 7 / 8 * stage.width();  //设定的柱状图的总宽度
                     var xWidth = 1 / 24 * width1;        //设定每个点之间的间距
                     var eachWidth = 1 / 6 * width1;    //每个小时的宽度为总宽度的1/6
+
                     var bsline1 = new Konva.Line({       //画柱状图的底线
                         points: [x01, y01, x01 + width1, y01],
                         strokeWidth: 3,
@@ -139,7 +140,42 @@ $("#nav-right").on("click",function(){
                     });
                     layer.add(bsline1);
                     layer.add(bsline2);
-                    //layer.add(NowTimeText);
+
+                    //说明
+                    var describeTotal = new Konva.Text({
+                        x : stage.width()-175,
+                        y : 20,
+                        fontSize : 25,
+                        fill : "black",
+                        fontStyle : "bold",
+                        text : "黑色：总数 ",
+                        width  :150,
+                        height : 25
+                    });
+                    var describeSuc = new Konva.Text({
+                        x : stage.width()-175,
+                        y : 45,
+                        fontSize : 25,
+                        fontStyle : "bold",
+                        fill : "green",
+                        text : "绿色：成功数",
+                        width  :150,
+                        height : 25
+                    });
+                    var describeFail = new Konva.Text({
+                        x : stage.width()-175,
+                        y : 70,
+                        fontSize : 25,
+                        fontStyle : "bold",
+                        fill : "red",
+                        text : "红色：失败数",
+                        width  :150,
+                        height : 25
+                    });
+
+                    layer.add(describeTotal);
+                    layer.add(describeSuc);
+                    layer.add(describeFail);
                     for (var k = 0; k < 6; k++) {
                         var rect = new Konva.Rect({
                             x: x01 + (1 / 6 + k) * eachWidth,
@@ -153,6 +189,7 @@ $("#nav-right").on("click",function(){
                             y: y01 - data[nameArray[u]][k].total - 20,
                             fontSize: 20,
                             text: data[nameArray[u]][k].total,
+                            fill :"black",
                             width: 7 / 27 * eachWidth,
                             Align: "center"
                         });
@@ -161,7 +198,7 @@ $("#nav-right").on("click",function(){
                             y: y01 + 10,
                             fontSize: 20,
                             text: data[nameArray[u]][k].time,
-                            width: 7 / 27 * eachWidth,
+                            width: 10 / 27 * eachWidth,
                             Align: "center"
                         });
                         var rect1 = new Konva.Rect({
@@ -175,6 +212,7 @@ $("#nav-right").on("click",function(){
                             x: x01 + 7 / 27 * eachWidth + (1 / 6 + k) * eachWidth,
                             y: y01 - data[nameArray[u]][k].suc - 20,
                             fontSize: 20,
+                            fill : "green",
                             text: data[nameArray[u]][k].suc,
                             width: 7 / 27 * eachWidth,
                             Align: "center"
@@ -190,6 +228,7 @@ $("#nav-right").on("click",function(){
                             x: x01 + 14 / 27 * eachWidth + (1 / 6 + k) * eachWidth,
                             y: y01 - data[nameArray[u]][k].fail - 20,
                             fontSize: 20,
+                            fill : "red",
                             text: data[nameArray[u]][k].fail,
                             width: 7 / 27 * eachWidth,
                             Align: "center"
@@ -202,20 +241,46 @@ $("#nav-right").on("click",function(){
                         layer.add(rect2);
                         layer.add(text2);
                     }
-                    //
+                    //折线
+                    var zs = 0;    //总数系数
+                    var cgs   = 0;   //成功数系数
+                    var sbs  = 0;    //失败数系数
+                    switch (nameArray[u]){
+                        case "feed":
+                            zs = 5;
+                            cgs = 4;
+                            sbs = 2;
+                            break;
+                        case "changes":
+                            zs = 7;
+                            cgs = 5;
+                            sbs = 2;
+                            break;
+                        case "somes" :
+                            zs = 7;
+                            cgs = 5;
+                            sbs = 2;
+                            break;
+                        case "alls"  :
+                            zs = 2.5;
+                            cgs = 1;
+                            sbs = 1;
+                            break;
+                    }
+
                     for (var q = 0; q < num - 1; q++) {
                         var totalLine = new Konva.Line({       //总数折线
-                            points: [x01 + q * xWidth, y02 - parseInt(data[nameArray[u]][q].total), x01 + [q + 1] * xWidth, y02 - parseInt(data[nameArray[u]][(q + 1)].total)],
+                            points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].total))*zs, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].total))*zs],
                             strokeWidth: 3,
                             stroke: "black"
                         });
                         var sucLine = new Konva.Line({       //成功数折线
-                            points: [x01 + q * xWidth, y02 - parseInt(data[nameArray[u]][q].suc), x01 + [q + 1] * xWidth, y02 - parseInt(data[nameArray[u]][(q + 1)].suc)],
+                            points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].suc))*cgs, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].suc))*cgs],
                             strokeWidth: 3,
                             stroke: "green"
                         });
                         var failLine = new Konva.Line({       //失败数折线
-                            points: [x01 + q * xWidth, y02 - parseInt(data[nameArray[u]][q].fail), x01 + [q + 1] * xWidth, y02 - parseInt(data[nameArray[u]][(q + 1)].fail)],
+                            points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].fail))*sbs, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].fail))*sbs],
                             strokeWidth: 3,
                             stroke: "red"
                         });
@@ -223,23 +288,27 @@ $("#nav-right").on("click",function(){
                         layer.add(sucLine);
                         layer.add(failLine);
                     }
+                    //折线数据部分
                     for (var w = 0; w < num; w++) {
                         var toatlNum = new Konva.Text({
                             x: x01 + w * xWidth,
-                            y: y02 - parseInt(data[nameArray[u]][q].total) - 20,
+                            y: y02 - (parseInt(data[nameArray[u]][w].total)*zs) - 18,
                             fontSize: 18,
+                            fill :"black",
                             text: data[nameArray[u]][w].total,
                         });
                         var sucNum = new Konva.Text({
                             x: x01 + w * xWidth,
-                            y: y02 - parseInt(data[nameArray[u]][q].suc) + 5,
+                            y: y02 - (parseInt(data[nameArray[u]][w].suc)*cgs) - 18,
                             fontSize: 18,
+                            fill : "green",
                             text: data[nameArray[u]][w].suc,
                         });
                         var failNum = new Konva.Text({
                             x: x01 + w * xWidth,
-                            y: y02 - parseInt(data[nameArray[u]][q].fail) - 15,
+                            y: y02 - (parseInt(data[nameArray[u]][w].fail))*sbs -18,
                             fontSize: 18,
+                            fill : "red",
                             text: data[nameArray[u]][w].fail,
                         });
 
@@ -256,6 +325,7 @@ $("#nav-right").on("click",function(){
                             height: 5,
                             fill: "black"
                         });
+
                         layer.add(toatlNum);
                         layer.add(sucNum);
                         layer.add(failNum);
