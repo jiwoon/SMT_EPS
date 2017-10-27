@@ -42,12 +42,12 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/add")
-	public ResultUtil add(String id, String name, Integer type, String password) {
+	public ResultUtil add(String id, Integer classType, String name, Integer type, String password) {
 		if(id == null && type == null) {
 			ResultUtil.failed("参数不足");
 			return ResultUtil.failed();
 		}
-		String result = userService.add(id, name , type, password);
+		String result = userService.add(id, classType, name , type, password);
 		if(result.equals("succeed")) {
 			return ResultUtil.succeed();
 		}else {
@@ -58,19 +58,19 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/list")
-	public List<UserVO> list(String id, String name, Integer type, String password, String orderBy, Boolean enabled) {
-		return userService.list(id, name , type, orderBy, enabled);
+	public List<UserVO> list(String id, Integer classType, String name, Integer type, String password, String orderBy, Boolean enabled) {
+		return userService.list(id, classType, name , type, orderBy, enabled);
 	}
 	
 	
 	@ResponseBody
 	@RequestMapping("/update")
-	public ResultUtil update(String id, String name, Integer type, String password, Boolean enabled) {
+	public ResultUtil update(String id, Integer classType, String name, Integer type, String password, Boolean enabled) {
 		if(id == null) {
 			ResultUtil.failed("参数不足");
 			return ResultUtil.failed();
 		}
-		String result = userService.update(id, name , type, password, enabled);
+		String result = userService.update(id, classType, name , type, password, enabled);
 		if(result.equals("succeed")) {
 			return ResultUtil.succeed();
 		}else {

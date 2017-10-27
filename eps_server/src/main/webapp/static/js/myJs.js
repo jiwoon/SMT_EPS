@@ -65,6 +65,7 @@ $("#nav-right").on("click",function(){
 //   自动播放
 
     timer1 = setInterval(autoPlay,10000);
+    
     function autoPlay(){
         $("#main div").eq(key).animate({"left":-mainWidth},500);
         $(".mainText section").eq(key).animate({"left":-screenWidth},500);
@@ -270,12 +271,20 @@ $("#nav-right").on("click",function(){
 
                     for (var q = 0; q < num - 1; q++) {
                         var totalLine = new Konva.Line({       //总数折线
+<<<<<<< HEAD
                             points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].total))*zs, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].total))*zs],
+=======
+                            points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].total))*5, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].total))*5],
+>>>>>>> 8401cd161eff00c6e8032c4ab00165c262af4a21
                             strokeWidth: 3,
                             stroke: "black"
                         });
                         var sucLine = new Konva.Line({       //成功数折线
+<<<<<<< HEAD
                             points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].suc))*cgs, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].suc))*cgs],
+=======
+                            points: [x01 + q * xWidth, y02 - (parseInt(data[nameArray[u]][q].suc))*5, x01 + [q + 1] * xWidth, y02 - (parseInt(data[nameArray[u]][(q + 1)].suc))*5],
+>>>>>>> 8401cd161eff00c6e8032c4ab00165c262af4a21
                             strokeWidth: 3,
                             stroke: "green"
                         });
@@ -292,21 +301,33 @@ $("#nav-right").on("click",function(){
                     for (var w = 0; w < num; w++) {
                         var toatlNum = new Konva.Text({
                             x: x01 + w * xWidth,
+<<<<<<< HEAD
                             y: y02 - (parseInt(data[nameArray[u]][w].total)*zs) - 18,
+=======
+                            y: y02 - parseInt(data[nameArray[u]][q].total)*5 - 20,
+>>>>>>> 8401cd161eff00c6e8032c4ab00165c262af4a21
                             fontSize: 18,
                             fill :"black",
                             text: data[nameArray[u]][w].total,
                         });
                         var sucNum = new Konva.Text({
                             x: x01 + w * xWidth,
+<<<<<<< HEAD
                             y: y02 - (parseInt(data[nameArray[u]][w].suc)*cgs) - 18,
+=======
+                            y: y02 - parseInt(data[nameArray[u]][q].suc)*5 + 5,
+>>>>>>> 8401cd161eff00c6e8032c4ab00165c262af4a21
                             fontSize: 18,
                             fill : "green",
                             text: data[nameArray[u]][w].suc,
                         });
                         var failNum = new Konva.Text({
                             x: x01 + w * xWidth,
+<<<<<<< HEAD
                             y: y02 - (parseInt(data[nameArray[u]][w].fail))*sbs -18,
+=======
+                            y: y02 - parseInt(data[nameArray[u]][q].fail)*5 - 15,
+>>>>>>> 8401cd161eff00c6e8032c4ab00165c262af4a21
                             fontSize: 18,
                             fill : "red",
                             text: data[nameArray[u]][w].fail,

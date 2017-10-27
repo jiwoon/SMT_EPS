@@ -54,6 +54,13 @@ public class OperationController {
 	}
 	
 	
+	@Open
+	@RequestMapping("/goDisplayReport2")
+	public ModelAndView goDisplayReport2() {
+		return new ModelAndView("operation/goDisplayReport2");
+	}
+	
+	
 	@ResponseBody
 	@RequestMapping("/listClientReport")
 	public List<ClientReport> listClientReport(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime) {

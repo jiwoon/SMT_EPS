@@ -1,12 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
-<%
-	String path = request.getContextPath();
-	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-%>
 <!DOCTYPE html>
 <html>
 	<head>
-		<base href="<%=basePath%>">
+		<base href="/eps_server/">
 		<meta charset="UTF-8">
 		<title>上传排位表</title>
 		<script src="static/js/jquery-2.1.1.js" ></script>

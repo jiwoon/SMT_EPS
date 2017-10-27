@@ -258,7 +258,7 @@ public class OperationServiceImpl implements OperationService {
 				item = displayReport.getAlls().get(hour);
 				break;
 			default:
-				break;
+				continue;
 			}
 			if(operation.getResult().equals("PASS")) {
 				item.setSuc(item.getSuc()+1);

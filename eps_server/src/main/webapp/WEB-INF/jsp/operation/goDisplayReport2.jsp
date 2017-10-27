@@ -1,6 +1,8 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<base href="/eps_server/">
     <meta charset="UTF-8">
     <title>实时显示报表展示页面</title>
     <link rel="stylesheet" href="static/css/myCss.css">

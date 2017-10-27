@@ -13,23 +13,25 @@ public interface UserService {
 	/**
 	 * 新增一个用户
 	 * @param id
+	 * @param classType 
 	 * @param name
 	 * @param type
 	 * @param password
 	 * @return
 	 */
-	String add(String id, String name, Integer type, String password);
+	String add(String id, Integer classType, String name, Integer type, String password);
 	
 	/**
 	 * 修改指定工号的用户信息
 	 * @param id
+	 * @param classType 
 	 * @param name
 	 * @param type
 	 * @param password
 	 * @param enabled
 	 * @return
 	 */
-	String update(String id, String name, Integer type, String password, Boolean enabled);
+	String update(String id, Integer classType, String name, Integer type, String password, Boolean enabled);
 
 	/**
 	 * 根据条件列出用户
@@ -43,6 +45,7 @@ public interface UserService {
 		create_time；
 		enabled为true时，只显示在职用户，默认为false
 	 * @param id
+	 * @param classType 
 	 * @param name
 	 * @param type
 	 * @param password
@@ -50,7 +53,7 @@ public interface UserService {
 	 * @param enabled
 	 * @return
 	 */
-	List<UserVO> list(String id, String name, Integer type, String orderBy, Boolean enabled);
+	List<UserVO> list(String id, Integer classType, String name, Integer type, String orderBy, Boolean enabled);
 	
 	/**
 	 * 使用管理员id以及对应的密码进行登录（如果有），

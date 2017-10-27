@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 	private UserToUserVOFiller filler;
 	
 	@Override
-	public String add(String id, String name, Integer type, String password) {
+	public String add(String id, Integer classType, String name, Integer type, String password) {
 		if(userMapper.selectByPrimaryKey(id) != null) {
 			return "failed_id_exist";
 		}
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String update(String id, String name, Integer type, String password, Boolean enabled) {
+	public String update(String id, Integer classType, String name, Integer type, String password, Boolean enabled) {
 		if(userMapper.selectByPrimaryKey(id) == null) {
 			return "failed_not_found";
 		}
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<UserVO> list(String id, String name, Integer type, String orderBy, Boolean enabled) {
+	public List<UserVO> list(String id, Integer classType, String name, Integer type, String orderBy, Boolean enabled) {
 		UserExample userExample = new UserExample();
 		Criteria criteria = userExample.createCriteria();
 		if(id != null) {
@@ -71,6 +71,9 @@ public class UserServiceImpl implements UserService {
 		}
 		if(enabled != null) {
 			criteria.andEnabledEqualTo(enabled);
+		}
+		if(classType != null) {
+			criteria.andClassTypeEqualTo(classType);
 		}
 		userExample.setOrderByClause(orderBy);
 		return filler.fill(userMapper.selectByExample(userExample));
