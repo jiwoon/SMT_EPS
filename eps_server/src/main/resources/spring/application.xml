@@ -28,7 +28,7 @@
 		<!-- 国际化拦截器 -->
 		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
 		<!-- 登录拦截器 -->
-		<bean class="com.jimi.smt.esp_server.interceptor.LoginInterceptor"/>
+		<bean class="com.jimi.smt.eps_server.interceptor.LoginInterceptor"/>
 	</mvc:interceptors>
 
 	
@@ -76,19 +76,19 @@
 
 	<!-- 自动扫描了所有的XxxxMapper.xml对应的mapper接口文件，这样就不用一个一个手动配置Mpper的映射了，只要Mapper接口类和Mapper映射文件对应起来就可以了。 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.jimi.smt.esp_server.mapper" />
+		<property name="basePackage" value="com.jimi.smt.eps_server.mapper" />
 	</bean>
 
 	<!-- 配置Mybatis的文件 ，mapperLocations配置**Mapper.xml文件位置，configLocation配置mybatis-config文件位置 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="mapperLocations"
-			value="classpath*:com.jimi.smt.esp_server.mapper/**/*.xml" />
+			value="classpath*:com.jimi.smt.eps_server.mapper/**/*.xml" />
 		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml" />
 	</bean>
 
 	<!-- 自动扫描注解的bean -->
-	<context:component-scan base-package="com.jimi.smt.esp_server" />
+	<context:component-scan base-package="com.jimi.smt.eps_server" />
 	
 	<!-- 配置事务管理器 -->  
     <bean name="transactionManager"
@@ -106,7 +106,7 @@
     <!-- 配置事务切面 -->  
     <aop:config>  
         <aop:pointcut id="serviceOperation"  
-            expression="execution(* com.jimi.smt.esp_server.service..*.*(..))" />  
+            expression="execution(* com.jimi.smt.eps_server.service..*.*(..))" />  
         <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceOperation" />  
     </aop:config>  
 	
