@@ -5,7 +5,7 @@
 	<base href="/eps_server/">
     <meta charset="UTF-8">
     <title>表单</title>
-    <link rel="stylesheet" href="static/css/tableCss.css">
+    <link rel="stylesheet" href="static/css/TableCss.css">
     <script src="static/js/jquery-1.11.3.min.js"></script>
     <script src="static/js/table_js.js"></script>
 </head>
