@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -65,12 +66,12 @@ public class ExcelHelper{
 		/**
 		 * 优先尝试转换成整型
 		 */
-		INT,
+		DOUBLE,
 		
 		/**
 		 * 优先尝试转换成日期型
 		 */
-		DOUBLE,
+		STRING,
 		
 		/**
 		 * 优先尝试转换成双精度浮点型
@@ -80,7 +81,7 @@ public class ExcelHelper{
 		/**
 		 * 优先尝试转换成字符串型
 		 */
-		STRING,
+		INT,
 		
 		/**
 		 * 优先尝试转换成布尔型
@@ -387,6 +388,46 @@ public class ExcelHelper{
 				}
 			}
 		}
+	}
+	
+	
+	/**
+	 * 根据提供的Class类，解析出报表实例列表
+	 */
+	public <T> List<T> unfill(Class<T> clazz) throws Exception{
+		List<T> entities = new ArrayList<T>();
+		for (int i = 0; i < workbook.getSheetAt(currentSheetNum).getLastRowNum(); i++) {
+			T entity = null;
+			try {
+				entity = clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e2) {
+				e2.printStackTrace();
+			}
+			Field[] fields = clazz.getDeclaredFields();
+			for (Field field : fields) {
+				Excel e = field.getAnnotation(Excel.class);
+				if(e == null) {
+					continue;
+				}
+				//如果是第一行则校验表头
+				if(i == 0) {
+					if(!e.head().equals(getString(i, e.col()))){
+						throw new Exception("表头校验失败");
+					}
+				}
+				//填充list
+				field.setAccessible(true);
+				try {
+					Object value = get(i, e.col(), RequireType.values()[workbook.getSheetAt(currentSheetNum).getRow(i).getCell(e.col()).getCellType()]);
+					field.set(entity, value);
+				} catch (IllegalArgumentException | IllegalAccessException e1) {
+					logger.error("调用ExcelHelper.fill()中field.get()方法时出错");
+					e1.printStackTrace();
+				}
+			}
+			entities.add(entity);
+		}
+		return entities;
 	}
 	
 
