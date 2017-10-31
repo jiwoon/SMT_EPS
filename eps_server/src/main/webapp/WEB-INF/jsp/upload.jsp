@@ -12,7 +12,7 @@
 				$("#upload-btn").attr("disabled","disabled");
 				var formData = new FormData($("#file")[0]);  
 				$.ajax({
-				     url: '<%=basePath%>program/upload',
+				     url: 'program/upload',
 				     type: 'POST',  
 				     data: formData,  
 				     cache: false,  

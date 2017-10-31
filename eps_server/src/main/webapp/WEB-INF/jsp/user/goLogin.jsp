@@ -9,7 +9,7 @@
 	<script type="text/javascript">
 		function login(){
 			$.ajax({
-			     url: '<%=basePath%>user/login',
+			     url: 'user/login',
 			     type: 'POST',  
 			     data: {
 			    	 id:$("#id").val(),

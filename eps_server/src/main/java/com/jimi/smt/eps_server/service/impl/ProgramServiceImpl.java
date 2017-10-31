@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -30,6 +26,7 @@ import com.jimi.smt.eps_server.mapper.ProgramItemBackupMapper;
 import com.jimi.smt.eps_server.mapper.ProgramItemMapper;
 import com.jimi.smt.eps_server.mapper.ProgramMapper;
 import com.jimi.smt.eps_server.service.ProgramService;
+import com.jimi.smt.eps_server.util.ExcelHelper;
 import com.jimi.smt.eps_server.util.FieldUtil;
 import com.jimi.smt.eps_server.util.UuidUtil;
 
@@ -49,81 +46,55 @@ public class ProgramServiceImpl implements ProgramService {
 	
 	@Override
 	public Map<String, Object> upload(MultipartFile programFile, Integer boardType) throws IOException {
-		Workbook workbook = null;
-		//判断格式
-		if(programFile.getOriginalFilename().endsWith(".xlsx")){
-			workbook = new XSSFWorkbook(programFile.getInputStream());
-		}else {
-			workbook = new HSSFWorkbook(programFile.getInputStream());
-		}
-		Sheet sheet = workbook.getSheetAt(0);
+		ExcelHelper helper = ExcelHelper.from(programFile);
 		//校验
 		final String header = "SMT FEEDER LIST";
-		if(!header.equals(sheet.getRow(1).getCell(0).getStringCellValue())) {
+		if(!header.equals(helper.getString(1, 0))) {
 			throw new RuntimeException("头部错误：没有找到\"SMT FEEDER LIST\"标题栏");
 		}
 		//填充表头
 		Program program = new Program();
-		program.setClient(sheet.getRow(2).getCell(1).getStringCellValue());
-		program.setMachineName(sheet.getRow(2).getCell(4).getStringCellValue());
-		program.setVersion(sheet.getRow(2).getCell(6).getStringCellValue());
-		program.setMachineConfig(sheet.getRow(3).getCell(1).getStringCellValue());
-		program.setProgramNo(sheet.getRow(3).getCell(4).getStringCellValue());
-		program.setLine(String.valueOf(sheet.getRow(3).getCell(6).getNumericCellValue()).split("\\.")[0]);
-		program.setEffectiveDate(sheet.getRow(4).getCell(1).getDateCellValue().toString());
-		program.setPcbNo(sheet.getRow(4).getCell(4).getStringCellValue());
-		program.setBom(sheet.getRow(5).getCell(1).getStringCellValue());
-		program.setProgramName(sheet.getRow(6).getCell(1).getStringCellValue());
-		program.setAuditor(sheet.getRow(7).getCell(4).getStringCellValue().substring(3));
+		program.setClient(helper.getString(2, 1));
+		program.setMachineName(helper.getString(2, 4));
+		program.setVersion(helper.getString(2, 6));
+		program.setMachineConfig(helper.getString(3, 1));
+		program.setProgramNo(helper.getString(3, 4));
+		program.setLine(helper.getString(3, 6));
+		program.setEffectiveDate(helper.getDate(4, 1).toString());
+		program.setPcbNo(helper.getString(4, 4));
+		program.setBom(helper.getString(5, 1));
+		program.setProgramName(helper.getString(6, 1));
+		program.setAuditor(helper.getString(7, 4).substring(3));
 		program.setFileName(programFile.getOriginalFilename());
 		program.setId(UuidUtil.get32UUID());
 		program.setCreateTime(new Date());
 		program.setBoardType(boardType);
-		program.setWorkOrder(sheet.getRow(4).getCell(6).getStringCellValue());
+		program.setWorkOrder(helper.getString(4, 6));
 		
-//		//转移表
-//		ProgramExample programExample = new ProgramExample();
-//		programExample.createCriteria().andLineEqualTo(program.getLine());
-//		List<Program> programs = programMapper.selectByExample(programExample);
-//		for (Program p : programs) {
-//			ProgramItemExample programItemExample = new ProgramItemExample();
-//			programItemExample.createCriteria().andProgramIdEqualTo(p.getId());
-//			List<ProgramItem> programItems = programItemMapper.selectByExample(programItemExample);
-//			for (ProgramItem pi : programItems) {
-//				ProgramItemBackup pib = new ProgramItemBackup();
-//				BeanUtils.copyProperties(pi, pib);
-//				programItemBackupMapper.insert(pib);
-//				programItemMapper.deleteByPrimaryKey(pi);
-//			}
-//			ProgramBackup pb = new ProgramBackup();
-//			BeanUtils.copyProperties(p, pb);
-//			programBackupMapper.insert(pb);
-//			programMapper.deleteByPrimaryKey(p.getId());
-//		}
 		//初始化结果
 		Map<String, Object> result = new HashMap<String , Object>();
-		int sum = workbook.getNumberOfSheets();
+		int sum = helper.getBook().getNumberOfSheets();
 		result.put("real_parse_num", sum);
 		result.put("plan_parse_num", sum);
 		result.put("action_name", "上传");
 		
 		//填充表项
-		for(int i = 0; i < workbook.getNumberOfSheets(); i++) {
-			sheet = workbook.getSheetAt(i);
-			for(int j = 9; j < sheet.getLastRowNum() - 3; j++) {
+		for(int i = 0; i < sum; i++) {
+			helper.switchSheet(i);
+			for(int j = 9; j < helper.getBook().getSheetAt(i).getLastRowNum() - 3; j++) {
 				ProgramItem programItem = new ProgramItem();
 				//空表判断
-				if(sheet.getRow(j).getCell(0).getStringCellValue().equals("")) {
+				if(helper.getString(j, 0).equals("")) {
 					int temp = (int) result.get("real_parse_num");
 					result.put("real_parse_num", temp--);
 					break;
 				}
-				programItem.setLineseat(formatLineseat(sheet.getRow(j).getCell(0).getStringCellValue()));
-				programItem.setMaterialNo(sheet.getRow(j).getCell(1).getStringCellValue());
-				programItem.setAlternative(sheet.getRow(j).getCell(2).getCellType() == 0 ? false : true);
-				programItem.setSpecitification(sheet.getRow(j).getCell(3).getStringCellValue());
-				programItem.setPosition(sheet.getRow(j).getCell(4).getStringCellValue());
-				programItem.setQuantity((int) sheet.getRow(j).getCell(5).getNumericCellValue());
+				programItem.setLineseat(formatLineseat(helper.getString(j, 0)));
+				programItem.setMaterialNo(helper.getString(j, 1));
+				programItem.setAlternative(helper.getBoolean(j, 2));
+				programItem.setSpecitification(helper.getString(j, 3));
+				programItem.setPosition(helper.getString(j, 4));
+				programItem.setQuantity(helper.getInt(j, 5));
 				//设置programId
 				programItem.setProgramId(program.getId());
 				//忽略重复项

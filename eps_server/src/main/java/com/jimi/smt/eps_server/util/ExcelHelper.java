@@ -138,10 +138,10 @@ public class ExcelHelper{
 	 * @throws IOException
 	 */
 	public void write(OutputStream outputStream, boolean autoColumnWidth) throws IOException {
-		workbook.write(outputStream);
 		if(autoColumnWidth) {
 			autoColumnWidth();
 		}
+		workbook.write(outputStream);
 	}
 	
 	
@@ -593,6 +593,10 @@ public class ExcelHelper{
 				for (int j = 0; j < sheet.getRow(0).getLastCellNum(); j++) {
 					sheet.autoSizeColumn(j);
 					sheet.setColumnWidth(j, sheet.getColumnWidth(j) + 4 *256);
+					//设置上限
+					if(sheet.getColumnWidth(j) >= 80 * 256) {
+						sheet.setColumnWidth(j, 80 * 256);
+					}
 				}
 			}
 		}catch (NullPointerException e) {

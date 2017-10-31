@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
 		user.setType(type);
 		user.setPassword(password);
 		user.setCreateTime(new Date());
+		user.setClassType(classType);
 		if(userMapper.insertSelective(user) == 1) {
 			return "succeed";
 		}
@@ -50,6 +51,7 @@ public class UserServiceImpl implements UserService {
 		user.setType(type);
 		user.setPassword(password);
 		user.setEnabled(enabled);
+		user.setClassType(classType);
 		if(userMapper.updateByPrimaryKeySelective(user) == 1){
 			return "succeed";
 		}
@@ -60,19 +62,19 @@ public class UserServiceImpl implements UserService {
 	public List<UserVO> list(String id, Integer classType, String name, Integer type, String orderBy, Boolean enabled) {
 		UserExample userExample = new UserExample();
 		Criteria criteria = userExample.createCriteria();
-		if(id != null) {
+		if(id != null || "".equals(id)) {
 			criteria.andIdEqualTo(id);
 		}
-		if(name != null) {
+		if(name != null || "".equals(name)) {
 			criteria.andNameEqualTo(name);
 		}
-		if(type != null) {
+		if(type != null || "".equals(type)) {
 			criteria.andTypeEqualTo(type);
 		}
-		if(enabled != null) {
+		if(enabled != null || "".equals(enabled)) {
 			criteria.andEnabledEqualTo(enabled);
 		}
-		if(classType != null) {
+		if(classType != null || "".equals(classType)) {
 			criteria.andClassTypeEqualTo(classType);
 		}
 		userExample.setOrderByClause(orderBy);

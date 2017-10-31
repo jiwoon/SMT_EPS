@@ -11,6 +11,10 @@ public class UserVO extends User {
 	private String typeName;
 	
 	private String createTimeString;
+	
+	private String classTypeName;
+	
+	private String isEnabled;
 
 	public String getTypeName() {
 		return typeName;
@@ -26,6 +30,22 @@ public class UserVO extends User {
 
 	public void setCreateTimeString(String createTimeString) {
 		this.createTimeString = createTimeString;
+	}
+
+	public String getClassTypeName() {
+		return classTypeName;
+	}
+
+	public void setClassTypeName(String classTypeName) {
+		this.classTypeName = classTypeName;
+	}
+
+	public String getIsEnabled() {
+		return isEnabled;
+	}
+
+	public void setIsEnabled(String isEnabled) {
+		this.isEnabled = isEnabled;
 	}
 
 	
