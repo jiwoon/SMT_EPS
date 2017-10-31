@@ -13,7 +13,7 @@
 <div class="manageSystem">
     <!--版头部分-->
     <div class="banner" id="banner">
-        <span class="name">管理系统</span>
+        <span class="name">SMT防错料管理系统</span>
         <span class="showUser"></span>
         <span class="logout"></span>
     </div>
@@ -50,7 +50,12 @@
         </div>
         <!--右侧主要显示框-->
         <div class="main-text" id="main-text">
-            <!--员工表-->
+                <!--刚进入时显示的界面-->
+            <section class="guard" id="guard" style="display: none">
+                <span></span>
+                <p>欢迎来到SMT防错料管理系统，请通过左侧导航栏进入相关界面进行操作</p>
+            </section>
+                <!--员工表-->
             <section class="staff" id="staff">
                 <span class="manage-staff">人员管理</span>
                 <!--搜索框-->
@@ -59,21 +64,21 @@
                     工号：<input type="text" id="id">
                     姓名：<input type="text" id="name">
                     岗位：<select id="type">
-                            <option value =null>不限</option>
-                            <option value ="0">0、仓库操作员</option>
-                            <option value ="1">1、厂线操作员</option>
-                            <option value="2">2、IPQC</option>
-                            <option value="3">3、管理员</option>
+                            <option value =>不限</option>
+                            <option value =0>0、仓库操作员</option>
+                            <option value =1>1、厂线操作员</option>
+                            <option value=2>2、IPQC</option>
+                            <option value=3>3、管理员</option>
                           </select>
                     班别：<select id="classType">
-                                 <option value =null>不限</option>
-                                <option value ="0">白班</option>
-                                <option value ="1">夜班</option>
+                                 <option value =>不限</option>
+                                <option value =0>白班</option>
+                                <option value =1>夜班</option>
                            </select>
                     在职：<select id="enabled">
-                                 <option value =null>不限</option>
-                                <option value ="0">是</option>
-                                <option value ="1">否</option>
+                                 <option value =>不限</option>
+                                <option value =0>是</option>
+                                <option value =1>否</option>
                            </select>
                     <button id="find" class="ui-button ui-corner-all ui-state-default locative">查询</button>
                 </section>
@@ -97,9 +102,30 @@
                         </thead>
                         <tbody id="ShowTable"></tbody>
                     </table>
-<!--                     <button id="modify" class="operateBtn ui-state-default ui-corner-all ui-corner-top">修改</button>
-                    <button id="delete" class="operateBtn ui-state-default ui-corner-all ui-corner-top delete">删除</button> -->
                 </section>
+            </section>
+
+             <!--员工表具体操作页面-->
+            <section class="staff-operation" id="staff-operation" style="display: none">
+               <div class="new-position">
+                   工号：<input type="text" id="newId"> <br>
+                   姓名：<input type="text" id="newName"><br>
+                   岗位：<select id="newType">
+                       <option value=>不限</option>
+                       <option value=0>仓库操作员</option>
+                       <option value=1>厂线操作员</option>
+                       <option value=2>IPQC</option>
+                       <option value=3>管理员</option>
+                   </select><br>
+                   班别：<select id="newClassType">
+                       <option value=>不限</option>
+                       <option value=0>白班</option>
+                       <option value=1>夜班</option>
+                   </select>
+                   <button id="new-position-save" class="ui-button ui-corner-all ui-state-default new-position-save" >保存</button>
+               </div>
+                <button id="new-position-back" class="ui-button ui-corner-all ui-state-default new-position-back">返回</button>
+
             </section>
         </div>
     </div>
