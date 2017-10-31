@@ -90,9 +90,10 @@ public class OperationController {
 	@ResponseBody
 	@RequestMapping("/listDisplayReport")
 	public DisplayReport listDisplayReport(String line) {
-		System.out.println("进入listDisplayReport-Controller:" + System.currentTimeMillis());
+		if(line == null || line.equals("")) {
+			return null;
+		}
 		DisplayReport displayReport = operationService.listDisplayReport(line);
-		System.out.println("离开listDisplayReport-Controller:" + System.currentTimeMillis());
 		return displayReport;
 	}
 	

@@ -40,13 +40,14 @@ $(function(){
 
 //    查询按钮点击事件
     $("#find").on("click",function(){
+
         $.ajax({
             url: "user/list",
             type: "post",
             dataType: "json",
             data:{
-                id :$("#id").val()==""?null:$("#id").val(),
-                name:$("#name").val()==""?null:$("#name").val(),
+                id :$("#id").val(),
+                name:$("#name").val(),
                 type:$("#type").val(),
                 classType:$("#classType").val(),
                 enable :$("#enabled").val()
@@ -90,6 +91,39 @@ $(function(){
         html +=      "<td>" + $("#newClassType option:selected").text() + "</td>"
         html +=      "<td>" + "是" +"</td>"
         html +=      "<td>" + time + "</td>"
+//页面一加载就获得的数据
+$.ajax({
+    url: "user/list",
+    type: "post",
+    dataType: "json",
+    data: {
+    	id:$("#id").val(),
+		name:$("#name").val(),
+		type:$("#type").val(),
+        classType:$("#classType").val(),
+        enable :$("#enabled").val()
+    },
+    success: function (data){
+        autoCreateTable(data);
+    },
+    error:function(){
+        console.log("数据传输失败");
+    }
+});
+//    动态生成表格
+    function autoCreateTable(data){
+    $("#ShowTable").empty();
+    var staffNum = data.length;    //获取员工总人数
+    var html = "";     //用于动态创建表格
+    for(var i = 0;i<staffNum;i++) {
+        //创建表格
+        html += "<tr>";
+        html += "<td>" + data[i].id + "</td>"
+        html += "<td>" + data[i].name + "</td>"
+        html += "<td>" + data[i].typeName + "</td>"
+        html += "<td>" + data[i].classType + "</td>"
+        html += "<td>" + data[i].enabled + "</td>"
+        html += "<td>" + data[i].createTimeString + "</td>"
         html += "</tr>";
         $("#ShowTable tr").eq(btnNum-1).after(html);
         var btn3 = $("<button id='0" + btnNum + "' class='operateBtn ui-state-default ui-corner-all ui-corner-top modify'>修改</button>");
@@ -287,5 +321,9 @@ $(function(){
                 $("#ShowTable td").eq(t+12*q).css({"background-color":"#BFFFFF"});
             }
         }
+        $("#mainTable").append(btn1)
+            .append(btn2);
+    }
+
 }
 

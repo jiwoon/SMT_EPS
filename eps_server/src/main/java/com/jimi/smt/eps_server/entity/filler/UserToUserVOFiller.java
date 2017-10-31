@@ -33,6 +33,16 @@ public class UserToUserVOFiller extends VoFieldFiller<User, UserVO> {
 		default:
 			break;
 		}
+		if(userVO.getClassType() == 0) {
+			userVO.setClassTypeName("白班");
+		}else {
+			userVO.setClassTypeName("夜班");
+		}
+		if(userVO.getEnabled() == true) {
+			userVO.setIsEnabled("是");
+		}else {
+			userVO.setIsEnabled("否");
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		userVO.setCreateTimeString(sdf.format(userVO.getCreateTime()));
 		return userVO;

@@ -138,10 +138,10 @@ public class ExcelHelper{
 	 * @throws IOException
 	 */
 	public void write(OutputStream outputStream, boolean autoColumnWidth) throws IOException {
-		workbook.write(outputStream);
 		if(autoColumnWidth) {
 			autoColumnWidth();
 		}
+		workbook.write(outputStream);
 	}
 	
 	
@@ -393,6 +393,7 @@ public class ExcelHelper{
 	
 	/**
 	 * 根据提供的Class类，解析出报表实例列表
+	 * @throws 表头解析错误时抛出
 	 */
 	public <T> List<T> unfill(Class<T> clazz) throws Exception{
 		List<T> entities = new ArrayList<T>();
@@ -418,7 +419,7 @@ public class ExcelHelper{
 				//填充list
 				field.setAccessible(true);
 				try {
-					Object value = get(i, e.col(), RequireType.values()[workbook.getSheetAt(currentSheetNum).getRow(i).getCell(e.col()).getCellType()]);
+					Object value = get(i+1, e.col(), RequireType.values()[workbook.getSheetAt(currentSheetNum).getRow(i).getCell(e.col()).getCellType()]);
 					field.set(entity, value);
 				} catch (IllegalArgumentException | IllegalAccessException e1) {
 					logger.error("调用ExcelHelper.fill()中field.get()方法时出错");
@@ -593,6 +594,10 @@ public class ExcelHelper{
 				for (int j = 0; j < sheet.getRow(0).getLastCellNum(); j++) {
 					sheet.autoSizeColumn(j);
 					sheet.setColumnWidth(j, sheet.getColumnWidth(j) + 4 *256);
+					//设置上限
+					if(sheet.getColumnWidth(j) >= 80 * 256) {
+						sheet.setColumnWidth(j, 80 * 256);
+					}
 				}
 			}
 		}catch (NullPointerException e) {
