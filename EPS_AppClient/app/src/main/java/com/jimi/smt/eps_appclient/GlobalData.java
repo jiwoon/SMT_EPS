@@ -3,7 +3,6 @@ package com.jimi.smt.eps_appclient;
 import android.app.Application;
 import android.content.Context;
 
-import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 
 import java.util.ArrayList;
@@ -62,5 +61,17 @@ public class GlobalData extends Application {
 
     public void setOperType(int operType) {
         OperType = operType;
+    }
+
+
+    //apk下载路径
+    private String apkDownloadDir;
+
+    public String getApkDownloadDir() {
+        return apkDownloadDir;
+    }
+
+    public void setApkDownloadDir(String apkDownloadDir) {
+        this.apkDownloadDir = apkDownloadDir;
     }
 }

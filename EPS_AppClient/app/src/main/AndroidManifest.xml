@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jimi.smt.eps_appclient">
+    package="com.jimi.smt.eps_appclient"
+    android:versionCode="1"
+    android:versionName="eps_client_v1.1">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--<uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />-->
 
     <application
         android:name=".GlobalData"
         android:allowBackup="true"
         android:icon="@mipmap/eps_icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
 
         <!-- 主activity -->
         <activity
             android:name=".EPS_MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
 
             <!--
             <intent-filter>
@@ -42,7 +44,13 @@
         </activity>
         <activity android:name=".Activity.WareHouseActivity" />
         <activity android:name=".Activity.FactoryLineActivity" />
-        <activity android:name=".Activity.QCActivity"></activity>
+        <activity android:name=".Activity.QCActivity" />
+
+        <service
+            android:name=".Func.UpdateAppService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

@@ -129,9 +129,23 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.iv_ware_back:
+                Intent intent=getIntent();
+                Bundle bundle=intent.getExtras();
+                intent.putExtras(bundle);
+                setResult(RESULT_OK,intent);
                 this.finish();
                 break;
         }
+    }
+
+    //物理返回键
+    @Override
+    public void onBackPressed() {
+        Intent intent=getIntent();
+        Bundle bundle=intent.getExtras();
+        intent.putExtras(bundle);
+        setResult(RESULT_OK,intent);
+        this.finish();
     }
 
     //扫料号的输入事件
@@ -167,7 +181,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
                         //获取对应站位的索引
                         lineSeatIndexs.add(i);
                         sucIssueCount++;
-                        //TODO: 2017/10/21 将其置顶？
+                        //将其置顶
                         lv_ware_materials.setSelection(i);
                         //刷新数据
                         wareHouseAdapter.notifyDataSetChanged();
@@ -338,7 +352,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
             while (!isInterrupted()){
                 if ((infoDialog != null) && (infoDialog.isShowing())){
                     try {
-                        Thread.sleep(3000);//休眠3s
+                        Thread.sleep(5000);//休眠5s
                         //发送消息取消窗口
                         Message message=Message.obtain();
                         message.what=DISSMIASS_DIALOG;

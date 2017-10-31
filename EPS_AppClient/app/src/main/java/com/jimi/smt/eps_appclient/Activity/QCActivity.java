@@ -1,6 +1,7 @@
 package com.jimi.smt.eps_appclient.Activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -96,10 +97,25 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.iv_QC_back:
+                Intent intent=getIntent();
+                Bundle bundle=intent.getExtras();
+                intent.putExtras(bundle);
+                setResult(RESULT_OK,intent);
                 this.finish();
                 break;
         }
     }
+
+    //物理返回键
+    @Override
+    public void onBackPressed() {
+        Intent intent=getIntent();
+        Bundle bundle=intent.getExtras();
+        intent.putExtras(bundle);
+        setResult(RESULT_OK,intent);
+        this.finish();
+    }
+
 
     //设置选中页面时标题
     private void setSelectTabTitle(int tab){

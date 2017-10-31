@@ -1,5 +1,6 @@
 package com.jimi.smt.eps_appclient.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -9,7 +10,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.jimi.smt.eps_appclient.ChangeMaterialFragment;
@@ -30,12 +30,18 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
     private final String TAG="FactoryLineActivity";
     private TextView tv_factory_feed;
     private TextView tv_factory_change;
+    private String curOrderNum;
+    private String curOperatorNUm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_factory_line);
+//        Intent intent=getIntent();
+//        savedInstanceState=intent.getExtras();
+//        curOrderNum =savedInstanceState.getString("orderNum");
+//        curOperatorNUm =savedInstanceState.getString("operatorNum");
         initView();
         //设置选中标题
         setSelectTabTitle(0);
@@ -96,6 +102,10 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.iv_factory_back:
+                Intent intent=getIntent();
+                Bundle bundle=intent.getExtras();
+                intent.putExtras(bundle);
+                setResult(RESULT_OK,intent);
                 this.finish();
                 break;
         }
@@ -123,5 +133,15 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return super.onKeyDown(keyCode, event);
+    }
+
+    //物理返回键
+    @Override
+    public void onBackPressed() {
+        Intent intent=getIntent();
+        Bundle bundle=intent.getExtras();
+        intent.putExtras(bundle);
+        setResult(RESULT_OK,intent);
+        this.finish();
     }
 }

@@ -1,5 +1,6 @@
 package com.jimi.smt.eps_appclient.Func;
 
+import com.jimi.smt.eps_appclient.Unit.EpsAppVersion;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Unit.OperLogItem;
 import com.jimi.smt.eps_appclient.Unit.Operator;
@@ -8,7 +9,6 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.ResultSet;
 
-import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -197,6 +197,33 @@ public class DBService {
         }
 
         return programList;
+    }
+
+    //获取数据库中版本信息的最后一条,即是最新的一条
+    public EpsAppVersion getAppVersion(){
+        EpsAppVersion epsAppVersion=null;
+        String sql="SELECT epsAppVersion.version_code,epsAppVersion.version_name,epsAppVersion.version_des FROM epsAppVersion ORDER BY id DESC LIMIT 1";
+        conn = DBOpenHelper.getConn();
+        try {
+            if ((conn != null) && (!conn.isClosed())) {
+                ps = (PreparedStatement) conn.prepareStatement(sql);
+                if (ps != null){
+                    rs = (ResultSet) ps.executeQuery();
+                    if (rs != null){
+                        while (rs.next()){
+                            epsAppVersion=new EpsAppVersion();
+                            epsAppVersion.setVersionCode(rs.getInt("version_code"));
+                            epsAppVersion.setVersionName(rs.getString("version_name"));
+                            epsAppVersion.setVersionDes(rs.getString("version_des"));
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            epsAppVersion = null;
+        }
+        return  epsAppVersion;
     }
 
     /**

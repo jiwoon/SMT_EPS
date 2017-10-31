@@ -29,10 +29,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     private final String TAG = this.getClass().getSimpleName();
 
     //全局变量
-    GlobalData globalData;
+    private GlobalData globalData;
 
     //换料视图
-    View vChangeMaterialFragment;
+    private View vChangeMaterialFragment;
     //操作员　站位　料号
     private TextView edt_Operation;
     private EditText edt_LineSeat;
@@ -49,6 +49,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     //当前换料项
     private int curChangeMaterialId = -1;
     private String FileId;
+    //成功换料的站位
+    private String sucSeatNo;
+    //成功换料时的时间
+    private long sucTime;
 
     @Nullable
     @Override
@@ -159,6 +163,13 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                             }
                             strValue=scanLineSeat;
                             edt_LineSeat.setText(strValue);
+                            //判断在该5分钟内,该站位是否成功换过料
+                            if (scanLineSeat.equalsIgnoreCase(sucSeatNo)){
+                                if (System.currentTimeMillis() - sucTime < 5000){
+
+                                    return true;
+                                }
+                            }
                             //站位
                             //String scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
                             for (int j = 0; j < lChangeMaterialItem.size(); j++) {
