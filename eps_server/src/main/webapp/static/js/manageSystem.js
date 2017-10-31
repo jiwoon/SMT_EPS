@@ -38,16 +38,19 @@ $(function(){
         //console.log($("#classType").val());
         //console.log($("#enabled").val());
 
+    	
+    	
+    	
         $.ajax({
             url: "user/list",
             type: "post",
             dataType: "json",
             data:{
-                id :$("#id").val()==""?null:$("#id").val(),
-                name:$("#name").val()==""?null:$("#id").val(),
-                type:$("#type").val(),
-                classType:$("#classType").val(),
-                enable :$("#enabled").val()
+            	id:$("#id").val() == "" ? s : $("#id").val(),
+    			name:$("#name").val(),
+    			type:$("#type").val(),
+    	        classType:$("#classType").val(),
+    	        enable :$("#enabled").val()
             },
             success: function (data){
                 autoCreateTable(data);
@@ -70,7 +73,13 @@ $.ajax({
     url: "user/list",
     type: "post",
     dataType: "json",
-    data: {},
+    data: {
+    	id:$("#id").val(),
+		name:$("#name").val(),
+		type:$("#type").val(),
+        classType:$("#classType").val(),
+        enable :$("#enabled").val()
+    },
     success: function (data){
         autoCreateTable(data);
     },
@@ -78,6 +87,16 @@ $.ajax({
         console.log("数据传输失败");
     }
 });
+
+
+function getJSON(){
+	var json = {
+			
+	};
+	return JSON.stringify(json);
+}
+
+
 //    动态生成表格
     function autoCreateTable(data){
     $("#ShowTable").empty();
@@ -122,5 +141,5 @@ $.ajax({
         $("#mainTable").append(btn1)
             .append(btn2);
     }
-
+    
 }

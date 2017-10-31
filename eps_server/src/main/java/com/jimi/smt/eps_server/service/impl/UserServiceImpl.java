@@ -46,8 +46,8 @@ public class UserServiceImpl implements UserService {
 			return "failed_not_found";
 		}
 		User user = new User();
-		user.setId(id);
-		user.setName(name);
+		user.setId(id.equals("") ? null : id);
+		user.setName(name.equals("") ? null : name);
 		user.setType(type);
 		user.setPassword(password);
 		user.setEnabled(enabled);
@@ -62,19 +62,19 @@ public class UserServiceImpl implements UserService {
 	public List<UserVO> list(String id, Integer classType, String name, Integer type, String orderBy, Boolean enabled) {
 		UserExample userExample = new UserExample();
 		Criteria criteria = userExample.createCriteria();
-		if(id != null || "".equals(id)) {
+		if(id != null && id.equals("")) {
 			criteria.andIdEqualTo(id);
 		}
-		if(name != null || "".equals(name)) {
+		if(name != null && name.equals("")) {
 			criteria.andNameEqualTo(name);
 		}
-		if(type != null || "".equals(type)) {
+		if(type != null) {
 			criteria.andTypeEqualTo(type);
 		}
-		if(enabled != null || "".equals(enabled)) {
+		if(enabled != null) {
 			criteria.andEnabledEqualTo(enabled);
 		}
-		if(classType != null || "".equals(classType)) {
+		if(classType != null) {
 			criteria.andClassTypeEqualTo(classType);
 		}
 		userExample.setOrderByClause(orderBy);

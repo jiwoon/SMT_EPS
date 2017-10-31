@@ -5,14 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jimi.smt.eps_server.entity.vo.ClientReport;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 import com.jimi.smt.eps_server.service.ProgramService;
+import com.jimi.smt.eps_server.util.ExcelHelper;
 import com.jimi.smt.eps_server.util.ResultUtil;
 
 /**
@@ -30,6 +33,12 @@ public class ProgramController {
 	@RequestMapping("/goUpload")
 	public ModelAndView goUpload() {
 		return new ModelAndView("upload");
+	}
+	
+	
+	@RequestMapping("/goUpload2")
+	public ModelAndView goUpload2() {
+		return new ModelAndView("upload2");
 	}
 	
 	
@@ -57,9 +66,25 @@ public class ProgramController {
 	}
 	
 	
+	@RequestMapping("/unfill")
+	public ResponseEntity<byte[]> unfill(MultipartFile file) throws IOException {
+		ExcelHelper excel = ExcelHelper.from(file);
+		try {
+			List<ClientReport> clientReports = excel.unfill(ClientReport.class);
+			System.out.println(clientReports.get(0).getMaterialSpecitification());
+			ExcelHelper excel2 = ExcelHelper.create();
+			excel2.fill(clientReports);
+			return excel2.getDownloadEntity("123.xls", true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 	@ResponseBody
 	@RequestMapping("/upload")
-	public ResultUtil  upload(MultipartFile  programFile, Integer boardType) {
+	public ResultUtil upload(MultipartFile  programFile, Integer boardType) {
 		//文件名检查
 		String originalFileName = programFile.getOriginalFilename();
 		if(!originalFileName.endsWith(".xls") && !originalFileName.endsWith(".xlsx")){
@@ -74,7 +99,7 @@ public class ProgramController {
 		} catch (IOException e) {
 			return ResultUtil.failed("上传失败，IO错误，请重试，或联系开发者",e);
 		} catch (RuntimeException e) {
-			return ResultUtil.failed("上传失败，解析文件时出错，请参考排位表标准格式规范：http://39.108.231.15/eps_server/static/standard.docx",e);
+			return ResultUtil.failed("上传失败，解析文件时出错，请参考排位表标准格式规范：http://wx.jimi-iot.com/eps_server/static/standard.docx",e);
 		}
 		
 		//结果检查

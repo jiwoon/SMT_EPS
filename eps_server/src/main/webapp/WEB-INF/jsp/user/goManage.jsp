@@ -59,21 +59,21 @@
                     工号：<input type="text" id="id">
                     姓名：<input type="text" id="name">
                     岗位：<select id="type">
-                            <option value =null>不限</option>
-                            <option value ="0">0、仓库操作员</option>
-                            <option value ="1">1、厂线操作员</option>
-                            <option value="2">2、IPQC</option>
-                            <option value="3">3、管理员</option>
+                            <option value =>不限</option>
+                            <option value =0>0、仓库操作员</option>
+                            <option value =1>1、厂线操作员</option>
+                            <option value=2>2、IPQC</option>
+                            <option value=3>3、管理员</option>
                           </select>
                     班别：<select id="classType">
-                                 <option value =null>不限</option>
-                                <option value ="0">白班</option>
-                                <option value ="1">夜班</option>
+                                 <option value =>不限</option>
+                                <option value =0>白班</option>
+                                <option value =1>夜班</option>
                            </select>
                     在职：<select id="enabled">
-                                 <option value =null>不限</option>
-                                <option value ="0">是</option>
-                                <option value ="1">否</option>
+                                 <option value =>不限</option>
+                                <option value =0>是</option>
+                                <option value =1>否</option>
                            </select>
                     <button id="find" class="ui-button ui-corner-all ui-state-default locative">查询</button>
                 </section>

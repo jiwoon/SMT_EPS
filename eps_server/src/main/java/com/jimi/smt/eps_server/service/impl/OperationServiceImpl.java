@@ -48,11 +48,11 @@ public class OperationServiceImpl implements OperationService {
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //转化时间
-        if(startTime != null) {
+        if(startTime != null && startTime.equals("")) {
         	operationCriteria.andTimeGreaterThanOrEqualTo(simpleDateFormat.parse(startTime));
         }
         
-        if(endTime != null) {
+        if(endTime != null && endTime.equals("")) {
         	operationCriteria.andTimeLessThanOrEqualTo(simpleDateFormat.parse(endTime));
         }
         
@@ -61,15 +61,15 @@ public class OperationServiceImpl implements OperationService {
         ProgramBackupExample programBackupExample = new ProgramBackupExample();
         ProgramBackupExample.Criteria programBackupCriteria = programBackupExample.createCriteria();
         //筛选客户
-		if(client != null) {
+		if(client != null && client.equals("")) {
 			programBackupCriteria.andClientEqualTo(client);
 		}
 		//筛选程序表编号
-		if(programNo != null) {
+		if(programNo != null && programNo.equals("")) {
 			programBackupCriteria.andProgramNoEqualTo(programNo);
 		}
 		//筛选线别
-		if(line != null) {
+		if(line != null && line.equals("")) {
 			programBackupCriteria.andLineEqualTo(line);
 		}
 		
