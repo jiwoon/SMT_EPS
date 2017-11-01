@@ -18,7 +18,7 @@
 
 	<loggers>
 	
-		<logger name="com.jimi.smt.esp_server" level="ERROR">
+		<logger name="com.jimi.smt.eps_server" level="ERROR">
 			<appender-ref ref="File" />
 		</logger>
 		<logger name="org.springframework" level="ERROR">

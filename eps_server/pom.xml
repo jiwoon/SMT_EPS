@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.jimi.smt</groupId>
 	<artifactId>eps_server</artifactId>
-	<packaging>war</packaging> 
+	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>eps_server Maven Webapp</name>
 	<url>http://maven.apache.org</url>
@@ -177,20 +177,7 @@
 			<version>2.9.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>6.0</version>
-			<scope>provided</scope>
-		</dependency>
 
-		<!-- javaee-web-api包 注意和项目使用的JDK版本对应 -->
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
-			<version>6.0</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<!-- mybatis类型支持扩展包，支持LocalDateTime -->
 		<dependency>
@@ -236,7 +223,20 @@
 		    <version>3.10-FINAL</version>
 		</dependency>
 		
-		
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>8.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- javaee-web-api包 注意和项目使用的JDK版本对应 -->
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<version>8.0</version>
+			<scope>provided</scope>
+		</dependency>
 		
 	</dependencies>
 </project>
