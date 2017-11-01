@@ -8,8 +8,8 @@ android {
         applicationId "com.jimi.smt.eps_appclient"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
-        versionName "eps_client_v1.1"
+        versionCode 3
+        versionName "eps_client_v1.3"
     }
     buildTypes {
         release {

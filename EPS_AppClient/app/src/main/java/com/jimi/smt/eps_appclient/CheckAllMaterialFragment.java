@@ -202,8 +202,7 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
             feedMaterialItem = new MaterialItem(materialItems.get(k).getFileId(),materialItems.get(k).getOrgLineSeat(),
                     materialItems.get(k).getOrgMaterial(), "", "", "", "");
             lCheckAllMaterialItem.add(feedMaterialItem);
-        }
-        */
+        }*/
 
         //设置Adapter
         materialAdapter = new MaterialAdapter(getActivity(), lCheckAllMaterialItem);
@@ -397,6 +396,7 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         }
         //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setCancelable(false);
         //设置Title的图标
         builder.setIcon(android.R.drawable.ic_dialog_info);
         //设置Title的内容
