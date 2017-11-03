@@ -5,16 +5,6 @@ import com.jimi.smt.eps_server.util.ExcelHelper.Excel;
 /**
  * 客户报表
  * @author 沫熊工作室 <a href="http://www.darhao.cc">www.darhao.cc</a>
-materialDescription
-物料描述
-materialSpecitification
-物料规格
-operationType
-操作类型
-orderNo
-订单号
-workOrderNo
-工单号
  */
 public class ClientReport{
 

@@ -18,9 +18,11 @@ import com.jimi.smt.eps_server.entity.OperationExample;
 import com.jimi.smt.eps_server.entity.ProgramBackup;
 import com.jimi.smt.eps_server.entity.ProgramBackupExample;
 import com.jimi.smt.eps_server.entity.filler.OperationToClientReportFiller;
+import com.jimi.smt.eps_server.entity.filler.OperationToOperationReportFiller;
 import com.jimi.smt.eps_server.entity.vo.ClientReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReportItem;
+import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.mapper.OperationMapper;
 import com.jimi.smt.eps_server.mapper.ProgramBackupMapper;
 import com.jimi.smt.eps_server.service.OperationService;
@@ -34,7 +36,9 @@ public class OperationServiceImpl implements OperationService {
 	@Autowired
 	private ProgramBackupMapper programBackupMapper;
 	@Autowired
-	private OperationToClientReportFiller filler;
+	private OperationToClientReportFiller operationToClientReportFiller;
+	@Autowired
+	private OperationToOperationReportFiller operationToOperationReportFiller;
 	
 	@Override
 	public List<ClientReport> listClientReport(String client, String programNo, String line, String orderNo,
@@ -48,28 +52,39 @@ public class OperationServiceImpl implements OperationService {
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //转化时间
-        if(startTime != null && startTime.equals("")) {
+        if(startTime != null && !startTime.equals("")) {
         	operationCriteria.andTimeGreaterThanOrEqualTo(simpleDateFormat.parse(startTime));
         }
         
-        if(endTime != null && endTime.equals("")) {
+        if(endTime != null && !endTime.equals("")) {
         	operationCriteria.andTimeLessThanOrEqualTo(simpleDateFormat.parse(endTime));
         }
+        
+        //时间降序
+        operationExample.setOrderByClause("time desc");
         
         List<Operation> operations = operationMapper.selectByExample(operationExample);
         
         ProgramBackupExample programBackupExample = new ProgramBackupExample();
         ProgramBackupExample.Criteria programBackupCriteria = programBackupExample.createCriteria();
         //筛选客户
-		if(client != null && client.equals("")) {
+		if(client != null && !client.equals("")) {
 			programBackupCriteria.andClientEqualTo(client);
 		}
 		//筛选程序表编号
-		if(programNo != null && programNo.equals("")) {
+		if(programNo != null && !programNo.equals("")) {
 			programBackupCriteria.andProgramNoEqualTo(programNo);
 		}
+		//筛选订单号
+		if(orderNo != null && !orderNo.equals("")) {
+			programBackupCriteria.andProgramNoEqualTo(orderNo);
+		}
+		//筛选工单号
+		if(workOrderNo != null && !workOrderNo.equals("")) {
+			programBackupCriteria.andProgramNoEqualTo(workOrderNo);
+		}
 		//筛选线别
-		if(line != null && line.equals("")) {
+		if(line != null && !line.equals("")) {
 			programBackupCriteria.andLineEqualTo(line);
 		}
 		
@@ -79,7 +94,7 @@ public class OperationServiceImpl implements OperationService {
 			for (ProgramBackup programBackup : programBackups) {
 				if(programBackup.getId().equals(operation.getFileid())) {
 					//把操作日志转化为客户报告
-					clientReports.add(filler.fill(operation));
+					clientReports.add(operationToClientReportFiller.fill(operation));
 					break;
 				}
 			}
@@ -157,6 +172,92 @@ public class OperationServiceImpl implements OperationService {
 		}
 		
 		return displayReport;
+	}
+
+	@Override
+	public List<OperationReport> listOperationReport(String client, String line, String workOrderNo, String startTime,
+			String endTime, Integer type) throws ParseException {
+		List<OperationReport> operationReports = new ArrayList<OperationReport>();
+		
+		OperationExample operationExample = new OperationExample();
+        OperationExample.Criteria operationCriteria = operationExample.createCriteria();
+        
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //转化时间
+        if(startTime != null && !startTime.equals("")) {
+        	operationCriteria.andTimeGreaterThanOrEqualTo(simpleDateFormat.parse(startTime));
+        }
+        
+        if(endTime != null && !endTime.equals("")) {
+        	operationCriteria.andTimeLessThanOrEqualTo(simpleDateFormat.parse(endTime));
+        }
+        
+        //过滤类型
+        operationCriteria.andTypeEqualTo(type);
+        
+        //时间降序
+        operationExample.setOrderByClause("time desc");
+        
+        List<Operation> operations = operationMapper.selectByExample(operationExample);
+        
+        ProgramBackupExample programBackupExample = new ProgramBackupExample();
+        ProgramBackupExample.Criteria programBackupCriteria = programBackupExample.createCriteria();
+        //筛选客户
+		if(client != null && !client.equals("")) {
+			programBackupCriteria.andClientEqualTo(client);
+		}
+		//筛选工单
+		if(workOrderNo != null && !workOrderNo.equals("")) {
+			programBackupCriteria.andProgramNoEqualTo(workOrderNo);
+		}
+		//筛选线别
+		if(line != null && !line.equals("")) {
+			programBackupCriteria.andLineEqualTo(line);
+		}
+		
+		List<ProgramBackup> programBackups = programBackupMapper.selectByExample(programBackupExample);
+		//匹配
+		for (Operation operation : operations) {
+			for (ProgramBackup programBackup : programBackups) {
+				if(programBackup.getId().equals(operation.getFileid())) {
+					//把操作日志转化为客户报告
+					operationReports.add(operationToOperationReportFiller.fill(operation));
+					break;
+				}
+			}
+		}
+		
+		return operationReports;
+	}
+
+	@Override
+	public ResponseEntity<byte[]> downloadOperationReport(String client, String line, String workOrderNo,
+			String startTime, String endTime, Integer type) throws ParseException, IOException {
+		List<OperationReport> operationReports = listOperationReport(client, line, workOrderNo, startTime, endTime, type);
+		ExcelHelper helper = ExcelHelper.create();
+		//解析操作类型
+		String title = null;
+		switch (type) {
+		case 0:
+			title ="SMT上料报表";
+			break;
+		case 1:
+			title ="SMT换料报表";
+			break;
+		case 2:
+			title ="SMT抽检报表";
+			break;
+		case 3:
+			title ="SMT全检报表";
+			break;
+		case 4:
+			title ="SMT仓库发料报表";
+			break;
+		default:
+			break;
+		}
+		helper.fill(operationReports, title);
+		return helper.getDownloadEntity(title + ".xls", true);
 	}
 
 

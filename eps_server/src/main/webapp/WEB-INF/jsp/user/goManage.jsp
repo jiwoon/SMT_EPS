@@ -77,8 +77,8 @@
                            </select>
                     在职：<select id="enabled">
                                  <option value =>不限</option>
-                                <option value =0>是</option>
-                                <option value =1>否</option>
+                                <option value =true>是</option>
+                                <option value =false>否</option>
                            </select>
                     <button id="find" class="ui-button ui-corner-all ui-state-default locative">查询</button>
                 </section>

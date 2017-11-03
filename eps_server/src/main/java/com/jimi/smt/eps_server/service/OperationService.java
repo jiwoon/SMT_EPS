@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.jimi.smt.eps_server.entity.vo.ClientReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReport;
+import com.jimi.smt.eps_server.entity.vo.OperationReport;
 
 /**
  * 操作日志服务接口
@@ -36,5 +37,20 @@ public interface OperationService {
 	 * @return
 	 */
 	DisplayReport listDisplayReport(String line);
+
+	/**
+	 * 根据条件列出客户报表
+	 * @return
+	 * @throws ParseException 
+	 */
+	List<OperationReport> listOperationReport(String client, String line, String workOrderNo, String startTime, String endTime , Integer type) throws ParseException;
+	
+	/**
+	 * 根据条件生成并下载excel
+	 * @return
+	 * @throws ParseException 
+	 * @throws IOException 
+	 */
+	ResponseEntity<byte[]> downloadOperationReport(String client, String line, String workOrderNo, String startTime, String endTime , Integer type) throws ParseException, IOException;
 	
 }

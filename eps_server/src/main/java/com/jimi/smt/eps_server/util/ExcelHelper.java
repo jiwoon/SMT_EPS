@@ -28,6 +28,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -349,24 +350,63 @@ public class ExcelHelper{
 	
 	
 	/**
-	 * 根据实体类列表填写表格，使用默认样式
+	 * 根据实体类列表从第一行填写表格，使用默认样式
 	 * 需要在实体类的每个属性中注解@Excel，col属性代表列号，从0开始，head属性表示该字段的表头描述
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
 	public void fill(List<?> entities){
-		fill(headStyle, bodyStyle, entities);
+		fill(headStyle, bodyStyle, entities , 0);
 	}
 	
 	
 	/**
-	 * 根据实体类列表填写表格，使用自定义样式
+	 * 根据实体类列表从第2行填写表格，使用默认样式，并且加上标题
 	 * 需要在实体类的每个属性中注解@Excel，col属性代表列号，从0开始，head属性表示该字段的表头描述
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
-	public void fill(CellStyle headStyle, CellStyle bodyStyle, List<?> entities) {
-		for (int i = 0; i < entities.size(); i++) {
+	public void fill(List<?> entities, String title){
+		fill(headStyle, bodyStyle, entities , 1);
+		Sheet sheet = workbook.getSheetAt(currentSheetNum);
+		int lastCellNum = sheet.getRow(1).getLastCellNum();
+		CellRangeAddress cra = new CellRangeAddress(0, 0, 0, lastCellNum - 1);        
+        //在sheet里增加合并单元格  
+		sheet.addMergedRegion(cra);  
+        Row row = sheet.createRow(0);  
+        Cell cell = row.createCell(0);  
+        cell.setCellValue(title);
+        //设置样式
+        CellStyle style = workbook.createCellStyle();
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		Font font = workbook.createFont();
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		font.setFontName("Arial");
+		font.setFontHeightInPoints((short) 16);
+		style.setFont(font);
+		cell.setCellStyle(style);
+	}
+	
+	
+	/**
+	 * 根据实体类列表从某一行填写表格，使用默认样式
+	 * 需要在实体类的每个属性中注解@Excel，col属性代表列号，从0开始，head属性表示该字段的表头描述
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 */
+	public void fill(List<?> entities , int startRowNum){
+		fill(headStyle, bodyStyle, entities , startRowNum);
+	}
+	
+	
+	/**
+	 * 根据实体类列表从某一行开始填写表格，使用自定义样式
+	 * 需要在实体类的每个属性中注解@Excel，col属性代表列号，从0开始，head属性表示该字段的表头描述
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 */
+	public void fill(CellStyle headStyle, CellStyle bodyStyle, List<?> entities, int startRowNum) {
+		for (int i = startRowNum; i < entities.size(); i++) {
 			Object entity = entities.get(i);
 			Field[] fields = entity.getClass().getDeclaredFields();
 			for (Field field : fields) {
@@ -375,7 +415,7 @@ public class ExcelHelper{
 					continue;
 				}
 				//如果是第一行则填写表头
-				if(i == 0) {
+				if(i == startRowNum) {
 					set(i, e.col(), e.head(), headStyle);
 				}
 				//填写表体
@@ -392,12 +432,21 @@ public class ExcelHelper{
 	
 	
 	/**
-	 * 根据提供的Class类，解析出报表实例列表
+	 * 根据提供的Class类，从第一行开始解析出报表实例列表
 	 * @throws 表头解析错误时抛出
 	 */
 	public <T> List<T> unfill(Class<T> clazz) throws Exception{
+		return unfill(clazz, 0);
+	}
+	
+	
+	/**
+	 * 根据提供的Class类，从某一行开始解析出报表实例列表
+	 * @throws 表头解析错误时抛出
+	 */
+	public <T> List<T> unfill(Class<T> clazz, int startRowNum) throws Exception{
 		List<T> entities = new ArrayList<T>();
-		for (int i = 0; i < workbook.getSheetAt(currentSheetNum).getLastRowNum(); i++) {
+		for (int i = startRowNum; i < workbook.getSheetAt(currentSheetNum).getLastRowNum(); i++) {
 			T entity = null;
 			try {
 				entity = clazz.newInstance();
@@ -411,7 +460,7 @@ public class ExcelHelper{
 					continue;
 				}
 				//如果是第一行则校验表头
-				if(i == 0) {
+				if(i == startRowNum) {
 					if(!e.head().equals(getString(i, e.col()))){
 						throw new Exception("表头校验失败");
 					}
@@ -591,7 +640,7 @@ public class ExcelHelper{
 		try {
 			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 				Sheet sheet = workbook.getSheetAt(i);
-				for (int j = 0; j < sheet.getRow(0).getLastCellNum(); j++) {
+				for (int j = 0; j < sheet.getRow(sheet.getLastRowNum()).getLastCellNum(); j++) {
 					sheet.autoSizeColumn(j);
 					sheet.setColumnWidth(j, sheet.getColumnWidth(j) + 4 *256);
 					//设置上限
