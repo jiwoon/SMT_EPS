@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.jimi.smt.eps_server.entity.ProgramItem;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 
 /**
@@ -15,26 +16,50 @@ import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 public interface ProgramService {
 	
 	/**
-	 * 列出所有线上的排位表
+	 * 根据条件列出线上的排位表
 	 * @return
 	 */
-	List<ProgramVO> list();
+	List<ProgramVO> list(String programName, String fileName, String line, String workOrder, Integer state, String ordBy);
 	
 	
 	/**
-	 * 根据id删除
-	 * @param id
-	 * @return
-	 */
-	boolean delete(String id);
-
-	
-	/**
-	 * 上传并解析文件
+	 * 上传并解析文件，如果“未开始”的工单列表中存在板面类型、工单号、线号同时一致的工单项目，将被新文件内容覆盖
 	 * @param programFile 文件
 	 * @return 
 	 * @throws IOException IO异常
 	 * @throws XLSException 解析异常
 	 */
-	Map<String, Object> upload(MultipartFile programFile, Integer boardType) throws IOException, RuntimeException;
+	List<Map<String, Object>> upload(MultipartFile programFile, Integer boardType) throws IOException, RuntimeException;
+
+
+	/**
+	 * 取消指定工单
+	 * @param workOrder
+	 * @return
+	 */
+	boolean cancel(String workOrder, String line, Integer boardType);
+
+
+	/**
+	 * 完成指定工单
+	 * @param workOrder
+	 * @return
+	 */
+	boolean finish(String workOrder, String line, Integer boardType);
+
+
+	/**
+	 * 开始指定工单
+	 * @param workOrder
+	 * @return
+	 */
+	boolean start(String workOrder, String line, Integer boardType);
+
+
+	/**
+	 * 列出指定id排位表的所有子项目
+	 * @param id
+	 * @return
+	 */
+	List<ProgramItem> listItem(String id);
 }

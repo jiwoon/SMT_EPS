@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 
 import com.jimi.smt.eps_server.entity.Operation;
 import com.jimi.smt.eps_server.entity.OperationExample;
-import com.jimi.smt.eps_server.entity.ProgramBackup;
-import com.jimi.smt.eps_server.entity.ProgramBackupExample;
+import com.jimi.smt.eps_server.entity.Program;
+import com.jimi.smt.eps_server.entity.ProgramExample;
 import com.jimi.smt.eps_server.entity.filler.OperationToClientReportFiller;
 import com.jimi.smt.eps_server.entity.filler.OperationToOperationReportFiller;
 import com.jimi.smt.eps_server.entity.vo.ClientReport;
@@ -24,7 +24,7 @@ import com.jimi.smt.eps_server.entity.vo.DisplayReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReportItem;
 import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.mapper.OperationMapper;
-import com.jimi.smt.eps_server.mapper.ProgramBackupMapper;
+import com.jimi.smt.eps_server.mapper.ProgramMapper;
 import com.jimi.smt.eps_server.service.OperationService;
 import com.jimi.smt.eps_server.util.ExcelHelper;
 
@@ -34,7 +34,7 @@ public class OperationServiceImpl implements OperationService {
 	@Autowired
 	private OperationMapper operationMapper;
 	@Autowired
-	private ProgramBackupMapper programBackupMapper;
+	private ProgramMapper programMapper;
 	@Autowired
 	private OperationToClientReportFiller operationToClientReportFiller;
 	@Autowired
@@ -65,34 +65,34 @@ public class OperationServiceImpl implements OperationService {
         
         List<Operation> operations = operationMapper.selectByExample(operationExample);
         
-        ProgramBackupExample programBackupExample = new ProgramBackupExample();
-        ProgramBackupExample.Criteria programBackupCriteria = programBackupExample.createCriteria();
+        ProgramExample programExample = new ProgramExample();
+        ProgramExample.Criteria programCriteria = programExample.createCriteria();
         //筛选客户
 		if(client != null && !client.equals("")) {
-			programBackupCriteria.andClientEqualTo(client);
+			programCriteria.andClientEqualTo(client);
 		}
 		//筛选程序表编号
 		if(programNo != null && !programNo.equals("")) {
-			programBackupCriteria.andProgramNoEqualTo(programNo);
+			programCriteria.andProgramNoEqualTo(programNo);
 		}
 		//筛选订单号
 		if(orderNo != null && !orderNo.equals("")) {
-			programBackupCriteria.andProgramNoEqualTo(orderNo);
+			programCriteria.andProgramNoEqualTo(orderNo);
 		}
 		//筛选工单号
 		if(workOrderNo != null && !workOrderNo.equals("")) {
-			programBackupCriteria.andProgramNoEqualTo(workOrderNo);
+			programCriteria.andProgramNoEqualTo(workOrderNo);
 		}
 		//筛选线别
 		if(line != null && !line.equals("")) {
-			programBackupCriteria.andLineEqualTo(line);
+			programCriteria.andLineEqualTo(line);
 		}
 		
-		List<ProgramBackup> programBackups = programBackupMapper.selectByExample(programBackupExample);
+		List<Program> programs = programMapper.selectByExample(programExample);
 		//匹配
 		for (Operation operation : operations) {
-			for (ProgramBackup programBackup : programBackups) {
-				if(programBackup.getId().equals(operation.getFileid())) {
+			for (Program program : programs) {
+				if(program.getId().equals(operation.getProgramId())) {
 					//把操作日志转化为客户报告
 					clientReports.add(operationToClientReportFiller.fill(operation));
 					break;
@@ -129,12 +129,12 @@ public class OperationServiceImpl implements OperationService {
 		List<Operation> operations = operationMapper.selectByExample(operationExample);
 		//线别筛选
 		List<Operation> operations2 = new ArrayList<Operation>(operations.size());
-		ProgramBackupExample programBackupExample = new ProgramBackupExample();
-		programBackupExample.createCriteria().andLineEqualTo(line);
-		List<ProgramBackup> programBackups = programBackupMapper.selectByExample(programBackupExample);
+		ProgramExample programExample = new ProgramExample();
+		programExample.createCriteria().andLineEqualTo(line);
+		List<Program> programs = programMapper.selectByExample(programExample);
 		for (Operation operation : operations) {
-			for (ProgramBackup programBackup : programBackups) {
-				if(programBackup.getId().equals(operation.getFileid())) {
+			for (Program program : programs) {
+				if(program.getId().equals(operation.getProgramId())) {
 					operations2.add(operation);
 					break;
 				}
@@ -200,26 +200,26 @@ public class OperationServiceImpl implements OperationService {
         
         List<Operation> operations = operationMapper.selectByExample(operationExample);
         
-        ProgramBackupExample programBackupExample = new ProgramBackupExample();
-        ProgramBackupExample.Criteria programBackupCriteria = programBackupExample.createCriteria();
+        ProgramExample programExample = new ProgramExample();
+        ProgramExample.Criteria programCriteria = programExample.createCriteria();
         //筛选客户
 		if(client != null && !client.equals("")) {
-			programBackupCriteria.andClientEqualTo(client);
+			programCriteria.andClientEqualTo(client);
 		}
 		//筛选工单
 		if(workOrderNo != null && !workOrderNo.equals("")) {
-			programBackupCriteria.andProgramNoEqualTo(workOrderNo);
+			programCriteria.andProgramNoEqualTo(workOrderNo);
 		}
 		//筛选线别
 		if(line != null && !line.equals("")) {
-			programBackupCriteria.andLineEqualTo(line);
+			programCriteria.andLineEqualTo(line);
 		}
 		
-		List<ProgramBackup> programBackups = programBackupMapper.selectByExample(programBackupExample);
+		List<Program> programs = programMapper.selectByExample(programExample);
 		//匹配
 		for (Operation operation : operations) {
-			for (ProgramBackup programBackup : programBackups) {
-				if(programBackup.getId().equals(operation.getFileid())) {
+			for (Program program : programs) {
+				if(program.getId().equals(operation.getProgramId())) {
 					//把操作日志转化为客户报告
 					operationReports.add(operationToOperationReportFiller.fill(operation));
 					break;

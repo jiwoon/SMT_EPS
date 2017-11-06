@@ -5,17 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jimi.smt.eps_server.entity.vo.ClientReport;
+import com.jimi.smt.eps_server.entity.ProgramItem;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 import com.jimi.smt.eps_server.service.ProgramService;
-import com.jimi.smt.eps_server.util.ExcelHelper;
 import com.jimi.smt.eps_server.util.ResultUtil;
 
 /**
@@ -50,15 +48,18 @@ public class ProgramController {
 	
 	@ResponseBody
 	@RequestMapping("/list")
-	public List<ProgramVO> list() {
-		return programService.list();
+	public List<ProgramVO> list(String programName, String fileName, String line, String workOrder, Integer state, String ordBy) {
+		return programService.list(programName, fileName, line, workOrder, state, ordBy);
 	}
 	
 	
 	@ResponseBody
-	@RequestMapping("/delete")
-	public ResultUtil delete(String id) {
-		if(programService.delete(id)) {
+	@RequestMapping("/start")
+	public ResultUtil start(String workOrder, String line, Integer boardType) {
+		if(workOrder == null || line == null || boardType == null) {
+			return ResultUtil.failed("参数不足");
+		}
+		if(programService.start(workOrder, line, boardType)) {
 			return ResultUtil.succeed();
 		}else {
 			return ResultUtil.failed();
@@ -66,36 +67,63 @@ public class ProgramController {
 	}
 	
 	
-	@RequestMapping("/unfill")
-	public ResponseEntity<byte[]> unfill(MultipartFile file) throws IOException {
-		ExcelHelper excel = ExcelHelper.from(file);
-		try {
-			List<ClientReport> clientReports = excel.unfill(ClientReport.class);
-			System.out.println(clientReports.get(0).getMaterialSpecitification());
-			ExcelHelper excel2 = ExcelHelper.create();
-			excel2.fill(clientReports);
-			return excel2.getDownloadEntity("123.xls", true);
-		} catch (Exception e) {
-			e.printStackTrace();
+	@ResponseBody
+	@RequestMapping("/finish")
+	public ResultUtil finish(String workOrder, String line, Integer boardType) {
+		if(workOrder == null || line == null || boardType == null) {
+			return ResultUtil.failed("参数不足");
 		}
-		return null;
+		if(programService.finish(workOrder, line, boardType)) {
+			return ResultUtil.succeed();
+		}else {
+			return ResultUtil.failed();
+		}
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/cancel")
+	public ResultUtil cancel(String workOrder, String line, Integer boardType) {
+		if(workOrder == null || line == null || boardType == null) {
+			return ResultUtil.failed("参数不足");
+		}
+		if(programService.cancel(workOrder, line, boardType)) {
+			return ResultUtil.succeed();
+		}else {
+			return ResultUtil.failed();
+		}
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/listItem")
+	public List<ProgramItem> listItem(String id) {
+		if(id == null) {
+			ResultUtil.failed("参数不足");
+			return null;
+		}
+		return programService.listItem(id);
 	}
 	
 	
 	@ResponseBody
 	@RequestMapping("/upload")
 	public ResultUtil upload(MultipartFile  programFile, Integer boardType) {
+		if(programFile == null || boardType == null) {
+			return ResultUtil.failed("参数不足");
+		}
+		
 		//文件名检查
 		String originalFileName = programFile.getOriginalFilename();
 		if(!originalFileName.endsWith(".xls") && !originalFileName.endsWith(".xlsx")){
 			return ResultUtil.failed("上传失败，必须为xls\\xlsx格式的文件");
 		}
 		
-		Map<String, Object> result = null;
+		List<Map<String, Object>> resultList = null;
 		
 		//格式检查
 		try {
-			result = programService.upload(programFile, boardType);
+			resultList = programService.upload(programFile, boardType);
 		} catch (IOException e) {
 			return ResultUtil.failed("上传失败，IO错误，请重试，或联系开发者",e);
 		} catch (RuntimeException e) {
@@ -103,15 +131,27 @@ public class ProgramController {
 		}
 		
 		//结果检查
-		int realParseNum = (int)result.get("real_parse_num");
-		int planParseNum = (int)result.get("plan_parse_num");
-		String actionName = (String)result.get("action_name");
-		if(realParseNum == 0) {
-			return ResultUtil.failed("操作失败，请检查表格内是否有空行，若有去掉该行再重试");
-		}else if(realParseNum < planParseNum){
-			return ResultUtil.failed(actionName + "完成，共检测到"+ planParseNum +"张表，但只解析成功"+ realParseNum +"张表，请检查是否有空表或表中是否有空行");
+		StringBuffer sb = new StringBuffer();
+		boolean isSucceed = true;
+		for (Map<String, Object> result : resultList) {
+			int realParseNum = (int)result.get("real_parse_num");
+			int planParseNum = (int)result.get("plan_parse_num");
+			String actionName = (String)result.get("action_name");
+			if(realParseNum == 0) {
+				isSucceed = false;
+				sb.append("操作失败，请检查表格内是否有空行，若有去掉该行再重试\n");
+			}else if(realParseNum < planParseNum){
+				isSucceed = false;
+				sb.append(actionName + "完成，共检测到"+ planParseNum +"张表，但只解析成功"+ realParseNum +"张表，请检查是否有空表或表中是否有空行\n");
+			}else {
+				sb.append(actionName + "完成，共解析到"+ realParseNum +"张表\n");
+			}
+		}
+		String string = sb.substring(0, sb.length() - 1);
+		if(isSucceed) {
+			return ResultUtil.succeed(string);
 		}else {
-			return ResultUtil.succeed(actionName + "完成，共解析到"+ realParseNum +"张表");
+			return ResultUtil.failed(string);
 		}
 	}
 	

@@ -35,8 +35,6 @@
 		<!-- 表和实体类的映射关系 -->
 		<table tableName="program" domainObjectName="Program" />
 		<table tableName="program_item" domainObjectName="ProgramItem" />
-		<table tableName="program_backup" domainObjectName="ProgramBackup" />
-		<table tableName="program_item_backup" domainObjectName="ProgramItemBackup" />
 		<table tableName="operation" domainObjectName="Operation" />
 		<table tableName="user" domainObjectName="User" />
 	</context>
