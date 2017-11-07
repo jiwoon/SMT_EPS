@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.jimi.smt.eps_server.entity.ProgramItem;
+import com.jimi.smt.eps_server.entity.vo.ProgramItemVO;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 
 /**
@@ -61,5 +61,5 @@ public interface ProgramService {
 	 * @param id
 	 * @return
 	 */
-	List<ProgramItem> listItem(String id);
+	List<ProgramItemVO> listItem(String id);
 }

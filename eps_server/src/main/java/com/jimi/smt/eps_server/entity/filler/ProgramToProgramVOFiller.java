@@ -32,6 +32,22 @@ public class ProgramToProgramVOFiller extends VoFieldFiller<Program, ProgramVO> 
 		default:
 			break;
 		}
+		switch (programVO.getState()) {
+		case 0:
+			programVO.setStateName("未开始");
+			break;
+		case 1:
+			programVO.setStateName("进行中");
+			break;
+		case 2:
+			programVO.setStateName("已完成");
+			break;
+		case 3:
+			programVO.setStateName("已作废");
+			break;
+		default:
+			break;
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		programVO.setCreateTimeString(sdf.format(programVO.getCreateTime()));
 		return programVO;

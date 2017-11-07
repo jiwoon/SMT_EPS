@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jimi.smt.eps_server.entity.ProgramItem;
+import com.jimi.smt.eps_server.entity.vo.ProgramItemVO;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 import com.jimi.smt.eps_server.service.ProgramService;
 import com.jimi.smt.eps_server.util.ResultUtil;
@@ -97,7 +97,7 @@ public class ProgramController {
 	
 	@ResponseBody
 	@RequestMapping("/listItem")
-	public List<ProgramItem> listItem(String id) {
+	public List<ProgramItemVO> listItem(String id) {
 		if(id == null) {
 			ResultUtil.failed("参数不足");
 			return null;

@@ -17,7 +17,9 @@ import com.jimi.smt.eps_server.entity.Program;
 import com.jimi.smt.eps_server.entity.ProgramExample;
 import com.jimi.smt.eps_server.entity.ProgramItem;
 import com.jimi.smt.eps_server.entity.ProgramItemExample;
+import com.jimi.smt.eps_server.entity.filler.ProgramItemToProgramItemVOFiller;
 import com.jimi.smt.eps_server.entity.filler.ProgramToProgramVOFiller;
+import com.jimi.smt.eps_server.entity.vo.ProgramItemVO;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 import com.jimi.smt.eps_server.mapper.ProgramItemMapper;
 import com.jimi.smt.eps_server.mapper.ProgramMapper;
@@ -35,7 +37,9 @@ public class ProgramServiceImpl implements ProgramService {
 	@Autowired
 	private ProgramItemMapper programItemMapper;
 	@Autowired
-	private ProgramToProgramVOFiller filler;
+	private ProgramToProgramVOFiller programToProgramVOFiller;
+	@Autowired
+	private ProgramItemToProgramItemVOFiller programItemToProgramItemVOFiller;
 	
 	@Override
 	public List<Map<String, Object>> upload(MultipartFile programFile, Integer boardType) throws IOException {
@@ -53,8 +57,8 @@ public class ProgramServiceImpl implements ProgramService {
 		}
 		
 		//分割解析工单和线号
-		String[] workOrders = helper.getString(4, 6).split(",");
-		String[] lines = helper.getString(3, 6).split(",");
+		String[] workOrders = helper.getString(4, 6).split("\\+");
+		String[] lines = helper.getString(3, 6).split("\\+");
 		
 		//创建所有工单
 		List<Program> programs = new ArrayList<Program>(workOrders.length * lines.length);
@@ -133,7 +137,7 @@ public class ProgramServiceImpl implements ProgramService {
 					//忽略重复项
 					try {
 						//插入表项
-						programItemMapper.insertSelective(programItem);
+						programItemMapper.insert(programItem);
 						//打印到控制台
 						FieldUtil.print(programItem);
 					}catch (DuplicateKeyException e) {
@@ -184,16 +188,16 @@ public class ProgramServiceImpl implements ProgramService {
 		}
 		
 		List<Program> programs = programMapper.selectByExample(programExample);
-		return filler.fill(programs);
+		return programToProgramVOFiller.fill(programs);
 	}
 
 
 
 	@Override
-	public List<ProgramItem> listItem(String id) {
+	public List<ProgramItemVO> listItem(String id) {
 		ProgramItemExample example = new ProgramItemExample();
 		example.createCriteria().andProgramIdEqualTo(id);
-		return programItemMapper.selectByExample(example);
+		return programItemToProgramItemVOFiller.fill(programItemMapper.selectByExample(example));
 	}
 
 
@@ -215,8 +219,9 @@ public class ProgramServiceImpl implements ProgramService {
 			ResultUtil.failed("状态不可逆");
 			return false;
 		}
-		program.setState(3);
-		int result = programMapper.updateByExample(program, example);
+		Program program2 = new Program();
+		program2.setState(3);
+		int result = programMapper.updateByExampleSelective(program2, example);
 		if(result != 0) {
 			return true;
 		}else {
@@ -243,8 +248,9 @@ public class ProgramServiceImpl implements ProgramService {
 			ResultUtil.failed("状态不可逆");
 			return false;
 		}
-		program.setState(2);
-		int result = programMapper.updateByExample(program, example);
+		Program program2 = new Program();
+		program2.setState(2);
+		int result = programMapper.updateByExampleSelective(program2, example);
 		if(result != 0) {
 			return true;
 		}else {
@@ -271,8 +277,9 @@ public class ProgramServiceImpl implements ProgramService {
 			ResultUtil.failed("状态不可逆");
 			return false;
 		}
-		program.setState(1);
-		int result = programMapper.updateByExample(program, example);
+		Program program2 = new Program();
+		program2.setState(1);
+		int result = programMapper.updateByExampleSelective(program2, example);
 		if(result != 0) {
 			return true;
 		}else {
