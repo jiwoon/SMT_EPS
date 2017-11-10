@@ -18,6 +18,7 @@ import java.util.List;
  * Created by think on 2017/9/25.
  */
 public class DBService {
+    private final String TAG="DBService";
     private Connection conn = null; //打开数据库对象
     private PreparedStatement ps = null;//操作整合sql语句的对象
     private ResultSet rs = null;//查询结果的集合
@@ -95,22 +96,25 @@ public class DBService {
             //获取链接数据库对象
             conn= DBOpenHelper.getConn();
             //MySQL 语句
-            String sql="INSERT INTO operation (operator,time,type,result,lineseat,material_no,old_material_no,scanlineseat,remark,fileid) VALUES (?,?,?,?,?,?,?,?,?,?)";
+            String sql="INSERT INTO operation (operator,time,type,result,lineseat,material_no,old_material_no,scanlineseat,remark,program_id,line,work_order,board_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
             try {
                 boolean closed=conn.isClosed();
                 if((conn!=null)&&(!closed)){
                     for(OperLogItem operLogItem:list){
                         ps= (PreparedStatement) conn.prepareStatement(sql);
-                        String FileId=operLogItem.getFileId();
-                        String Operator=operLogItem.getOperator();
-                        Timestamp Time=operLogItem.getTime();
-                        int Type=operLogItem.getType();
-                        String Result=operLogItem.getResult();
-                        String Lineseat=operLogItem.getLineseat();
-                        String material_no=operLogItem.getMaterial_no();
-                        String oldMaterialNo=operLogItem.getOld_material_no();
-                        String ScanLineseat=operLogItem.getScanLineseat();
-                        String Remark=operLogItem.getRemark();
+                        String FileId = operLogItem.getFileId();
+                        String Operator = operLogItem.getOperator();
+                        Timestamp Time = operLogItem.getTime();
+                        int Type = operLogItem.getType();
+                        String Result = operLogItem.getResult();
+                        String Lineseat = operLogItem.getLineseat();
+                        String material_no = operLogItem.getMaterial_no();
+                        String oldMaterialNo = operLogItem.getOld_material_no();
+                        String ScanLineseat = operLogItem.getScanLineseat();
+                        String Remark = operLogItem.getRemark();
+                        String line = operLogItem.getLine();
+                        String work_order = operLogItem.getWork_order();
+                        int board_type = operLogItem.getBoard_type();
 
                         ps.setString(1, Operator);//第一个参数 name 规则同上
                         ps.setTimestamp(2, Time);
@@ -122,6 +126,9 @@ public class DBService {
                         ps.setString(8,ScanLineseat);
                         ps.setString(9,Remark);
                         ps.setString(10,FileId);
+                        ps.setString(11,line);
+                        ps.setString(12,work_order);
+                        ps.setInt(13,board_type);
                         result=ps.executeUpdate();//返回1 执行成功
                     }
                 }
@@ -169,16 +176,18 @@ public class DBService {
     }
 
     /**
-     * 获取所有工单号
+     * 获取对应线号的所有工单号
      * @return List<Program>
      */
-    public List<Program> getProgramOrder(){
+    public List<Program> getProgramOrder(String line){
         List<Program> programList=new ArrayList<Program>();
-        String sql="select program.id,program.work_order from program";
+        String sql="select program.id,program.work_order,program.board_type,program.line from program where line=? and state=1";
+//        String sql="select program.id,program.work_order,program.board_type,program.line from program where line=?";
         conn=DBOpenHelper.getConn();
         try {
             if (conn != null && !(conn.isClosed())) {
                 ps = (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1,line);
                 if (ps != null){
                     rs = (ResultSet) ps.executeQuery();
                     if (rs != null){
@@ -186,6 +195,9 @@ public class DBService {
                             Program program=new Program();
                             program.setProgramID(rs.getString("id"));
                             program.setWork_order(rs.getString("work_order"));
+                            program.setBoard_type(rs.getInt("board_type"));
+                            program.setLine(rs.getString("line"));
+                            program.setChecked(false);
                             programList.add(program);
                         }
                     }
@@ -195,6 +207,7 @@ public class DBService {
             e.printStackTrace();
             return null;
         }
+        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
 
         return programList;
     }
@@ -203,7 +216,7 @@ public class DBService {
     public EpsAppVersion getAppVersion(){
         EpsAppVersion epsAppVersion=null;
         String sql="SELECT epsAppVersion.version_code,epsAppVersion.version_name,epsAppVersion.version_des FROM epsAppVersion ORDER BY id DESC LIMIT 1";
-        conn = DBOpenHelper.getConn();
+        conn=DBOpenHelper.getConn();
         try {
             if ((conn != null) && (!conn.isClosed())) {
                 ps = (PreparedStatement) conn.prepareStatement(sql);
@@ -215,6 +228,7 @@ public class DBService {
                             epsAppVersion.setVersionCode(rs.getInt("version_code"));
                             epsAppVersion.setVersionName(rs.getString("version_name"));
                             epsAppVersion.setVersionDes(rs.getString("version_des"));
+                            Log.d(TAG,rs.getInt("version_code"));
                         }
                     }
                 }
@@ -222,7 +236,9 @@ public class DBService {
         } catch (SQLException e) {
             e.printStackTrace();
             epsAppVersion = null;
+            Log.d(TAG,"SQLException---"+e);
         }
+        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
         return  epsAppVersion;
     }
 

@@ -50,7 +50,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
     private InfoDialog infoDialog;//弹出料号对应站位
     private int sucIssueCount = 0;//成功发料个数
     private int allCount = 0;//总数
-
+    private GlobalFunc globalFunc;
     private DissMissThread mDissMissThread;//
     private final int DISSMIASS_DIALOG = 120;//取消站位弹出窗
     private Handler dissmissDialogHandler=new Handler(){
@@ -83,6 +83,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
         globalData = (GlobalData) getApplication();
         globalData.setOperator(curOperatorNUm);
         globalData.setOperType(Constants.STORE_ISSUE);
+        globalFunc = new GlobalFunc(WareHouseActivity.this);
         List<MaterialItem> materialItems=globalData.getMaterialItems();
         //填充数据
         wareHouseMaterialItems.clear();
@@ -154,63 +155,72 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
 
         if (actionId == EditorInfo.IME_ACTION_SEND ||
                 (event != null && event.getKeyCode() == event.KEYCODE_ENTER)){
-            Log.d(TAG,"onEditorAction::"+v.getText());
-            Log.d(TAG,"event.getAction()::"+event.getAction());
+            //先判断是否联网
+            if (globalFunc.isNetWorkConnected()){
+                Log.d(TAG,"onEditorAction::"+v.getText());
+                Log.d(TAG,"event.getAction()::"+event.getAction());
 
-            if (!TextUtils.isEmpty(v.getText().toString().trim())){
-                //扫描的内容
-                String scanMaterial= String.valueOf(((EditText) v).getText());
-                scanMaterial = scanMaterial.replaceAll("\r", "");
-                Log.i(TAG,"sacnMaterial="+scanMaterial);
-                //料号,若为二维码则提取@@前的料号
-                //提取有效料号
-                if (scanMaterial.indexOf("@") != -1) {
-                    scanMaterial = scanMaterial.substring(0, scanMaterial.indexOf("@"));
-                    Log.d(TAG,"scan料号="+scanMaterial);
-                }
-                ArrayList<Integer> lineSeatIndexs=new ArrayList<Integer>();
-                ArrayList<String> lineSeatList=new ArrayList<String>();
-                for (int i = 0;i < wareHouseMaterialItems.size();i++) {
-                    MaterialItem materialItem=wareHouseMaterialItems.get(i);
-                    if (materialItem.getOrgMaterial().equalsIgnoreCase(scanMaterial)){
-                        materialItem.setScanMaterial(scanMaterial);
-                        materialItem.setResult("PASS");
-                        Log.d(TAG,"scan站位="+materialItem.getOrgLineSeat());
-                        //获取料号对应的所有站位
-                        lineSeatList.add(materialItem.getOrgLineSeat());
-                        //获取对应站位的索引
-                        lineSeatIndexs.add(i);
-                        sucIssueCount++;
-                        //将其置顶
-                        lv_ware_materials.setSelection(i);
-                        //刷新数据
-                        wareHouseAdapter.notifyDataSetChanged();
+                if (!TextUtils.isEmpty(v.getText().toString().trim())){
+                    //扫描的内容
+                    String scanMaterial= String.valueOf(((EditText) v).getText());
+                    scanMaterial = scanMaterial.replaceAll("\r", "");
+                    Log.i(TAG,"sacnMaterial="+scanMaterial);
+                    //料号,若为二维码则提取@@前的料号
+                    //提取有效料号
+                    if (scanMaterial.indexOf("@") != -1) {
+                        scanMaterial = scanMaterial.substring(0, scanMaterial.indexOf("@"));
+                        Log.d(TAG,"scan料号="+scanMaterial);
                     }
+                    ArrayList<Integer> lineSeatIndexs=new ArrayList<Integer>();
+                    ArrayList<String> lineSeatList=new ArrayList<String>();
+                    for (int i = 0;i < wareHouseMaterialItems.size();i++) {
+                        MaterialItem materialItem=wareHouseMaterialItems.get(i);
+                        if (materialItem.getOrgMaterial().equalsIgnoreCase(scanMaterial)){
+                            materialItem.setScanMaterial(scanMaterial);
+                            materialItem.setResult("PASS");
+                            Log.d(TAG,"scan站位="+materialItem.getOrgLineSeat());
+                            //获取料号对应的所有站位
+                            lineSeatList.add(materialItem.getOrgLineSeat());
+                            //获取对应站位的索引
+                            lineSeatIndexs.add(i);
+                            sucIssueCount++;
+                            //刷新数据
+                            wareHouseAdapter.notifyDataSetChanged();
+                            //将其置顶
+                            lv_ware_materials.setSelection(i);
+                        }
+                    }
+                    if (lineSeatIndexs.size() > 0){
+                        //写日志
+                        setOperateLog(lineSeatIndexs,"");
+                    }
+                    //弹出站位
+                    showInfo("料号:"+scanMaterial,lineSeatList,1);
+                    //启动子线程
+                    mDissMissThread=new DissMissThread();
+                    mDissMissThread.start();
+                    //刷新数据
+                    wareHouseAdapter.notifyDataSetChanged();
                 }
-                if (lineSeatIndexs.size() > 0){
-                    //写日志
-                    setOperateLog(lineSeatIndexs,"");
-                }
-                //弹出站位
-                showInfo(scanMaterial,lineSeatList);
-                //启动子线程
-                mDissMissThread=new DissMissThread();
-                mDissMissThread.start();
-                //刷新数据
-                wareHouseAdapter.notifyDataSetChanged();
+            }else {
+                /*
+                globalFunc.showInfo("警告","请检查网络是否连接!","请连接网络!");
+                v.setText("");
+                v.requestFocus();
+                */
+                showInfo("警告",null,2);
             }
-
         }
         return false;
     }
 
     //弹出提示站位窗口
-    private boolean showInfo(String title,ArrayList<String> lineSeatList){
+    private void showInfo(String title,ArrayList<String> lineSeatList,int type){
         //内容
         String message="";
         //内容的样式
         int msgStype[];
-        if (lineSeatList.size() > 0){
+        if ((lineSeatList != null) && (lineSeatList.size() > 0)){
             //存在站位,添加所有站位
             message="站位:";
             for (String lineSeat:lineSeatList) {
@@ -218,10 +228,15 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
             }
             msgStype=new int[]{23, Color.argb(255,102,153,0)};
         }else {
-            //写日志
-            setOperateLog(null,title);
-            //站位不存在
-            message="不存在该料号的站位!";
+            if (type == 1){
+                //写日志
+                setOperateLog(null,title);
+                //站位不存在
+                message="不存在该料号的站位!";
+            }else if (type == 2){
+                //网络未连接
+                message="请检查网络是否连接!";
+            }
             //内容的样式
             msgStype=new int[]{22, Color.RED};
         }
@@ -229,7 +244,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
         int itemResIds[]=new int[]{R.id.dialog_title_view,
                 R.id.dialog_title,R.id.tv_alert_info,R.id.info_trust};
         //标题和内容
-        String titleMsg[]=new String[]{"料号:"+title,message};
+        String titleMsg[]=new String[]{title,message};
 
         infoDialog = new InfoDialog(this,
                 R.layout.info_dialog_layout,itemResIds,titleMsg,msgStype);
@@ -263,7 +278,6 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
         });
         infoDialog.show();
 
-        return true;
     }
 
     //显示最终发料结果

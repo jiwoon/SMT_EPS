@@ -18,13 +18,15 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jimi.smt.eps_appclient.Adapter.EnterOrdersAdapter;
 import com.jimi.smt.eps_appclient.Func.DBService;
+import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.Func.UpdateAppService;
 import com.jimi.smt.eps_appclient.GlobalData;
@@ -46,17 +48,15 @@ import java.util.List;
  * 创建时间:2017/10/19 9:29
  * 描述: app入口
  */
-public class EnterActivity extends Activity implements TextView.OnEditorActionListener {
+public class EnterActivity extends Activity implements TextView.OnEditorActionListener, AdapterView.OnItemClickListener, View.OnClickListener {
 
     private final String TAG="EnterActivity";
     private EditText et_enter_operator;
-    private Spinner sp_oderNo;
-    private ArrayList<String> spinnerList;
-    private ArrayAdapter<String> spinnerAdapter;
     private ProgressDialog progressDialog;
     private GlobalData globalData;
     private String curOrderNum;//工单号
     private String curOperatorNum;//操作员
+    private Operator scanOperator;//扫描到的操作员
 
     private final int SET_ORDER=8;//设置工单号
     private final int NET_MATERIAL_FALL=400;//获取料号表失败
@@ -69,11 +69,17 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
     private final int UPDATE_APK = 5;//更新apk
     private List<Program> mProgramList=new ArrayList<Program>();//工单号列表
 
+    private int oldCheckIndex = -1;//之前选中的
+    private int curCheckIndex = -1;//现在选中的
+
+
     private Handler enterHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             //取消弹出窗
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
             switch (msg.what){
                 case SET_ORDER:
                     initData(mProgramList);
@@ -81,17 +87,19 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                 case NET_MATERIAL_FALL:
                     //获取料号表失败
                     Toast.makeText(getApplicationContext(),"获取料号表失败",Toast.LENGTH_SHORT).show();
-                    showInfo("提示", "请确认当前网络是否正常\n或工单号是否正确!!!");
+                    showInfo("警告", "请检查网络连接是否正常!");
                     break;
                 case OPERATOR_DISSMISS:
                     //操作员离职
                     Toast.makeText(getApplicationContext(),"操作员离职",Toast.LENGTH_SHORT).show();
                     et_enter_operator.setText("");
+                    et_enter_operator.requestFocus();
                     break;
                 case OPERATOR_NULL:
-                    //操作员离职
+                    //不存在该操作员
                     Toast.makeText(getApplicationContext(),"请重新扫描",Toast.LENGTH_LONG).show();
                     et_enter_operator.setText("");
+                    et_enter_operator.requestFocus();
                     break;
                 case TO_WARE_HOUSE:
                     //仓库
@@ -138,18 +146,31 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
         }
     };
     private ProgressDialog updateProgress;
+    private UpdateApkReceiver apkReceiver;
+    private GlobalFunc globalFunc;
+    private EditText et_enter_line;
+    private ListView lv_orders;
+    private EnterOrdersAdapter ordersAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter);
         //获取全局变量
         globalData = (GlobalData) getApplication();
+        globalFunc=new GlobalFunc(this);
         //创建apk下载路径
         createApkDownloadDir();
         initViews();
-//        initData();
-        getPrograms();
+        //先判断是否有网络连接
+        boolean netConnect = globalFunc.isNetWorkConnected();
+        if (netConnect){
+            //更新app
+            boolean result = updateApp();
+            Log.d(TAG,"updateApp-result::"+result);
+        }else {
+            showInfo("警告","请检查网络连接是否正常!");
+        }
         //注册广播
         registeReceiver();
     }
@@ -158,48 +179,69 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
     protected void onRestart() {
         super.onRestart();
         Log.i(TAG,"onRestart");
-        if (sp_oderNo != null){
-            sp_oderNo.setSelection(0);
-        }
+
+
         if (et_enter_operator != null){
             et_enter_operator.setText("");
         }
+
+        if (et_enter_line != null){
+            et_enter_line.setText("");
+            et_enter_line.requestFocus();
+        }
+
+        if ((mProgramList != null) && (mProgramList.size() >0)){
+            mProgramList.clear();
+            ordersAdapter.notifyDataSetChanged();
+        }
+
+        curCheckIndex = -1;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (apkReceiver != null){
+            unregisterReceiver(apkReceiver);
+        }
+
     }
 
     //初始化布局
     private void initViews(){
+        et_enter_line = (EditText) findViewById(R.id.et_enter_line);
         et_enter_operator = (EditText) findViewById(R.id.et_enter_operator);
-        sp_oderNo = (Spinner) findViewById(R.id.sp_oderNo);
+        lv_orders = (ListView) findViewById(R.id.lv_orders);
+        RelativeLayout rl_enter = (RelativeLayout) findViewById(R.id.rl_enter);
+        rl_enter.setOnClickListener(this);
+        et_enter_line.setOnEditorActionListener(this);
         et_enter_operator.setOnEditorActionListener(this);
+        et_enter_operator.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus){
+                    if (TextUtils.isEmpty(et_enter_line.getText().toString())){
+                        et_enter_line.setText("");
+                        et_enter_line.requestFocus();
+                    }
+                }
+            }
+        });
+        lv_orders.setOnItemClickListener(this);
+
     }
 
     //初始化数据
     private void initData(List<Program> programs){
-        //TODO 获取数据库中工单列表
-        spinnerList = new ArrayList<String>();
-        spinnerList.add("请选择工单号");
-        if (programs != null && (programs.size() > 0)){
-            for (int i=0;i < programs.size();i++){
-                spinnerList.add(programs.get(i).getWork_order());
-            }
+        if ((programs != null) && (programs.size() > 0)){
+            //显示工单
+            ordersAdapter = new EnterOrdersAdapter(getApplicationContext(),programs);
+            lv_orders.setAdapter(ordersAdapter);
+        }else {
+            Toast.makeText(this,"请重新扫描线号",Toast.LENGTH_LONG).show();
+            et_enter_line.setText("");
+            et_enter_line.requestFocus();
         }
-        //适配器
-        spinnerAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_dropdown_item,spinnerList);
-        //加载适配器
-        sp_oderNo.setAdapter(spinnerAdapter);
-        sp_oderNo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG,"sp_oderNo--"+sp_oderNo.getSelectedItem());
-                et_enter_operator.requestFocus();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
     //操作员输入框监听事件
@@ -208,74 +250,85 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
         //回车键
         if (actionId == EditorInfo.IME_ACTION_SEND ||
                 (event != null && event.getKeyCode() == event.KEYCODE_ENTER)){
-
             Log.d(TAG,"event.getAction()::"+event.getAction());
             Log.d(TAG,"event.getKeyCode()::"+event.getKeyCode());
 
-            if (!TextUtils.isEmpty(v.getText().toString().trim())){
-                //扫描内容
-                String scanValue = String.valueOf(((EditText) v).getText());
-                scanValue = scanValue.replaceAll("\r", "");
-                Log.i(TAG, "scan Value:" + scanValue);
+            switch (event.getAction()){
+                case KeyEvent.ACTION_UP:
+                    //判断网络是否连接
+                    if (globalFunc.isNetWorkConnected()){
+                        if (!TextUtils.isEmpty(v.getText().toString().trim())){
+                            //扫描内容
+                            String scanValue = String.valueOf(((EditText) v).getText());
+                            scanValue = scanValue.replaceAll("\r", "");
+                            Log.i(TAG, "scan Value:" + scanValue);
 
-                if (sp_oderNo.getSelectedItemPosition() <= 0){
-                    Toast.makeText(this,"请先选择工单号!!!",Toast.LENGTH_LONG).show();
-                    //清空操作员，等待再扫描
-//                  et_enter_operator.setText("");
-                    v.setText("");
-                }else {
-                    //显示加载框
-                    progressDialog = ProgressDialog.show(this,"请稍等!",
-                            "正在加载数据...",true);
-                    //获取工单号和操作员
-                    final int orderIndex = sp_oderNo.getSelectedItemPosition();
-                    final String orderNum = sp_oderNo.getSelectedItem().toString().trim();
-//                                final String operatorNum=et_enter_operator.getText().toString().trim();
-                    final String operatorNum = scanValue;
-                    Log.d(TAG,"onEditorAction::["+orderNum+"]--["+operatorNum+"]"+"--"+orderIndex);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //更新app版本
-                            boolean result=updateApp();
-                            Message message=Message.obtain();
-                            if (result){
-                                //获取工单号对应的料号表
-                                List<MaterialItem> materialItems=new DBService().getMaterial(mProgramList.get(orderIndex-1).getProgramID());
-                                globalData.setMaterialItems(materialItems);
-                                //查找数据库判断操作员类型,并跳转到对应的操作页面
-                                Operator operator=new DBService().getCurOperator(operatorNum);
-                                //未获取到工单号对应的料号表
-                                if (materialItems.size() <= 0){
-                                    message.what=NET_MATERIAL_FALL;
-                                }else {
-                                    if (null != operator){
-                                        Log.d(TAG,operator.getOperator());
-                                        if (operator.isEnabled() == 0){
-                                            //成功获取料号表,但是操作员处于离职
-                                            message.what=OPERATOR_DISSMISS;
-                                        }else if (operator.isEnabled() == 1){
-                                            //成功获取料号表,操作员在职
-                                            message.what=operator.getType();
-                                            curOrderNum=orderNum;
-                                            curOperatorNum=operatorNum;
-                                        }
-                                    }else {
-                                        //不存在该操作员,重新扫描
-                                        message.what=OPERATOR_NULL;
+                            switch (v.getId()){
+                                case R.id.et_enter_line:
+                                    //目前站位格式
+                                    // 100805100 -> 308线 05-10 站位
+                                    // 100805084 -> 308线 05-08 站位
+                                    boolean lineExit = false;
+                                    //扫描线号
+                                    String scanLine = scanValue;
+                                    if (scanValue.length() >= 8){
+                                        scanLine="30"+scanValue.substring(3,4);
                                     }
-                                }
-                            }else {
-                                message.what=UPDATE_APK;
-                            }
-                            //发送消息
-                            enterHandler.sendMessage(message);
-                        }
-                    }).start();
+                                    scanValue = scanLine;
+                                    for (int i = 0;i < Constants.lines.length;i++){
+                                        if (scanLine.equals(Constants.lines[i])){
+                                            lineExit = true;
+                                        }
+                                    }
+                                    if (lineExit){
+                                        //根据线号获取工单
+                                        getPrograms(scanLine);
+                                        et_enter_operator.requestFocus();
+                                    }else {
+                                        Toast.makeText(getApplicationContext(),"该线号不存在，重新扫描线号!",Toast.LENGTH_LONG).show();
+                                        et_enter_line.setText("");
+                                        et_enter_line.requestFocus();
+                                    }
+                                    break;
+                                case R.id.et_enter_operator:
+                                    final String scanOperatorStr = scanValue;
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //查找数据库判断操作员类型
+                                            Operator operator=new DBService().getCurOperator(scanOperatorStr);
+                                            Message message=Message.obtain();
+                                            if (operator != null){
+                                                if (operator.isEnabled() == 0){
+                                                    //操作员处于离职
+                                                    message.what=OPERATOR_DISSMISS;
+                                                    //发送消息
+                                                    enterHandler.sendMessage(message);
+                                                }else if (operator.isEnabled() == 1){
+                                                    //操作员在职
+                                                    scanOperator = operator;
+                                                }
+                                            }else {
+                                                //不存在该操作员,重新扫描
+                                                message.what=OPERATOR_NULL;
+                                                //发送消息
+                                                enterHandler.sendMessage(message);
+                                            }
+                                        }
+                                    }).start();
 
-                }
-            }else {
-                Toast.makeText(this,"请重新扫描操作员工号!!!",Toast.LENGTH_LONG).show();
+                                    break;
+                            }
+                        }else {
+                            Toast.makeText(this,"请重新扫描!",Toast.LENGTH_LONG).show();
+                        }
+                    }else {
+                        showInfo("警告","请检查网络连接是否正常!");
+                    }
+
+                    return true;
+                default:
+                    return true;
             }
 
         }
@@ -300,8 +353,9 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                 switch (view.getId()){
                     case R.id.info_trust:
                         dialog.dismiss();
-                        et_enter_operator.requestFocus();
+                        et_enter_line.setText("");
                         et_enter_operator.setText("");
+                        et_enter_line.requestFocus();
                         break;
                 }
             }
@@ -312,13 +366,14 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
     }
 
     //获取工单号
-    private void getPrograms(){
+    private void getPrograms(final String line){
         progressDialog = ProgressDialog.show(this,"请稍候!","正在加载工单...",true);
         progressDialog.setCanceledOnTouchOutside(false);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                List<Program> programList=new DBService().getProgramOrder();
+                List<Program> programList=new DBService().getProgramOrder(line);
+//                List<Program> programList=new DBService().getProgramOrder("308");
                 Message message=Message.obtain();
                 message.what=SET_ORDER;
                 mProgramList=programList;
@@ -328,38 +383,50 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
         }).start();
     }
 
+    private boolean updateAppResult;
     //更新app
     private boolean updateApp(){
-        boolean result;
-        try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo("com.jimi.smt.eps_appclient",0);
-            int mVersionCode=packageInfo.versionCode;
-            String mVersionName=packageInfo.versionName;
-            EpsAppVersion epsAppVersion=DBService.getDbService().getAppVersion();
-            if (epsAppVersion == null){
-                //弹出网络不好
-                showInfo("提示", "请确认当前网络是否正常\n或工单号是否正确!!!");
-                result = false;
-            }else {
-                Log.d(TAG,"mVersionCode-"+mVersionCode+"\n"+"serviceCode-"+epsAppVersion.getVersionCode());
-                Log.d(TAG,"mVersionName-"+mVersionName+"\n"+"serviceName-"+epsAppVersion.getVersionName());
-                if (epsAppVersion.getVersionCode() <= mVersionCode){
-                    result = true;
-                }else {
-                    //服务器上的版本号大于该版本,则更新
-                    Intent intent=new Intent(getApplicationContext(), UpdateAppService.class);
-                    intent.putExtra("apkUrl",Constants.DOWNLOAD_URL+"/"+epsAppVersion.getVersionName()+".apk");
-                    intent.putExtra("apkName",epsAppVersion.getVersionName()+".apk");
-                    startService(intent);
 
-                    result = false;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    PackageInfo packageInfo = getPackageManager().getPackageInfo("com.jimi.smt.eps_appclient",0);
+                    int mVersionCode=packageInfo.versionCode;
+                    String mVersionName=packageInfo.versionName;
+                    EpsAppVersion epsAppVersion=new DBService().getAppVersion();
+
+                    if (epsAppVersion == null){
+                        Log.d(TAG,"epsAppVersion == null");
+                        //弹出网络不好
+                        Message message = Message.obtain();
+                        message.what = NET_MATERIAL_FALL;
+                        enterHandler.sendMessage(message);
+                        updateAppResult = false;
+                    }else {
+                        Log.d(TAG,"mVersionCode-"+mVersionCode+"\n"+"serviceCode-"+epsAppVersion.getVersionCode());
+                        Log.d(TAG,"mVersionName-"+mVersionName+"\n"+"serviceName-"+epsAppVersion.getVersionName());
+                        if (epsAppVersion.getVersionCode() <= mVersionCode){
+                            updateAppResult = true;
+                        }else {
+                            //服务器上的版本号大于该版本,则更新
+                            Intent intent=new Intent(getApplicationContext(), UpdateAppService.class);
+                            intent.putExtra("apkUrl",Constants.DOWNLOAD_URL+"/"+epsAppVersion.getVersionName()+".apk");
+                            intent.putExtra("apkName",epsAppVersion.getVersionName()+".apk");
+                            startService(intent);
+
+                            updateAppResult = false;
+                        }
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                    updateAppResult = false;
                 }
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            result = false;
-        }
-        return result;
+        }).start();
+
+        return updateAppResult;
     }
 
     //创建apk下载路径
@@ -400,14 +467,110 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case Constants.ACTIVITY_RESULT:
-                //刷新工单号列表
-                getPrograms();
-                //获取上一个活动返回的工单号
-                Bundle bundle=data.getExtras();
-                String curOrderNum=bundle.getString("orderNum");
-                Log.d(TAG,"orderNum----"+curOrderNum);
+                //先判断网络是否连接
+                boolean net=globalFunc.isNetWorkConnected();
+                if (net){
+                    //更新app
+                    boolean result = updateApp();
+                    Log.d(TAG,"updateApp-result::"+result);
+/*
+
+                    //刷新工单号列表 // TODO: 2017/11/8
+                    getPrograms("308");
+                    //获取上一个活动返回的工单号
+                    Bundle bundle=data.getExtras();
+                    String curOrderNum=bundle.getString("orderNum");
+                    Log.d(TAG,"orderNum----"+curOrderNum);
+*/
+
+                }else {
+                    showInfo("警告","请检查网络连接是否正常!");
+                }
+
                 break;
             default:
+                break;
+        }
+    }
+
+    //工单点击事件
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        curCheckIndex = position;
+        Program curProgram = mProgramList.get(curCheckIndex);
+        curProgram.setChecked(true);
+        if (oldCheckIndex >= 0){
+            if (curCheckIndex != oldCheckIndex){
+                //设置之前的选中为不选中状态，当前的选中为选中状态
+                Program oldProgram = mProgramList.get(oldCheckIndex);
+                oldProgram.setChecked(false);
+                //将当前赋值给之前
+                oldCheckIndex = curCheckIndex;
+            }
+        }else {
+            //将当前赋值给之前
+            oldCheckIndex = curCheckIndex;
+        }
+        ordersAdapter.notifyDataSetChanged();
+        lv_orders.setSelection(curCheckIndex);
+        Log.d(TAG,"curProgram-order::"+curProgram.getWork_order());
+        Log.d(TAG,"curProgram-ProgramID::"+curProgram.getProgramID());
+    }
+
+    //进入按钮点击事件
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.rl_enter:
+                if (globalFunc.isNetWorkConnected()){
+                    if ((!TextUtils.isEmpty(et_enter_line.getText().toString().trim()))
+                            && (!TextUtils.isEmpty(et_enter_operator.getText().toString().trim()))){
+                        if (curCheckIndex >= 0){
+                            lv_orders.setSelection(curCheckIndex);
+                            //显示加载框
+                            progressDialog = ProgressDialog.show(this,"请稍等!", "正在加载数据...",true);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Message message=Message.obtain();
+                                    //获取工单号对应的料号表
+                                    List<MaterialItem> materialItems=new DBService()
+                                            .getMaterial(mProgramList.get(curCheckIndex).getProgramID());
+                                    Log.d(TAG,"curCheckIndex-ProgramID-"+mProgramList.get(curCheckIndex).getProgramID());
+                                    //未获取到工单号对应的料号表
+                                    if (materialItems.size() <= 0){
+                                        message.what=NET_MATERIAL_FALL;
+                                    }else {
+                                        globalData.setMaterialItems(materialItems);
+                                        globalData.setLine(mProgramList.get(curCheckIndex).getLine());
+                                        globalData.setWork_order(mProgramList.get(curCheckIndex).getWork_order());
+                                        globalData.setBoard_type(mProgramList.get(curCheckIndex).getBoard_type());
+                                        //成功获取料号表,操作员在职
+                                        message.what = scanOperator.getType();
+                                        curOrderNum = mProgramList.get(curCheckIndex).getWork_order();
+                                        curOperatorNum = scanOperator.getId();
+                                    }
+                                    //发送消息
+                                    enterHandler.sendMessage(message);
+                                }
+                            }).start();
+                            //判断操作员类型,进入页面
+                        }else {
+                            Toast.makeText(getApplicationContext(),"请选择工单号",Toast.LENGTH_LONG).show();
+                        }
+                    }else if (TextUtils.isEmpty(et_enter_line.getText().toString().trim())){
+                        Toast.makeText(getApplicationContext(),"请扫描线号",Toast.LENGTH_LONG).show();
+                        et_enter_line.setText("");
+                        et_enter_line.requestFocus();
+                    }else if (TextUtils.isEmpty(et_enter_operator.getText().toString().trim())){
+                        Toast.makeText(getApplicationContext(),"请扫描线工号",Toast.LENGTH_LONG).show();
+                        et_enter_operator.setText("");
+                        et_enter_operator.requestFocus();
+                    }
+                }else {
+                    globalFunc.showInfo("警告","请检查网络连接是否正常!","请连接网络!");
+                }
+
                 break;
         }
     }
@@ -434,10 +597,11 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
     //注册广播
     private void registeReceiver(){
         updateProgress = new ProgressDialog(this);
-        UpdateApkReceiver apkReceiver=new UpdateApkReceiver();
+        apkReceiver = new UpdateApkReceiver();
         IntentFilter intentFilter=new IntentFilter();
         intentFilter.addAction("com.jimi.smt.eps_appclient.UPDATE");
         registerReceiver(apkReceiver,intentFilter);
+        Log.d(TAG,"===registeReceiver===");
     }
 
     //显示下载进度

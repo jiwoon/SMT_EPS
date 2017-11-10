@@ -51,6 +51,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
     //当前检料项
     private int curCheckMaterialId = -1;
     private String FileId;
+    private GlobalFunc globalFunc;
 
     @Nullable
     @Override
@@ -65,6 +66,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
         globalData = (GlobalData) getActivity().getApplication();
         globalData.setOperator(savedInstanceState.getString("operatorNum"));
         globalData.setOperType(Constants.CHECKMATERIAL);
+        globalFunc = new GlobalFunc(getActivity());
 
         initViews(savedInstanceState);
         initData();//初始化数据
@@ -146,91 +148,101 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
             switch (keyEvent.getAction()) {
                 //按下
                 case KeyEvent.ACTION_UP:
-                    //扫描内容
-                    String scanValue = String.valueOf(((EditText) textView).getText());
-                    scanValue = scanValue.replaceAll("\r", "");
-                    Log.i(TAG, "scan Value:" + scanValue);
-                    textView.setText(scanValue);
+                    //先判断是否联网
+                    if (globalFunc.isNetWorkConnected()){
+                        //扫描内容
+                        String scanValue = String.valueOf(((EditText) textView).getText());
+                        scanValue = scanValue.replaceAll("\r", "");
+                        Log.i(TAG, "scan Value:" + scanValue);
+                        textView.setText(scanValue);
 
-                    //将扫描的内容更新至列表中
-                    switch (textView.getId()) {
+                        //将扫描的内容更新至列表中
+                        switch (textView.getId()) {
 
-                        case R.id.edt_lineseat:
-                            //站位
-                            String scanLineSeat=scanValue;
-                            if (scanValue.length()>=8){
-                                scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
-                            }
-                            scanValue=scanLineSeat;
-                            checkAgain();
-                            for (int j = 0; j < lCheckMaterialItems.size(); j++) {
-                                MaterialItem materialItem = lCheckMaterialItems.get(j);
-                                if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanValue)) {
-                                    curCheckMaterialId = j;
-                                    curOrgMaterialNo = materialItem.getOrgMaterial();
-                                    materialItem.setScanLineSeat(scanValue);
+                            case R.id.edt_lineseat:
+                                //站位
+                                String scanLineSeat=scanValue;
+                                if (scanValue.length()>=8){
+                                    scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
                                 }
-                            }
-                            if (curCheckMaterialId < 0) {
-                                curLineSeat=scanValue;
-                                curOrgSeatNo="";
-                                curOrgMaterialNo="";
-                                showCheckMaterialResult(1,"排位表不存在此站位！");
-                                return true;
-                            }
-                            curLineSeat=scanValue;
-                            edt_Material.requestFocus();
-                            break;
-                        case R.id.edt_material:
-                            //料号
-                            if (scanValue.indexOf("@") != -1) {
-                                scanValue = scanValue.substring(0, scanValue.indexOf("@"));
-                                textView.setText(scanValue);
-                            }
-                            //扫描到的站位
-                            String scanSeatNo=curLineSeat;
-                            //扫到的料号
-                            curMaterial=scanValue;
-                            curCheckMaterialId = -1;
-                            ArrayList<Integer> lineSeats=new ArrayList<Integer>();
-                            for (int k = 0;k < lCheckMaterialItems.size();k++){
-                                MaterialItem materialItem=lCheckMaterialItems.get(k);
-                                if (materialItem.getOrgMaterial().equalsIgnoreCase(scanValue)){
-                                    //料号存在
-                                    lineSeats.add(k);
-                                    if (!materialItem.getOrgLineSeat().equalsIgnoreCase(scanSeatNo)){
-                                        //料号对应的站位与扫描的站位不同
-                                        curCheckMaterialId = -2;
-                                        curOrgSeatNo = materialItem.getOrgLineSeat();
+                                scanValue=scanLineSeat;
+                                checkAgain();
+                                for (int j = 0; j < lCheckMaterialItems.size(); j++) {
+                                    MaterialItem materialItem = lCheckMaterialItems.get(j);
+                                    if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanValue)) {
+                                        curCheckMaterialId = j;
+                                        curOrgMaterialNo = materialItem.getOrgMaterial();
+                                        materialItem.setScanLineSeat(scanValue);
                                     }
                                 }
-                            }
-                            //遍历所有相同料号的站位,判断与扫描到的站位是否一样
-                            for (int j=0;j < lineSeats.size();j++){
-                                if (lCheckMaterialItems.get(lineSeats.get(j)).getOrgLineSeat().equals(scanSeatNo)){
-                                    curCheckMaterialId = lineSeats.get(j);
+                                if (curCheckMaterialId < 0) {
+                                    curLineSeat=scanValue;
+                                    curOrgSeatNo="";
+                                    curOrgMaterialNo="";
+                                    showCheckMaterialResult(1,"排位表不存在此站位！");
+                                    return true;
                                 }
-                            }
-                            //显示结果
-                            String Remark="";
-                            if (curCheckMaterialId < 0){
-                                if (curCheckMaterialId == -2){
-                                    Remark="站位与料号不对应！";
-                                    showCheckMaterialResult(1,Remark);
+                                curLineSeat=scanValue;
+                                edt_Material.requestFocus();
+                                break;
+                            case R.id.edt_material:
+                                //料号
+                                if (scanValue.indexOf("@") != -1) {
+                                    scanValue = scanValue.substring(0, scanValue.indexOf("@"));
+                                    textView.setText(scanValue);
+                                }
+                                //扫描到的站位
+                                String scanSeatNo=curLineSeat;
+                                //扫到的料号
+                                curMaterial=scanValue;
+                                curCheckMaterialId = -1;
+                                ArrayList<Integer> lineSeats=new ArrayList<Integer>();
+                                for (int k = 0;k < lCheckMaterialItems.size();k++){
+                                    MaterialItem materialItem=lCheckMaterialItems.get(k);
+                                    if (materialItem.getOrgMaterial().equalsIgnoreCase(scanValue)){
+                                        //料号存在
+                                        lineSeats.add(k);
+                                        if (!materialItem.getOrgLineSeat().equalsIgnoreCase(scanSeatNo)){
+                                            //料号对应的站位与扫描的站位不同
+                                            curCheckMaterialId = -2;
+                                            curOrgSeatNo = materialItem.getOrgLineSeat();
+                                        }
+                                    }
+                                }
+                                //遍历所有相同料号的站位,判断与扫描到的站位是否一样
+                                for (int j=0;j < lineSeats.size();j++){
+                                    if (lCheckMaterialItems.get(lineSeats.get(j)).getOrgLineSeat().equals(scanSeatNo)){
+                                        curCheckMaterialId = lineSeats.get(j);
+                                    }
+                                }
+                                //显示结果
+                                String Remark="";
+                                if (curCheckMaterialId < 0){
+                                    if (curCheckMaterialId == -2){
+                                        Remark="站位与料号不对应！";
+                                        showCheckMaterialResult(1,Remark);
+                                    }else {
+                                        Remark="排位表不存在此料号！";
+                                        showCheckMaterialResult(1,Remark);
+                                    }
                                 }else {
-                                    Remark="排位表不存在此料号！";
-                                    showCheckMaterialResult(1,Remark);
+                                    MaterialItem materialItem=lCheckMaterialItems.get(curCheckMaterialId);
+                                    materialItem.setScanMaterial(scanValue);
+                                    materialItem.setResult("PASS");
+                                    materialItem.setRemark("站位和料号正确!");
+                                    showCheckMaterialResult(0,"站位和料号正确!");
                                 }
-                            }else {
-                                MaterialItem materialItem=lCheckMaterialItems.get(curCheckMaterialId);
-                                materialItem.setScanMaterial(scanValue);
-                                materialItem.setResult("PASS");
-                                materialItem.setRemark("站位和料号正确!");
-                                showCheckMaterialResult(0,"站位和料号正确!");
-                            }
 
-                            break;
+                                break;
+                        }
+                    }else {
+                        globalFunc.showInfo("警告","请检查网络连接是否正常!","请连接网络!");
+                        //自动清空站位和料号以便下一项检测
+                        edt_LineSeat.setText("");
+                        edt_Material.setText("");
+                        edt_LineSeat.requestFocus();
                     }
+
                     return true;
                 default:
                     return true;

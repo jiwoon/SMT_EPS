@@ -15,4 +15,6 @@ public class Constants {
     public static final int ACTIVITY_RESULT = 5;
     //apk地址
     public static final String DOWNLOAD_URL="http://39.108.231.15/SMT_EPS_APK/";
+    //线号301-308
+    public static final String[] lines={"301","302","303","304","305","306","307","308"};
 }

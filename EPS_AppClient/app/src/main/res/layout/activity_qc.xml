@@ -50,7 +50,7 @@
                 android:text="QC全检"
                 android:textColor="@android:color/white"
                 android:clickable="true"
-                android:background="@drawable/factory_change_unclick_shape"
+                android:background="@drawable/factory_checkall_unclick_shape"
                 />
 
         </LinearLayout>

@@ -1,6 +1,5 @@
 package com.jimi.smt.eps_appclient.Activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,10 +11,8 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.jimi.smt.eps_appclient.ChangeMaterialFragment;
 import com.jimi.smt.eps_appclient.CheckAllMaterialFragment;
 import com.jimi.smt.eps_appclient.CheckMaterialFragment;
-import com.jimi.smt.eps_appclient.FeedMaterialFragment;
 import com.jimi.smt.eps_appclient.R;
 
 import java.util.ArrayList;
@@ -125,7 +122,7 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
                 tv_check_some.setBackgroundResource(R.drawable.factory_feed_click_shape);
                 break;
             case 1:
-                tv_check_all.setBackgroundResource(R.drawable.factory_change_click_shape);
+                tv_check_all.setBackgroundResource(R.drawable.factory_checkall_click_shape);
                 break;
         }
     }
@@ -133,6 +130,6 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
     //设置标题为原状态
     private void resetTitle(){
         tv_check_some.setBackgroundResource(R.drawable.factory_feed_unclick_shape);
-        tv_check_all.setBackgroundResource(R.drawable.factory_change_unclick_shape);
+        tv_check_all.setBackgroundResource(R.drawable.factory_checkall_unclick_shape);
     }
 }

@@ -1,6 +1,5 @@
 package com.jimi.smt.eps_appclient.Unit;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -18,6 +17,9 @@ public class OperLogItem {
     String ScanLineseat;
     String Remark;
     String FileId;
+    String line;
+    String work_order;
+    int board_type;
 
     public OperLogItem() {
     }
@@ -100,5 +102,29 @@ public class OperLogItem {
 
     public void setFileId(String fileId) {
         FileId = fileId;
+    }
+
+    public String getLine() {
+        return line;
+    }
+
+    public void setLine(String line) {
+        this.line = line;
+    }
+
+    public String getWork_order() {
+        return work_order;
+    }
+
+    public void setWork_order(String work_order) {
+        this.work_order = work_order;
+    }
+
+    public int getBoard_type() {
+        return board_type;
+    }
+
+    public void setBoard_type(int board_type) {
+        this.board_type = board_type;
     }
 }

@@ -14,6 +14,12 @@ public class Program {
     private String programID;
     //工单号
     private String work_order;
+    //版面类型
+    private int board_type;
+    //线号
+    private String line;
+    //选中状态
+    private boolean checked;
 
     public String getProgramID() {
         return programID;
@@ -29,5 +35,29 @@ public class Program {
 
     public void setWork_order(String work_order) {
         this.work_order = work_order;
+    }
+
+    public int getBoard_type() {
+        return board_type;
+    }
+
+    public void setBoard_type(int board_type) {
+        this.board_type = board_type;
+    }
+
+    public String getLine() {
+        return line;
+    }
+
+    public void setLine(String line) {
+        this.line = line;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }
