@@ -177,8 +177,8 @@ public class ExcelHelper{
 	/**
 	 * 获取一个值
 	 */
-	public  int getInt(int rowNum, int colNum) {
-		return (int) get(rowNum, colNum, RequireType.INT);
+	public Integer getInt(int rowNum, int colNum) {
+		return (Integer) get(rowNum, colNum, RequireType.INT);
 	}
 	
 	
@@ -201,8 +201,8 @@ public class ExcelHelper{
 	/**
 	 * 获取一个值
 	 */
-	public boolean getBoolean(int rowNum, int colNum) {
-		return (boolean) get(rowNum, colNum, RequireType.BOOLEAN);
+	public Boolean getBoolean(int rowNum, int colNum) {
+		return (Boolean) get(rowNum, colNum, RequireType.BOOLEAN);
 	}
 	
 	
@@ -560,7 +560,21 @@ public class ExcelHelper{
 					return Double.parseDouble(cell.getStringCellValue());
 				}
 			default:
-				return null;
+				switch (requireType) {
+				case BOOLEAN:
+					return false;
+				case STRING:
+					return "";
+				case INT:
+					return 0;
+				case DATE:
+					logger.error("无法把坐标为("+currentSheetNum+","+rowNum+","+colNum+")的布尔值转成日期");
+					return null;
+				case DOUBLE:
+					return 0.0d;
+				default:
+					return null;
+				}
 			}
 		}catch (NullPointerException e) {
 			logger.error("空指针异常，无法获取坐标为("+currentSheetNum+","+rowNum+","+colNum+")的值");
