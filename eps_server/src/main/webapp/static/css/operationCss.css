@@ -1,0 +1,77 @@
+.operation-search{
+    background-color: #ffffff;
+    font-size: 18px;
+    padding:5px;
+    line-height: 27px;
+    position: relative;
+    border-bottom: 3px solid #77d5f7;
+}
+.operation-search span{
+    display: inline-block;
+    height:37px;
+    width:235px;
+    position: absolute;
+    top:11px;
+    left:0;
+}
+
+.operation-search .youhua{
+    width:243px;
+    border: 1px solid #ffffff;
+}
+.operation-search input{
+    border: 1px solid black;
+    font-size: 16px;
+    padding-left: 5px;
+    margin-left: -8px;
+    margin-right: 14px;
+    margin-bottom: 5px;
+}
+
+.position-table .location{
+    position: relative;
+    margin-right: 22px;
+}
+.operation-search em{
+    position: absolute;
+    top:56px;
+    left:534px;
+}
+.operation-search select{
+    font-size: 18px;
+}
+.span select{
+    font-size: 26px;
+}
+.commonBtn{
+    font-size: 23px;
+    padding:5px;
+    position: absolute;
+    top:25px;
+}
+.btnSearch{
+    right:18%;
+}
+.btnLoad{
+    right:6%;
+}
+.operationTable{
+    color: #000;
+    width:100%;
+    background-color: #ffffff;
+    position: relative;
+}
+.operationTable table{
+    width:100%;
+}
+.operationTable td{
+    padding:5px 8px;
+    height:30px;
+    border: 1px solid black;
+    font-size: 20px;
+    line-height: normal;
+}
+.operationTable thead td{
+    font-size: 24px;
+    font-weight: bold;
+}

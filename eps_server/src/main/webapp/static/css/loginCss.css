@@ -1,0 +1,182 @@
+@charset "UTF-8";
+/*css 初始化 */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+    margin: 0;
+    padding: 0;
+}
+
+fieldset, img, input, button {
+    border: none;
+    padding: 0;
+    margin: 0;
+    outline-style: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+input {
+    padding-top: 0;
+    padding-bottom: 0;
+    font-family: "SimSun", "宋体";
+}
+
+select, input {
+    vertical-align: middle;
+}
+
+select, input, textarea {
+    font-size: 12px;
+    margin: 0;
+}
+textarea {
+    resize: none;
+}
+
+/*防止拖动*/
+img {
+    border: 0;
+    vertical-align: middle;
+}
+
+/*  去掉图片低测默认的3像素空白缝隙*/
+table {
+    border-collapse: collapse;
+}
+
+body {
+    font: 12px/150% Arial, Verdana, "\5b8b\4f53";
+    color: #666;
+    background: #fff;
+    overflow: hidden;
+}
+
+.clearfix:before, .clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1; /*IE/7/6*/
+}
+
+a {
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #C81623;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 100%;
+}
+
+s, i, em {
+    font-style: normal;
+    text-decoration: none;
+}
+/*背景*/
+.login-box{
+    width:100%;
+    height:100%;
+    background:url("../images/loginbackground.jpg") no-repeat;
+    position: relative;
+}
+.loginOutBox{
+    width:590px;
+    height:289px;
+    border:14px solid rgba(0,128,255,.7) ;
+    border-radius:10px ;
+    position: absolute;
+    top:143px;
+    left:389px;
+}
+.login{
+    width:590px;
+    height:290px;
+    background-color: #4DA6FF;
+    opacity:0.9;
+    position: absolute;
+    top:0;
+    left:0;
+    box-shadow: 0 0 32px #fff inset;
+    border-radius:10px;
+}
+.title{
+    display: block;
+    opacity:1;
+    width:160px;
+    height:50px;
+    font-size: 40px;
+    color:#ffffff;
+    line-height: normal;
+    margin-left: 215px;
+    margin-top: 10px;
+}
+.login-main{
+    width:336px;
+    font-size:40px;
+    color: #000000;
+    margin:40px auto;
+    line-height: normal;
+}
+.login-main input{
+    width:200px;
+    height:30px;
+    font-size: 25px;
+    padding:5px;
+    margin-left: -16px;
+    margin-bottom: 15px;
+}
+.login-btn{
+    width:148px;
+    height:53px;
+    font-size: 29px;
+    position: absolute;
+    bottom:16px;
+    left:50%;
+    margin-left: -50px;
+    cursor: pointer;
+}
+
+/*账户不匹配时的界面*/
+.showError {
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color: rgba(204,204,204,.4);
+}
+.errorShowBox{
+    display: block;
+    width: 400px;
+    height: 200px;
+    margin:218px auto;
+    background-color: #BFEFFF;
+    color:#000;
+    font-size: 20px;
+    text-align: center;
+    line-height: 122px;
+    position: relative;
+}
+.errorShowBox-btn{
+    width:78px;
+    height:38px;
+    font-size: 20px;
+    position: absolute;
+    bottom:10px;
+    left:50%;
+    margin-left: -39px;
+    cursor: pointer;
+    color: #000;
+}
