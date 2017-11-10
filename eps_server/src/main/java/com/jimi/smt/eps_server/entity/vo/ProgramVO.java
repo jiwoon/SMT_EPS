@@ -8,6 +8,8 @@ import com.jimi.smt.eps_server.entity.Program;
  */
 public class ProgramVO extends Program {
 
+	private String stateName;
+	
 	private String boardTypeName;
 	
 	private String createTimeString;
@@ -26,6 +28,14 @@ public class ProgramVO extends Program {
 
 	public void setCreateTimeString(String createTimeString) {
 		this.createTimeString = createTimeString;
+	}
+
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
 	}
 	
 	

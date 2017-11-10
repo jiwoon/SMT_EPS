@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 
 import com.jimi.smt.eps_server.entity.Operation;
 import com.jimi.smt.eps_server.entity.ProgramItem;
-import com.jimi.smt.eps_server.entity.vo.ClientReport;
+import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.mapper.ProgramItemMapper;
 import com.jimi.smt.eps_server.util.VoFieldFiller;
 
 @Component
-public class OperationToClientReportFiller extends VoFieldFiller<Operation, ClientReport> {
+public class OperationToOperationReportFiller extends VoFieldFiller<Operation, OperationReport> {
 
 	@Autowired
 	private ProgramItemMapper programItemMapper;
@@ -28,18 +28,18 @@ public class OperationToClientReportFiller extends VoFieldFiller<Operation, Clie
 	public void init() {
 		programItems = programItemMapper.selectByExample(null);
 	}
-	
+		
 	@Override
-	public ClientReport fill(Operation operation) {
-		ClientReport clientReport = new ClientReport();
+	public OperationReport fill(Operation operation) {
+		OperationReport operationReport = new OperationReport();
 		//拷贝相同属性
-		BeanUtils.copyProperties(operation, clientReport);
+		BeanUtils.copyProperties(operation, operationReport);
 		//填写工单
-		clientReport.setWorkOrderNo(operation.getWorkOrder());
+		operationReport.setWorkOrderNo(operation.getWorkOrder());
 		
 		String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(operation.getTime());
-		clientReport.setTime(time);
-		
+		operationReport.setTime(time);
+			
 		//匹配程序表子项目和操作日志
 		for (ProgramItem programItem : programItems) {
 			if(programItem.getProgramId().equals(operation.getProgramId()) 
@@ -52,47 +52,23 @@ public class OperationToClientReportFiller extends VoFieldFiller<Operation, Clie
 					String materialDescription = specitification.substring(0, specitification.indexOf(","));
 					String temp = specitification.substring(specitification.indexOf(";") + 5, specitification.lastIndexOf(";") - 4);
 					if(!temp.equals(materialDescription)) {
-						clientReport.setMaterialDescription("-");
-						clientReport.setMaterialSpecitification(specitification);
+						operationReport.setMaterialDescription("-");
+						operationReport.setMaterialSpecitification(specitification);
 					}else {
 						String materialSpecitification = specitification.substring(specitification.indexOf(",") + 1, specitification.indexOf(";"));
-						clientReport.setMaterialDescription(materialDescription);
-						clientReport.setMaterialSpecitification(materialSpecitification);
+						operationReport.setMaterialDescription(materialDescription);
+						operationReport.setMaterialSpecitification(materialSpecitification);
 					}
 					break;
 				}catch (StringIndexOutOfBoundsException e) {
-					clientReport.setMaterialDescription("-");
-					clientReport.setMaterialSpecitification(specitification);
+					operationReport.setMaterialDescription("-");
+					operationReport.setMaterialSpecitification(specitification);
 				}
 				
 			}
 		}
-		//解析操作类型
-		switch (operation.getType()) {
-		case 0:
-			clientReport.setOperationType("上料");
-			break;
-		case 1:
-			clientReport.setOperationType("换料");
-			break;
-		case 2:
-			clientReport.setOperationType("检料");
-			break;
-		case 3:
-			clientReport.setOperationType("核对全料");
-			break;
-		case 4:
-			clientReport.setOperationType("仓库发料");
-			break;
-		default:
-			break;
-		}
-		
-		
-		
-		clientReport.setOrderNo("-");
-		
-		return clientReport;
+			
+		return operationReport;
 	}
 
 }

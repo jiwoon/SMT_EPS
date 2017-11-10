@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.jimi.smt.eps_server.annotation.Open;
 import com.jimi.smt.eps_server.entity.vo.ClientReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReport;
+import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.service.OperationService;
 import com.jimi.smt.eps_server.util.ResultUtil;
 
@@ -77,6 +78,39 @@ public class OperationController {
 	public ResponseEntity<byte[]> downloadClientReport(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime){
 		try {
 			return operationService.downloadClientReport(client, programNo, line, orderNo, workOrderNo, startTime, endTime);
+		} catch (ParseException e) {
+			ResultUtil.failed("日期格式不正确", e);
+		} catch (IOException e) {
+			ResultUtil.failed("IO异常", e);
+		}
+		return null;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/listOperationReport")
+	public List<OperationReport> listOperationReport(String client, String line, String workOrderNo, String startTime, String endTime, Integer type) {
+		if(type == null) {
+			ResultUtil.failed("参数不足");
+			return null;
+		}
+		try {
+			return operationService.listOperationReport(client, line, workOrderNo, startTime, endTime, type);
+		} catch (ParseException e) {
+			ResultUtil.failed("日期格式不正确", e);
+		}
+		return null;
+	}
+	
+	
+	@RequestMapping("/downloadOperationReport")
+	public ResponseEntity<byte[]> downloadOperationReport(String client, String line, String workOrderNo, String startTime, String endTime, Integer type){
+		if(type == null) {
+			ResultUtil.failed("参数不足");
+			return null;
+		}
+		try {
+			return operationService.downloadOperationReport(client, line, workOrderNo, startTime, endTime, type);
 		} catch (ParseException e) {
 			ResultUtil.failed("日期格式不正确", e);
 		} catch (IOException e) {

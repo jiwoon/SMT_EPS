@@ -49,7 +49,7 @@ $(function(){
                 name:$("#name").val()==""?null:$("#name").val(),
                 type:$("#type").val(),
                 classType:$("#classType").val(),
-                enable :$("#enabled").val()
+                enabled :$("#enabled").val()
             },
             success: function (data){
                 autoCreateTable(data);
@@ -128,7 +128,7 @@ $(function(){
                     name:staffName,
                     type:staffType,
                     classType:staffClassType,
-                    enable :staffEnable
+                    enabled :staffEnable
                 },
                 success: function (data){
                     if(data){
@@ -261,7 +261,7 @@ $(function(){
                         name:staffName,
                         type:staffType,
                         classType:staffClassType,
-                        enable :staffEnable
+                        enabled :staffEnable
                     },
                     success: function (data){
                         if(data){

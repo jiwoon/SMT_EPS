@@ -62,11 +62,11 @@ public class UserServiceImpl implements UserService {
 	public List<UserVO> list(String id, Integer classType, String name, Integer type, String orderBy, Boolean enabled) {
 		UserExample userExample = new UserExample();
 		Criteria criteria = userExample.createCriteria();
-		if(id != null && id.equals("")) {
-			criteria.andIdEqualTo(id);
+		if(id != null && !id.equals("")) {
+			criteria.andIdLike(id);
 		}
-		if(name != null && name.equals("")) {
-			criteria.andNameEqualTo(name);
+		if(name != null && !name.equals("")) {
+			criteria.andNameLike(name);
 		}
 		if(type != null) {
 			criteria.andTypeEqualTo(type);
