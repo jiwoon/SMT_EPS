@@ -16,7 +16,7 @@ $(function(){
                     data :{
                         client :  $("#client").val(),
                         programNo : $("#programNum").val(),
-                        line : $("#line option:selected").text(),
+                        line : $("#line option:selected").text() == "不限" ? null : $("#line option:selected").text() ,
                         orderNo : $("#OrderNum").val(),
                         workOrderNo : $("#workOrderNum").val(),
                         startTime : $("#startTime").val(),
@@ -63,7 +63,7 @@ $(function(){
     function CreateOneTable(k ,data){
         var html = "";
         html += "<tr>";
-        html += "<td>" + 308 + "</td>"
+        html += "<td>" + data[k].line + "</td>"
         html += "<td>" + data[k].workOrderNo + "</td>"
         html += "<td>" + data[k].orderNo + "</td>"
         html += "<td>" + data[k].lineseat + "</td>"
