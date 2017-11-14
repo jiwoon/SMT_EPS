@@ -53,6 +53,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     private String sucSeatNo;
     //成功换料时的时间
     private long sucTime;
+    private GlobalFunc globalFunc;
 
     @Nullable
     @Override
@@ -67,6 +68,7 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         globalData = (GlobalData) getActivity().getApplication();
         globalData.setOperator(savedInstanceState.getString("operatorNum"));
         globalData.setOperType(Constants.CHANGEMATERIAL);
+        globalFunc = new GlobalFunc(getActivity());
 
         initViews(savedInstanceState);
         initEvents();
@@ -147,22 +149,25 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
             switch (keyEvent.getAction()) {
                 //按下
                 case KeyEvent.ACTION_UP:
-                    //扫描内容
-                    String strValue = String.valueOf(((EditText) textView).getText());
-                    strValue = strValue.replaceAll("\r", "");
-                    Log.i(TAG, "strValue:" + strValue);
-                    textView.setText(strValue);
+                    //先判断是否联网
+                    if (globalFunc.isNetWorkConnected()){
+                        //扫描内容
+                        String strValue = String.valueOf(((EditText) textView).getText());
+                        strValue = strValue.replaceAll("\r", "");
+                        Log.i(TAG, "strValue:" + strValue);
+                        textView.setText(strValue);
 
-                    //将扫描的内容更新至列表中
-                    switch (textView.getId()) {
-                        case R.id.edt_lineseat:
-                            changeNextMaterial();
-                            String scanLineSeat=strValue;
-                            if (strValue.length()>=8){
-                                scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
-                            }
-                            strValue=scanLineSeat;
-                            edt_LineSeat.setText(strValue);
+                        //将扫描的内容更新至列表中
+                        switch (textView.getId()) {
+                            case R.id.edt_lineseat:
+                                changeNextMaterial();
+                                String scanLineSeat=strValue;
+                                if (strValue.length()>=8){
+                                    scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
+                                }
+                                strValue=scanLineSeat;
+                                edt_LineSeat.setText(strValue);
+                            /*
                             //判断在该5分钟内,该站位是否成功换过料
                             if (scanLineSeat.equalsIgnoreCase(sucSeatNo)){
                                 if (System.currentTimeMillis() - sucTime < 5000){
@@ -170,92 +175,97 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     return true;
                                 }
                             }
-                            //站位
-                            //String scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
-                            for (int j = 0; j < lChangeMaterialItem.size(); j++) {
-                                MaterialItem materialItem = lChangeMaterialItem.get(j);
-                                if (materialItem.getOrgLineSeat().equalsIgnoreCase(strValue)) {
-                                    curChangeMaterialId = j;
-                                    materialItem.setScanLineSeat(strValue);
-                                }
-                            }
-                            if (curChangeMaterialId < 0) {
-                                curLineSeat=strValue;
-                                displayResult(1,"","排位表不存在此站位！");
-                                return true;
-                            }
-                            curLineSeat=strValue;
-                            edt_OrgMaterial.requestFocus();
-                            break;
-                        case R.id.edt_OrgMaterial:
-                            if (strValue.indexOf("@") != -1) {
-                                strValue = strValue.substring(0, strValue.indexOf("@"));
-                                textView.setText(strValue);
-                            }
-                            curOrgMaterial=strValue;
-                            //比对线上料号,包括替换料
-                            String orgLineSeat="";//料号表中的站位
-                            //先获取扫描到的站位
-//                            String scanSeatNo=lChangeMaterialItem.get(curChangeMaterialId).getScanLineSeat();
-                            String scanSeatNo = curLineSeat;
-                            Log.d(TAG,"scanSeatNo-"+scanSeatNo);
-                            ArrayList<Integer> lineSeats=new ArrayList<Integer>();
-                            curChangeMaterialId=-1;
-                            for (int j = 0;j < lChangeMaterialItem.size();j++){
-                                MaterialItem materialItem = lChangeMaterialItem.get(j);
-                                //料号存在
-                                if (materialItem.getOrgMaterial().equalsIgnoreCase(curOrgMaterial)){
-                                    lineSeats.add(j);
-                                    //原始站位与扫描到的站位一样
-                                    if (!materialItem.getOrgLineSeat().equalsIgnoreCase(scanSeatNo)){
-                                        //原始站位与扫描到的站位不一样
-                                        curChangeMaterialId=-2;
+                            */
+                                //站位
+                                //String scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
+                                for (int j = 0; j < lChangeMaterialItem.size(); j++) {
+                                    MaterialItem materialItem = lChangeMaterialItem.get(j);
+                                    if (materialItem.getOrgLineSeat().equalsIgnoreCase(strValue)) {
+                                        curChangeMaterialId = j;
+                                        materialItem.setScanLineSeat(strValue);
                                     }
-                                    orgLineSeat=materialItem.getOrgLineSeat();
                                 }
-                            }
-                            //遍历所有相同料号的站位,判断与扫描到的站位是否一样
-                            for (int k=0;k < lineSeats.size();k++){
-                                if (lChangeMaterialItem.get(lineSeats.get(k)).getOrgLineSeat().equals(scanSeatNo)){
-                                    //相同
-                                    curChangeMaterialId = lineSeats.get(k);
+                                if (curChangeMaterialId < 0) {
+                                    curLineSeat=strValue;
+                                    displayResult(1,"","排位表不存在此站位！");
+                                    return true;
                                 }
-                            }
-
-                            //扫描到的料号不存在表中
-                            if (curChangeMaterialId < 0){
-                                if (curChangeMaterialId == -2){
-                                    displayResult(1,orgLineSeat,"料号与站位不对应！");
-                                }else {
-                                    displayResult(1,orgLineSeat,"原始料号与排位表不相符！");
+                                curLineSeat=strValue;
+                                edt_OrgMaterial.requestFocus();
+                                break;
+                            case R.id.edt_OrgMaterial:
+                                if (strValue.indexOf("@") != -1) {
+                                    strValue = strValue.substring(0, strValue.indexOf("@"));
+                                    textView.setText(strValue);
                                 }
-                                return true;
-                            }
-
-                            //清空站位数组
-                            lineSeats.clear();
-                            edt_ChgMaterial.requestFocus();
-
-                            break;
-                        case R.id.edt_ChgMaterial:
-                            if (strValue.indexOf("@") != -1) {
-                                strValue = strValue.substring(0, strValue.indexOf("@"));
-                                textView.setText(strValue);
-                            }
-                            curChgMaterial=strValue;
-                            //比对更换料号
-                            if (curChangeMaterialId >= 0) {
-                                if (edt_ChgMaterial.getText().toString().equals(edt_OrgMaterial.getText().toString())) {
-                                    displayResult(0,lChangeMaterialItem.get(curChangeMaterialId).getOrgLineSeat(),
-                                            "换料成功!");
-                                } else {
-                                    displayResult(1,lChangeMaterialItem.get(curChangeMaterialId).getOrgLineSeat(),
-                                            "更换的料号与线上料号不同！");
+                                curOrgMaterial=strValue;
+                                //比对线上料号,包括替换料
+                                String orgLineSeat="";//料号表中的站位
+                                //先获取扫描到的站位
+//                            String scanSeatNo=lChangeMaterialItem.get(curChangeMaterialId).getScanLineSeat();
+                                String scanSeatNo = curLineSeat;
+                                Log.d(TAG,"scanSeatNo-"+scanSeatNo);
+                                ArrayList<Integer> lineSeats=new ArrayList<Integer>();
+                                curChangeMaterialId=-1;
+                                for (int j = 0;j < lChangeMaterialItem.size();j++){
+                                    MaterialItem materialItem = lChangeMaterialItem.get(j);
+                                    //料号存在
+                                    if (materialItem.getOrgMaterial().equalsIgnoreCase(curOrgMaterial)){
+                                        lineSeats.add(j);
+                                        //原始站位与扫描到的站位一样
+                                        if (!materialItem.getOrgLineSeat().equalsIgnoreCase(scanSeatNo)){
+                                            //原始站位与扫描到的站位不一样
+                                            curChangeMaterialId=-2;
+                                        }
+                                        orgLineSeat=materialItem.getOrgLineSeat();
+                                    }
                                 }
-                            }
-                            edt_LineSeat.requestFocus();
+                                //遍历所有相同料号的站位,判断与扫描到的站位是否一样
+                                for (int k=0;k < lineSeats.size();k++){
+                                    if (lChangeMaterialItem.get(lineSeats.get(k)).getOrgLineSeat().equals(scanSeatNo)){
+                                        //相同
+                                        curChangeMaterialId = lineSeats.get(k);
+                                    }
+                                }
 
-                            break;
+                                //扫描到的料号不存在表中
+                                if (curChangeMaterialId < 0){
+                                    if (curChangeMaterialId == -2){
+                                        displayResult(1,orgLineSeat,"料号与站位不对应！");
+                                    }else {
+                                        displayResult(1,orgLineSeat,"原始料号与排位表不相符！");
+                                    }
+                                    return true;
+                                }
+
+                                //清空站位数组
+                                lineSeats.clear();
+                                edt_ChgMaterial.requestFocus();
+
+                                break;
+                            case R.id.edt_ChgMaterial:
+                                if (strValue.indexOf("@") != -1) {
+                                    strValue = strValue.substring(0, strValue.indexOf("@"));
+                                    textView.setText(strValue);
+                                }
+                                curChgMaterial=strValue;
+                                //比对更换料号
+                                if (curChangeMaterialId >= 0) {
+                                    if (edt_ChgMaterial.getText().toString().equals(edt_OrgMaterial.getText().toString())) {
+                                        displayResult(0,lChangeMaterialItem.get(curChangeMaterialId).getOrgLineSeat(),
+                                                "换料成功!");
+                                    } else {
+                                        displayResult(1,lChangeMaterialItem.get(curChangeMaterialId).getOrgLineSeat(),
+                                                "更换的料号与线上料号不同！");
+                                    }
+                                }
+                                edt_LineSeat.requestFocus();
+
+                                break;
+                        }
+                    }else {
+                        globalFunc.showInfo("警告","请检查网络连接是否正常!","请连接网络!");
+                        clearAndSetFocus();
                     }
                     return true;
                 default:

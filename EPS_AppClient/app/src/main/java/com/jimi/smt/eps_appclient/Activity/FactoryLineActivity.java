@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jimi.smt.eps_appclient.ChangeMaterialFragment;
+import com.jimi.smt.eps_appclient.CheckAllMaterialFragment;
 import com.jimi.smt.eps_appclient.FeedMaterialFragment;
 import com.jimi.smt.eps_appclient.R;
 
@@ -32,6 +33,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
     private TextView tv_factory_change;
     private String curOrderNum;
     private String curOperatorNUm;
+    private TextView tv_factory_checkAll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +54,12 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
         ImageView iv_factory_back= (ImageView) findViewById(R.id.iv_factory_back);
         tv_factory_feed = (TextView) findViewById(R.id.tv_factory_feed);
         tv_factory_change = (TextView) findViewById(R.id.tv_factory_change);
+        tv_factory_checkAll = (TextView) findViewById(R.id.tv_factory_checkAll);
         ViewPager viewpager_factory= (ViewPager) findViewById(R.id.viewpager_factory);
         iv_factory_back.setOnClickListener(this);
         tv_factory_feed.setOnClickListener(this);
         tv_factory_change.setOnClickListener(this);
+        tv_factory_checkAll.setOnClickListener(this);
         //设置viewpager切换事件监听
         viewpager_factory.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             //页面滑动事件
@@ -81,6 +85,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
         final List<Fragment> fragmentList=new ArrayList<Fragment>();
         fragmentList.add(new FeedMaterialFragment());
         fragmentList.add(new ChangeMaterialFragment());
+        fragmentList.add(new CheckAllMaterialFragment());
         //fragment适配器
         FragmentPagerAdapter fragmentPagerAdapter=new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -121,6 +126,9 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
             case 1:
                 tv_factory_change.setBackgroundResource(R.drawable.factory_change_click_shape);
                 break;
+            case 2:
+                tv_factory_checkAll.setBackgroundResource(R.drawable.factory_checkall_click_shape);
+                break;
         }
     }
 
@@ -128,6 +136,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
     private void resetTitle(){
         tv_factory_feed.setBackgroundResource(R.drawable.factory_feed_unclick_shape);
         tv_factory_change.setBackgroundResource(R.drawable.factory_change_unclick_shape);
+        tv_factory_checkAll.setBackgroundResource(R.drawable.factory_checkall_unclick_shape);
     }
 
     @Override

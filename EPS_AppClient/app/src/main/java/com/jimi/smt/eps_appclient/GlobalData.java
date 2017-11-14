@@ -63,6 +63,38 @@ public class GlobalData extends Application {
         OperType = operType;
     }
 
+    //操作线号
+    private String line;
+
+    public String getLine() {
+        return line;
+    }
+
+    public void setLine(String line) {
+        this.line = line;
+    }
+
+    //工单号
+    private String work_order;
+
+    public String getWork_order() {
+        return work_order;
+    }
+
+    public void setWork_order(String work_order) {
+        this.work_order = work_order;
+    }
+
+    //板面类型
+    private int board_type;
+
+    public int getBoard_type() {
+        return board_type;
+    }
+
+    public void setBoard_type(int board_type) {
+        this.board_type = board_type;
+    }
 
     //apk下载路径
     private String apkDownloadDir;

@@ -1,19 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.jimi.smt.eps_appclient.Activity.EnterActivity">
+    android:layout_height="wrap_content"
+    android:paddingBottom="8dp"
+    android:paddingLeft="3dp"
+    android:paddingRight="3dp"
+    android:paddingTop="3dp"
+    >
 
     <LinearLayout
+        android:id="@+id/ll_top"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/rl_enter"
+        android:layout_marginBottom="5dp"
         >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="线    号:"
+                android:textSize="22sp"
+                android:layout_gravity="center"
+                android:textColor="@android:color/black"
+                />
+            <EditText
+                android:id="@+id/et_enter_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="20sp"
+                android:singleLine="true"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="3dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="操作员:"
+                android:textSize="22sp"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center"
+                />
+            <EditText
+                android:id="@+id/et_enter_operator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="20sp"
+                android:singleLine="true"
+                />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/linear_center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/linear_center_title"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:orientation="horizontal"
+                android:background="#d9d9d9"
+                >
+
+                <TextView
+                    android:layout_width="170dp"
+                    android:layout_height="match_parent"
+                    android:text="工单号"
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:textColor="@android:color/black"
+                    />
+                <View
+                    android:layout_width="0.1dp"
+                    android:layout_height="match_parent"
+                    android:background="#7b7b7b"
+                    />
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="板面"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"
+                    />
+                <View
+                    android:layout_width="0.1dp"
+                    android:layout_height="match_parent"
+                    android:background="#7b7b7b"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="选择"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"
+                    />
+
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/lv_orders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/linear_center_title"
+                android:background="@drawable/enter_orders_shape"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_enter"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/enter_selector"
+        android:clickable="true"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="进入"
+            android:textSize="28sp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            />
+    </RelativeLayout>
+
+<!--
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,28 +188,26 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             >
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="操作员:"
+                android:text="版    面:"
                 android:textSize="22sp"
-                android:layout_gravity="center"
+                android:layout_gravity="top"
                 />
-            <EditText
-                android:id="@+id/et_enter_operator"
+            <Spinner
+                android:id="@+id/sp_board"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="20sp"
-                android:singleLine="true"
                 />
 
         </LinearLayout>
+-->
 
-
-    </LinearLayout>
 
 </RelativeLayout>

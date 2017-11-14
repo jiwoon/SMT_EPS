@@ -19,4 +19,8 @@
         <item name="android:backgroundDimEnabled">true</item> <!--背景是否模糊显示-->
     </style>
 
+    <style name="DeptCheckboxTheme" parent="@android:style/Widget.CompoundButton.CheckBox" >
+        <item name= "android:button">@drawable/dept_checkbox_style </item>
+    </style >
+
 </resources>

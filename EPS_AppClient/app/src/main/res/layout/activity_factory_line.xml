@@ -15,7 +15,7 @@
         <ImageView
             android:id="@+id/iv_factory_back"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:src="@mipmap/arrow_back_48px"
             />
 
@@ -31,11 +31,11 @@
             >
             <TextView
                 android:id="@+id/tv_factory_feed"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textSize="24dp"
-                android:text="厂线上料"
+                android:text="上料"
                 android:textColor="@android:color/white"
                 android:clickable="true"
                 android:background="@drawable/factory_feed_unclick_shape"
@@ -43,14 +43,25 @@
 
             <TextView
                 android:id="@+id/tv_factory_change"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textSize="24dp"
-                android:text="厂线换料"
+                android:text="换料"
                 android:textColor="@android:color/white"
                 android:clickable="true"
                 android:background="@drawable/factory_change_unclick_shape"
+                />
+            <TextView
+                android:id="@+id/tv_factory_checkAll"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="24dp"
+                android:text="全检"
+                android:textColor="@android:color/white"
+                android:clickable="true"
+                android:background="@drawable/factory_checkall_unclick_shape"
                 />
 
         </LinearLayout>
