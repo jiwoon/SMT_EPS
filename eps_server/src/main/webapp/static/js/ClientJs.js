@@ -3,6 +3,7 @@ $(function(){
     //查询按钮事件
     var originNum = 100;  //一开始加载的个数
     var newNum = 0;
+    var dataLength = 0;
     $("#searchBtn").hover(function(){
             $(this).addClass("ui-state-hover")
         },function(){
@@ -23,18 +24,21 @@ $(function(){
                         endTime : $("#endTime").val()
                     },
                     success : function(data){
-                        var dataLength  = data.length ; //获取数据长度
-                        autoCreateTable(data);
-                       $(window).on("scroll",function(){
-                            newNum = originNum ;
-                           if(newNum < dataLength){
-                               originNum += 3;
-                                originNum = (originNum >= dataLength ? dataLength : originNum);  //判断加3后是否长度大于数据长度
-                               for(var de = newNum ; de < originNum ; de++){
-                                   CreateOneTable(de ,data);
-                               }
-                           }
-                        });
+                        dataLength  = data.length ; //获取数据长度
+                        $("#clientMainTable").empty();
+                        if(dataLength != 0){
+                            autoCreateTable(data,dataLength);
+                            $(window).on("scroll",function(){
+                                newNum = originNum ;
+                                if(newNum < dataLength){
+                                    originNum += 3;
+                                    originNum = (originNum >= dataLength ? dataLength : originNum);  //判断加3后是否长度大于数据长度
+                                    for(var de = newNum ; de < originNum ; de++){
+                                        CreateOneTable(de ,data);
+                                    }
+                                }
+                            });
+                        }
                     },
                     error : function(){
                         console.log("数据传输失败！");
@@ -54,9 +58,8 @@ $(function(){
 
 //    动态生成多行表格
     function  autoCreateTable(data){
-        $("#clientMainTable").empty();
-        for( var i = 0 ; i < 100 ; i++){
-            CreateOneTable(i ,data)
+            for( var i = 0 ; i < 100 ; i++){
+                 CreateOneTable(i ,data)
         }
     }
 //    动态生成一行表格
@@ -86,22 +89,27 @@ $(function(){
 
         var input1 = $("<input>");     //存储客户名
         input1.attr("type","hidden")
+            .attr("name","client")
               .attr("value",$("#client").val());
 
         var input2 = $("<input>");     //存储程序表名
              input2.attr("type","hidden")
+                 .attr("name","programNo")
                    .attr("value",$("#programNum").val());
 
         var input3 = $("<input>");     //存储线别
         input3.attr("type","hidden")
+            .attr("name","line")
             .attr("value",$("#line option:selected").val());
 
         var input4 = $("<input>");     //存储订单号
         input4.attr("type","hidden")
+            .attr("name","orderNo")
             .attr("value",$("#OrderNum").val());
 
         var input5 = $("<input>");     //存储订单号
         input5.attr("type","hidden")
+            .attr("name","workOrderNo")
             .attr("value",$("#workOrderNum").val());
 
         form.append(input1)

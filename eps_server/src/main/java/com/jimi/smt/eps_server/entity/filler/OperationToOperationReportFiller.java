@@ -13,10 +13,10 @@ import com.jimi.smt.eps_server.entity.Operation;
 import com.jimi.smt.eps_server.entity.ProgramItem;
 import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.mapper.ProgramItemMapper;
-import com.jimi.smt.eps_server.util.VoFieldFiller;
+import com.jimi.smt.eps_server.util.EntityFieldFiller;
 
 @Component
-public class OperationToOperationReportFiller extends VoFieldFiller<Operation, OperationReport> {
+public class OperationToOperationReportFiller extends EntityFieldFiller<Operation, OperationReport> {
 
 	@Autowired
 	private ProgramItemMapper programItemMapper;

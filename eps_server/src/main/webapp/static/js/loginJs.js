@@ -19,7 +19,6 @@ $(function(){
                     },
                     success : function(data){
                        if(data.result == "succeed"){
-                           $("#login-form").submit();
                            window.location.href = "user/goManage";
                        }
                     },

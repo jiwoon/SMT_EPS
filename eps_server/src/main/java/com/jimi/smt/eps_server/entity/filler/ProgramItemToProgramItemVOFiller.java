@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component;
 
 import com.jimi.smt.eps_server.entity.ProgramItem;
 import com.jimi.smt.eps_server.entity.vo.ProgramItemVO;
-import com.jimi.smt.eps_server.util.VoFieldFiller;
+import com.jimi.smt.eps_server.util.EntityFieldFiller;
 
 @Component
-public class ProgramItemToProgramItemVOFiller extends VoFieldFiller<ProgramItem, ProgramItemVO> {
+public class ProgramItemToProgramItemVOFiller extends EntityFieldFiller<ProgramItem, ProgramItemVO> {
 
 	@Override
 	public ProgramItemVO fill(ProgramItem programItem) {

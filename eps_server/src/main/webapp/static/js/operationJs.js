@@ -13,8 +13,11 @@ $(function(){
         },function(){
             $(this).removeClass("ui-state-hover");})
         .on("click",function(){
-            //ExcelDownload();
-            console.log(111);
+            console.log($("#operationIPQC option:selected").val());
+            console.log($("#clientName").val());
+            console.log($("#line option:selected").val());
+            console.log($("#workOrderNum").val());
+            ExcelDownload1();
         });
     //查询时输出传输
     function searchAndCreate(){
@@ -32,6 +35,7 @@ $(function(){
             },
             success : function(data){
                 var dataLength  = data.length ; //获取数据长度
+                console.log(dataLength);
                 autoCreateTable(data);
                 $(window).on("scroll",function(){
                     newNum = originNum ;
@@ -78,42 +82,39 @@ $(function(){
     }
 
     //    上传参数并下载Excel文件
-    function ExcelDownload(){
-        var form   = $("<form>");
-        $(document.body).append(form);
+    function ExcelDownload1(){
         var url = "operation/downloadOperationReport";
-        form.attr("style","display : none").attr("target","").attr("method","post").attr("action",url).attr("enctype","multipart/form-data");
+        var form1 = $("<form>");
+        $(document.body).append(form1);
+        form1.attr("style","display : none")
+             .attr("target","")
+             .attr("method","post")
+            .attr("action",url);
+        var input1 = $("<input>");
+        input1.attr("style","display : none")           //类型
+              .attr("name","type")
+              .attr("value" ,$("#operationIPQC option:selected").val());
 
-        var input1 = $("<input>");     //存储客户名
-        input1.attr("type","hidden")
-            .attr("value",$("#clientName").val());
+        var input2 = $("<input>");   //客户名
+        input2.attr("style","display : none")
+            .attr("name","client")
+              .attr("value",$("#clientName").val());
 
-        var input2 = $("<input>");     //存储类型
-        input2.attr("type","hidden")
-            .attr("value",$("#operationIPQC option:selected").val());
-
-        var input3 = $("<input>");     //存储线别
-        input3.attr("type","hidden")
+        var input3 = $("<input>");   //线别
+        input3.attr("style","display : none")
+            .attr("name","line")
             .attr("value",$("#line option:selected").val());
 
-        var input4 = $("<input>");     //存储工单号
-        input4.attr("type","hidden")
-            .attr("value",$("#workOrderNum").val());
+        var input4 = $("<input>");
+        input4.attr("style","display :none")
+            .attr("name","workOrderNo")
+              .attr("value" ,$("#workOrderNum").val());
+        form1.append(input1);
+        form1.append(input2);
+        form1.append(input3);
+        form1.append(input4);
 
-        var input5 = $("<input>");     //存储开始时间
-        input5.attr("type","hidden")
-            .attr("value",$("#startTime").val());
-
-        var input6 = $("<input>");   //存储截止时间
-        input5.attr("type","hidden")
-            .attr("value",$("#endTime").val());
-        form.append(input1)
-            .append(input2)
-            .append(input3)
-            .append(input4)
-            .append(input5)
-            .append(input6);
-        form.submit();
-        form.remove();
+        form1.submit();
+        form1.remove();
     }
 });

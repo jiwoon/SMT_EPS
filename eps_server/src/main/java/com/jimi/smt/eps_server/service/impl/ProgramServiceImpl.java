@@ -17,11 +17,15 @@ import com.jimi.smt.eps_server.entity.Program;
 import com.jimi.smt.eps_server.entity.ProgramExample;
 import com.jimi.smt.eps_server.entity.ProgramItem;
 import com.jimi.smt.eps_server.entity.ProgramItemExample;
+import com.jimi.smt.eps_server.entity.ProgramItemVisit;
+import com.jimi.smt.eps_server.entity.ProgramItemVisitExample;
 import com.jimi.smt.eps_server.entity.filler.ProgramItemToProgramItemVOFiller;
+import com.jimi.smt.eps_server.entity.filler.ProgramItemToProgramItemVisitFiller;
 import com.jimi.smt.eps_server.entity.filler.ProgramToProgramVOFiller;
 import com.jimi.smt.eps_server.entity.vo.ProgramItemVO;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 import com.jimi.smt.eps_server.mapper.ProgramItemMapper;
+import com.jimi.smt.eps_server.mapper.ProgramItemVisitMapper;
 import com.jimi.smt.eps_server.mapper.ProgramMapper;
 import com.jimi.smt.eps_server.service.ProgramService;
 import com.jimi.smt.eps_server.util.ExcelHelper;
@@ -37,9 +41,13 @@ public class ProgramServiceImpl implements ProgramService {
 	@Autowired
 	private ProgramItemMapper programItemMapper;
 	@Autowired
+	private ProgramItemVisitMapper programItemVisitMapper;
+	@Autowired
 	private ProgramToProgramVOFiller programToProgramVOFiller;
 	@Autowired
 	private ProgramItemToProgramItemVOFiller programItemToProgramItemVOFiller;
+	@Autowired
+	private ProgramItemToProgramItemVisitFiller programItemToProgramItemVisitFiller;
 	
 	@Override
 	public List<Map<String, Object>> upload(MultipartFile programFile, Integer boardType) throws IOException {
@@ -151,7 +159,6 @@ public class ProgramServiceImpl implements ProgramService {
 	}
 
 
-
 	@Override
 	public List<ProgramVO> list(String programName, String fileName, String line, String workOrder, Integer state,
 			String ordBy) {
@@ -201,7 +208,6 @@ public class ProgramServiceImpl implements ProgramService {
 	}
 
 
-
 	@Override
 	public boolean cancel(String workOrder, String line, Integer boardType) {
 		ProgramExample example = new ProgramExample();
@@ -223,12 +229,13 @@ public class ProgramServiceImpl implements ProgramService {
 		program2.setState(3);
 		int result = programMapper.updateByExampleSelective(program2, example);
 		if(result != 0) {
+			//清除ProgramItemVisit
+			clearVisits(program.getId());
 			return true;
 		}else {
 			return false;
 		}
 	}
-
 
 
 	@Override
@@ -252,6 +259,8 @@ public class ProgramServiceImpl implements ProgramService {
 		program2.setState(2);
 		int result = programMapper.updateByExampleSelective(program2, example);
 		if(result != 0) {
+			//清除ProgramItemVisit
+			clearVisits(program.getId());
 			return true;
 		}else {
 			return false;
@@ -280,11 +289,27 @@ public class ProgramServiceImpl implements ProgramService {
 		Program program2 = new Program();
 		program2.setState(1);
 		int result = programMapper.updateByExampleSelective(program2, example);
+		//初始化Program_Item_Visit
+		ProgramItemExample programItemExample = new ProgramItemExample();
+		programItemExample.createCriteria().andProgramIdEqualTo(program.getId());
+		List<ProgramItem> programItems = programItemMapper.selectByExample(programItemExample);
+		List<ProgramItemVisit> programItemVisits = programItemToProgramItemVisitFiller.fill(programItems);
+		for (ProgramItemVisit programItemVisit : programItemVisits) {
+			programItemVisitMapper.insertSelective(programItemVisit);
+		}
 		if(result != 0) {
 			return true;
 		}else {
 			return false;
 		}
+	}
+
+
+
+	private void clearVisits(String programId) {
+		ProgramItemVisitExample programItemVisitExample = new ProgramItemVisitExample();
+		programItemVisitExample.createCriteria().andProgramIdEqualTo(programId);
+		programItemVisitMapper.deleteByExample(programItemVisitExample);
 	}
 
 
