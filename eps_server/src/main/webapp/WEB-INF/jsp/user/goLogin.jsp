@@ -29,11 +29,6 @@
                 </section>
             </div>
         </div>
-        <div class="showError" id="showError" style="display: none">
-            <span class="errorShowBox">您输入的账号或者密码错误，请重新输入
-            <button id="errorShowBox-btn" class="errorShowBox-btn">确定</button>
-            </span>
-        </div>
     </div>
 </body>
 </html>

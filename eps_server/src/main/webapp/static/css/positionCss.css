@@ -129,31 +129,36 @@ s, i, em {
 /*提示语句*/
 .position-table-warm{
     display: block;
-    width:58%;
+    width:100%;
     background-color: #ffffff;
     height:47px;
     font-size: 18px;
-    padding-left: 285px;
-    padding-right: 161px;
     padding-top: 10px;
+    padding-left: 5px;
     color: #FF0000;
     font-weight: bold;
-    line-height: 21px;
+    line-height: normal;
+    text-indent: 2em;
 }
 
 /*搜索框*/
 .position-table-search{
     margin-top: 2px;
-    width:64%;
+    width:100%;
     height:30px;
     background-color: #ffffff;
     font-size: 20px;
-    padding-left: 20px;
+    padding-left: 5px;
     padding-top: 12px;
     padding-bottom: 5px;
-    float: left;
 }
-.position-table-search input{
+.completeAuto{
+    float:left;
+    width:177px;
+    position: relative;
+    z-index: 999;
+}
+.completeAuto input{
     border: 1px solid black;
     width:90px;
     height:25px;
@@ -177,13 +182,14 @@ s, i, em {
 /*文件上传部分*/
 .upload{
     margin-top: 2px;
-    width:30%;
+    width:100%;
     height:44px;
     background-color: #ffffff;
-    float: right;
     padding-left: 10px;
     padding-top: 2px;
     position: relative;
+    line-height: 41px;
+    border-bottom: 2px solid #77d5f7;
 }
 .fileUpload{
     width:160px;
@@ -193,15 +199,15 @@ s, i, em {
     padding:5px;
     position: absolute;
     top:5px;
-    right:20px;
+    left:26%;
 }
 .show-warm{
     display: none;
     height:20px;
     color:red;
     position: absolute;
-    bottom:0;
-    left:10px;
+    bottom:24px;
+    left:360px;
     letter-spacing: 3px;
 }
 .banmian{
@@ -212,10 +218,9 @@ s, i, em {
     color: #000;
     width:100%;
     background-color: #ffffff;
-    margin-top: 55px;
-    position: relative;
 }
 .mainTable td{
+    width:auto;
     padding:12px 16px;
     height:30px;
     border: 1px solid black;
@@ -228,20 +233,23 @@ s, i, em {
 }
 .positionTable table{
     margin-left: 10px;
+    mso-cellspacing: 0;
 }
 #positionTableTitle td{
     padding:10px 40px;
 }
+.commonDiv{
+    width:258px;
+}
 .stateModifyCommon{
-    position: absolute;
-    top:62px;
+    float: left;
 }
 .stateModifyBtn{
     font-size: 18px;
     padding:5px;
-    left:76%;
+    margin-right: 10px;
 }
 .stateModifySel{
-    left:85%;
     font-size: 20px;
+    margin-right: 10px;
 }

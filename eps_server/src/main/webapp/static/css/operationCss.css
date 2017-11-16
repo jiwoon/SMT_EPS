@@ -2,7 +2,7 @@
     background-color: #ffffff;
     font-size: 18px;
     padding:5px;
-    line-height: 27px;
+    line-height: 14px;
     position: relative;
     border-bottom: 3px solid #77d5f7;
 }
@@ -34,8 +34,8 @@
 }
 .operation-search em{
     position: absolute;
-    top:56px;
-    left:534px;
+    top:62px;
+    left:514px;
 }
 .operation-search select{
     font-size: 18px;
@@ -50,10 +50,19 @@
     top:25px;
 }
 .btnSearch{
-    right:18%;
+    left:748px;
 }
 .btnLoad{
-    right:6%;
+    left:820px;
+}
+
+.autoCom{
+    width:265px ;
+    position: relative;
+    z-index: 999;
+}
+.autoInput{
+    float: left;
 }
 .operationTable{
     color: #000;

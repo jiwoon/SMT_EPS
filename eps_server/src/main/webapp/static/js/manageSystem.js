@@ -1,10 +1,14 @@
 $(function(){
+
+
     //设置登录时人的账号
    var screenWidth = $(window).width();     //获取屏幕宽度
     var screenHeight = $(window).height(); //获取屏幕高度
     var markNum = 0;  //用于记录修改的是哪一行以便返回数据
     //根据屏幕设置宽高度
     var trLength = 0;   //存储显示表格tr的个数
+    var array1 = [];   //用于存储工号
+    var array2 = [];   //用于存储姓名
     $(".manageSystem #banner .main").css("width",screenWidth);    //版头的宽度
     $(".main").css("height",screenHeight-81);               //
 
@@ -43,6 +47,9 @@ $(function(){
             data: {},
             success: function (data){
                 autoCreateTable(data);
+                btnBindEvent(data);
+                autoComplete("workId",array1,IDSearch);
+                autoComplete("name",array2,nameSearch);
             },
             error:function(){
                 console.log("数据传输失败");
@@ -70,7 +77,6 @@ $(function(){
         window.location.href = "../eps_server/operation/goDisplayReport2";
     });
 
-
 //    查询按钮点击事件
     $("#find").on("click",function(){
         $.ajax({
@@ -78,7 +84,7 @@ $(function(){
             type: "post",
             dataType: "json",
             data:{
-                id :$("#id").val()==""?null:$("#id").val(),
+                id :$("#workId").val()==""?null:$("#workId").val(),
                 name:$("#name").val()==""?null:$("#name").val(),
                 type:$("#type").val(),
                 classType:$("#classType").val(),
@@ -86,6 +92,7 @@ $(function(){
             },
             success: function (data){
                 autoCreateTable(data);
+                btnBindEvent(data);
             },
             error:function(){
                 console.log("数据传输失败!!!");
@@ -182,11 +189,11 @@ $(function(){
             success: function (data){
                 if(data.result == "succeed"){
                     alert("保存成功");
-                    $("#ShowTable td").eq(6*markNum).text(modifiedId);
-                    $("#ShowTable td").eq(6*markNum+1).text(modifiedName);
-                    $("#ShowTable td").eq(6*markNum+2).text(modifiedType1);
-                    $("#ShowTable td").eq(6*markNum+3).text(modifiedClassType1);
-                    $("#ShowTable td").eq(6*markNum+4).text(modifiedEnabled1);
+                    $("#ShowTable td").eq(7*markNum).text(modifiedId);
+                    $("#ShowTable td").eq(7*markNum+1).text(modifiedName);
+                    $("#ShowTable td").eq(7*markNum+2).text(modifiedType1);
+                    $("#ShowTable td").eq(7*markNum+3).text(modifiedClassType1);
+                    $("#ShowTable td").eq(7*markNum+4).text(modifiedEnabled1);
                 }
             },
             error:function(){
@@ -197,11 +204,21 @@ $(function(){
 
     //    动态生成表格
     function autoCreateTable(data){
+        array1 = [];
+        array2 = [];
         $("#ShowTable").empty();
         $("#btnControl").empty();
         var staffNum = data.length;    //获取员工总人数
         var html = "";     //用于动态创建表格
         for(var i = 0;i<staffNum;i++) {
+            var $json = {};
+            $json.label = data[i].id;
+            array1.push($json);
+
+            var $json1 = {};
+            $json1.label = data[i].name;
+            array2.push($json1);
+
             //创建表格
             html += "<tr>";
             html += "<td>" + data[i].id + "</td>"
@@ -210,54 +227,54 @@ $(function(){
             html += "<td>" + data[i].classTypeName + "</td>"
             html += "<td>" + data[i].isEnabled + "</td>"
             html += "<td>" + data[i].createTimeString + "</td>"
+            html += "<td>" + "<button id='" + i + "' class='operateBtn ui-state-default ui-corner-all ui-corner-top modify'>修改</button>" +
+                "<button id='0" + i + "' class='operateBtn ui-state-default ui-corner-all ui-corner-top delete'>删除</button>"+"</td>"
             html += "</tr>";
             $("#ShowTable").html(html);
-
-            //创建按钮
-            //修改按钮
-            var btn1 = $("<button id='0" + i + "' class='operateBtn ui-state-default ui-corner-all ui-corner-top modify'>修改</button>");
-            //删除按钮
-            var btn2 = $("<button id='"+i+"' class='operateBtn ui-state-default ui-corner-all ui-corner-top delete'>删除</button>");
-            if(data[i].isEnabled == "否"){
-                btn2.attr("disabled","disabled")
-                    .removeClass("ui-state-default");
-            }
-            btn1.css("top",65+i*55);
-            btn2.css("top",65+i*55);
-            btn1.hover(function(){
-                $(this).addClass("ui-state-hover")
-            },function(){
-                $(this).removeClass("ui-state-hover");
-            });
-            //修改按钮点击事件
-            btn1.on("click",function(){
-                var d = parseInt($(this).attr("id"));     //id对应的按键的数据
-                markNum = d;
-                modifyBtn(d);
-            });
-
-            btn2.on("click",function(){           //删除键点击事件
-                $(this).attr("disabled","disabled")
-                    .removeClass("ui-state-default ui-state-hover");
-                var  j = parseInt($(this).attr("id"));
-                deleteBtn(j);
-            });
-            btn2.hover(function(){
-                $(this).addClass("ui-state-hover")
-            },function(){
-                $(this).removeClass("ui-state-hover");
-            });
-            $("#btnControl").append(btn1)
-                .append(btn2);
         }
         setBakcGroundColor();
     }
+    
+    //给按钮绑定事件
+    function  btnBindEvent(data){
+        for(var i = 0;i<data.length;i++){
+            var workState = $("#ShowTable td").eq(4+7*i).text();
+            //修改按钮
+            $("#" + i).hover(function () {
+                         $(this).addClass("ui-state-hover")
+                        }, function () {
+                         $(this).removeClass("ui-state-hover");
+                        })
+                .on("click",function(){
+                    var d = parseInt($(this).attr("id"));     //id对应的按键的数据
+                    markNum = d;
+                    modifyBtn(d);
+                });
+            //删除按钮
+            $("#0"+i).hover(function () {
+                    $(this).addClass("ui-state-hover")
+                }, function () {
+                    $(this).removeClass("ui-state-hover");
+                })
+                .on("click",function(){
+                    $(this).attr("disabled","disabled")
+                           .removeClass("ui-state-default ui-state-hover");
+                    var  j = parseInt($(this).attr("id"));
+                    deleteBtn(j);
+                });
+            if(workState == "否"){
+                $("#0"+i).attr("disabled","disabled")
+                    .removeClass("ui-state-default ui-state-hover");
+            }
+        }
+    }
+
     //给背景色
     function setBakcGroundColor(){
         trLength = $("#ShowTable tr").length;
         for(var q = 0;q<trLength/2;q++){
-            for(t = 6; t < 12; t++){
-                $("#ShowTable td").eq(t+12*q).css({"background-color":"#BFFFFF"});
+            for(t = 7; t < 14; t++){
+                $("#ShowTable td").eq(t+14*q).css({"background-color":"#BFFFFF"});
             }
         }
     }
@@ -313,7 +330,7 @@ $(function(){
     function  modifyBtn(h){
         var targetType = 0;
         //对岗位类型进行判断
-        switch ($("#ShowTable td").eq(2+6*h).text()){
+        switch ($("#ShowTable td").eq(2+7*h).text()){
             case "仓库操作员" :
                 targetType = 0;
                 break;
@@ -327,10 +344,10 @@ $(function(){
                 targetType = 3;
                 break;
         }
-        var targetId = $("#ShowTable td").eq(6*h).text();
-        var targetName = $("#ShowTable td").eq(1+6*h).text();
-        var targetClassType =$("#ShowTable td").eq(3+6*h).text() == "白班" ? 0 : 1;
-        var targetEnable = $("#ShowTable td").eq(4+6*h).text() == "是" ? true : false;
+        var targetId = $("#ShowTable td").eq(7*h).text();
+        var targetName = $("#ShowTable td").eq(1+7*h).text();
+        var targetClassType =$("#ShowTable td").eq(3+7*h).text() == "白班" ? 0 : 1;
+        var targetEnable = $("#ShowTable td").eq(4+7*h).text() == "是" ? true : false;
         $("#modifyId").val(targetId)  ;
         $("#modifyName").val(targetName) ;
         $("#modifyType").find('option[value='+targetType+']').attr("selected",true);
@@ -338,6 +355,66 @@ $(function(){
         $("#modifyEnable").find('option[value='+targetEnable+']').attr("selected",true);
         $("#staff").css("display","none");
         $("#staff-modify").css("display","block");
+    }
+
+//自动补全函数
+    function autoComplete(id , array,fn){
+        $("#"+id).autocompleter({
+            highlightMatches : true,
+            source : array,
+            template : '{{ label }}',
+            empty : false,
+            limit : 5 ,
+            callback : function( index ,value,selected){
+                fn(selected.label);
+            }
+        });
+    }
+
+//    工号查询回调函数
+    function IDSearch(a){
+        $.ajax({
+            url: "user/list",
+            type: "post",
+            dataType: "json",
+            data:{
+                id :a,
+                name:$("#name").val()==""?null:$("#name").val(),
+                type:$("#type").val(),
+                classType:$("#classType").val(),
+                enabled :$("#enabled").val()
+            },
+            success: function (data){
+                autoCreateTable(data);
+                btnBindEvent(data);
+            },
+            error:function(){
+                console.log("数据传输失败!!!");
+            }
+    })
+    }
+
+//    姓名查询回调函数
+    function nameSearch(a){
+        $.ajax({
+            url: "user/list",
+            type: "post",
+            dataType: "json",
+            data: {
+                id: $("#workId").val() == "" ? null : $("#workId").val(),
+                name: a,
+                type: $("#type").val(),
+                classType: $("#classType").val(),
+                enabled: $("#enabled").val()
+            },
+            success: function (data) {
+                autoCreateTable(data);
+                btnBindEvent(data);
+            },
+            error: function () {
+                console.log("数据传输失败!!!");
+            }
+        });
     }
 });
 
