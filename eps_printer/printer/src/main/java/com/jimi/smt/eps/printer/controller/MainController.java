@@ -443,7 +443,7 @@ public class MainController implements Initializable {
 				throw new IOException();
 			}
 			Runtime.getRuntime().exec("printer.exe");
-			printerSocket = new Socket("10.10.11.110", 10101);
+			printerSocket = new Socket("127.0.0.1", 10101);
 		} catch (IOException e) {
 			error("启动打印机程序失败");
 			e.printStackTrace();
