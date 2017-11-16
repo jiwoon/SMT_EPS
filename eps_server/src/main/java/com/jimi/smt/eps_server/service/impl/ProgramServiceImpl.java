@@ -28,7 +28,7 @@ import com.jimi.smt.eps_server.mapper.ProgramItemMapper;
 import com.jimi.smt.eps_server.mapper.ProgramItemVisitMapper;
 import com.jimi.smt.eps_server.mapper.ProgramMapper;
 import com.jimi.smt.eps_server.service.ProgramService;
-import com.jimi.smt.eps_server.util.ExcelHelper;
+import com.jimi.smt.eps_server.util.ExcelSpringHelper;
 import com.jimi.smt.eps_server.util.FieldUtil;
 import com.jimi.smt.eps_server.util.ResultUtil;
 import com.jimi.smt.eps_server.util.UuidUtil;
@@ -52,7 +52,7 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	public List<Map<String, Object>> upload(MultipartFile programFile, Integer boardType) throws IOException {
 		//读文件
-		ExcelHelper helper = ExcelHelper.from(programFile);
+		ExcelSpringHelper helper = ExcelSpringHelper.from(programFile);
 		
 		//初始化结果
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -209,12 +209,9 @@ public class ProgramServiceImpl implements ProgramService {
 
 
 	@Override
-	public boolean cancel(String workOrder, String line, Integer boardType) {
+	public boolean cancel(String id) {
 		ProgramExample example = new ProgramExample();
-		example.createCriteria()
-			.andWorkOrderEqualTo(workOrder)
-			.andLineEqualTo(line)
-			.andBoardTypeEqualTo(boardType);
+		example.createCriteria().andIdEqualTo(id);
 		//状态判断
 		List<Program> programs = programMapper.selectByExample(example);
 		if(programs.isEmpty()) {
@@ -239,12 +236,9 @@ public class ProgramServiceImpl implements ProgramService {
 
 
 	@Override
-	public boolean finish(String workOrder, String line, Integer boardType) {
+	public boolean finish(String id) {
 		ProgramExample example = new ProgramExample();
-		example.createCriteria()
-			.andWorkOrderEqualTo(workOrder)
-			.andLineEqualTo(line)
-			.andBoardTypeEqualTo(boardType);
+		example.createCriteria().andIdEqualTo(id);
 		//状态判断
 		List<Program> programs = programMapper.selectByExample(example);
 		if(programs.isEmpty()) {
@@ -270,12 +264,9 @@ public class ProgramServiceImpl implements ProgramService {
 
 
 	@Override
-	public boolean start(String workOrder, String line, Integer boardType) {
+	public boolean start(String id) {
 		ProgramExample example = new ProgramExample();
-		example.createCriteria()
-			.andWorkOrderEqualTo(workOrder)
-			.andLineEqualTo(line)
-			.andBoardTypeEqualTo(boardType);
+		example.createCriteria().andIdEqualTo(id);
 		//状态判断
 		List<Program> programs = programMapper.selectByExample(example);
 		if(programs.isEmpty()) {

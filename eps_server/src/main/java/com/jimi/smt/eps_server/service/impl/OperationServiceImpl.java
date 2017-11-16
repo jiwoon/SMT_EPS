@@ -26,7 +26,7 @@ import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.mapper.OperationMapper;
 import com.jimi.smt.eps_server.mapper.ProgramMapper;
 import com.jimi.smt.eps_server.service.OperationService;
-import com.jimi.smt.eps_server.util.ExcelHelper;
+import com.jimi.smt.eps_server.util.ExcelSpringHelper;
 
 @Service
 public class OperationServiceImpl implements OperationService {
@@ -107,7 +107,7 @@ public class OperationServiceImpl implements OperationService {
 	@Override
 	public ResponseEntity<byte[]> downloadClientReport(String client, String programNo, String line, String orderNo,
 			String workOrderNo, String startTime, String endTime) throws ParseException, IOException {
-		ExcelHelper helper = ExcelHelper.create();
+		ExcelSpringHelper helper = ExcelSpringHelper.create();
 		//获取数据
 		List<ClientReport> clientReports = listClientReport(client, programNo, line, orderNo, workOrderNo, startTime, endTime);
 		helper.fill(clientReports);
@@ -223,7 +223,7 @@ public class OperationServiceImpl implements OperationService {
 	public ResponseEntity<byte[]> downloadOperationReport(String client, String line, String workOrderNo,
 			String startTime, String endTime, Integer type) throws ParseException, IOException {
 		List<OperationReport> operationReports = listOperationReport(client, line, workOrderNo, startTime, endTime, type);
-		ExcelHelper helper = ExcelHelper.create();
+		ExcelSpringHelper helper = ExcelSpringHelper.create();
 		//解析操作类型
 		String title = null;
 		switch (type) {

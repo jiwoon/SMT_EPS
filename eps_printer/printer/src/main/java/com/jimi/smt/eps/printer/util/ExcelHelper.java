@@ -1,4 +1,4 @@
-package com.jimi.smt.eps_server.util;
+package com.jimi.smt.eps.printer.util;
 
 import java.io.File;
 import java.io.FileInputStream;
