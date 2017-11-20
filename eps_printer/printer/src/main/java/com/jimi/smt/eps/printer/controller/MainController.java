@@ -247,6 +247,8 @@ public class MainController implements Initializable {
 							    @Override
 							    public void run() {
 							        //更新JavaFX的主线程的代码放在此处
+							    	materialNoTf.setText("");
+							    	materialNoTf.requestFocus();
 							    	info("打印成功");
 							    }
 							});
@@ -255,6 +257,7 @@ public class MainController implements Initializable {
 							    @Override
 							    public void run() {
 							        //更新JavaFX的主线程的代码放在此处
+							    	printBt.setDisable(false);
 							    	error("打印失败");
 							    }
 							});
@@ -264,6 +267,7 @@ public class MainController implements Initializable {
 						    @Override
 						    public void run() {
 						        //更新JavaFX的主线程的代码放在此处
+						    	printBt.setDisable(false);
 						    	error("无法接收打印结果");
 						    }
 						});
@@ -274,7 +278,6 @@ public class MainController implements Initializable {
 						    public void run() {
 						        //更新JavaFX的主线程的代码放在此处
 						    	//收尾操作
-								printBt.setDisable(false);
 								printBt.setText("打印");
 						    }
 						});
@@ -350,7 +353,7 @@ public class MainController implements Initializable {
 	 */
 	private void loadTableSelectorData() {
 		ObservableList<String> list = FXCollections.observableArrayList();
-		for (int i = 0; i < excel.getBook().getNumberOfSheets(); i++) {
+		for (int i = 0; i <  excel.getBook().getNumberOfSheets(); i++) {
 			String name = excel.getBook().getSheetAt(i).getSheetName();
 			list.add(name);
 		}
@@ -377,6 +380,7 @@ public class MainController implements Initializable {
 		}
 		materialTb.setItems(materialPropertiesList);
 		info("数据解析成功，请在右上方扫入或输入料号");
+		materialNoTf.requestFocus();
 	}
 
 	private void init() {
@@ -408,31 +412,32 @@ public class MainController implements Initializable {
 		File materialFile = new File(filePath);
 		try {
 			excel = ExcelHelper.from(materialFile);
+			
+			//设置当前文件名
+			fileSelectTf.setText(filePath);
+			info("文件加载成功");
+			
+			//加载表选择下拉菜单数据
+			loadTableSelectorData();
+			
+			//切换到指定sheet
+			if(sheetName == null || sheetName.equals("")) {
+				return;
+			}
+			if(!excel.switchSheet(sheetName)) {
+				error("表\""+ sheetName +"\"不存在");
+				return;
+			}
+			//设置当前下拉选项
+			tableSelectCb.getSelectionModel().select(excel.getBook().getSheetIndex(sheetName));
+			
+			//加载表数据
+			loadTableData();
 		} catch (IOException e) {
 			e.printStackTrace();
 			error("供应商料号表文件\""+ materialFile.getName() +"\"不存在");
 		}
-		//设置当前文件名
-		fileSelectTf.setText(filePath);
-		info("文件加载成功");
 		
-		
-		//加载表选择下拉菜单数据
-		loadTableSelectorData();
-		
-		//切换到指定sheet
-		if(sheetName == null || sheetName.equals("")) {
-			return;
-		}
-		if(!excel.switchSheet(sheetName)) {
-			error("表\""+ sheetName +"\"不存在");
-			return;
-		}
-		//设置当前下拉选项
-		tableSelectCb.getSelectionModel().select(excel.getBook().getSheetIndex(sheetName));
-		
-		//加载表数据
-		loadTableData();
 		
 		//初始化时间
 		timeLb.setText(DateUtil.yyyyMMddHHmmss(new Date()));
