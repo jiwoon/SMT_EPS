@@ -11,6 +11,7 @@ import com.jimi.smt.eps_appclient.GlobalData;
 import com.jimi.smt.eps_appclient.R;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Unit.OperLogItem;
+import com.jimi.smt.eps_appclient.Unit.ProgramItemVisit;
 import com.jimi.smt.eps_appclient.Views.InfoDialog;
 
 import java.sql.Timestamp;
@@ -35,6 +36,11 @@ public class GlobalFunc {
         this.context=context;
     }
 
+    /**
+     * 添加日志
+     * @param globalData
+     * @param materialItem
+     */
     //operator,time,type,result,lineseat,material_no,old_material_no,
     // scanlineseat,remark,fileid,line,work_order,board_type
     public void AddDBLog(final GlobalData globalData,final MaterialItem materialItem) {
@@ -58,6 +64,61 @@ public class GlobalFunc {
                 operLogItem.setBoard_type(globalData.getBoard_type());
                 operLogItems.add(operLogItem);
                 new DBService().inserOpertLog(operLogItems);
+            }
+        }).start();
+    }
+
+    /**
+     * 更新日志
+     * @param globalData
+     * @param materialItem
+     */
+    public void updateVisitLog(final GlobalData globalData, final MaterialItem materialItem){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ProgramItemVisit programItemVisit = new ProgramItemVisit();
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                programItemVisit.setLast_operation_type(globalData.getUpdateType());
+                programItemVisit.setLast_operation_time(timestamp);
+                programItemVisit.setProgram_id(materialItem.getFileId());
+                programItemVisit.setLineseat(materialItem.getOrgLineSeat());
+                programItemVisit.setMaterial_no(materialItem.getOrgMaterial());
+                programItemVisit.setScan_lineseat(materialItem.getScanLineSeat());
+                programItemVisit.setScan_material_no(materialItem.getScanMaterial());
+                byte result = 1;
+                if (materialItem.getResult().equalsIgnoreCase("PASS")){
+                    result = 1;
+                }else if (materialItem.getResult().equalsIgnoreCase("FAIL")){
+                    result = 0;
+                }
+                switch (globalData.getUpdateType()){
+                    case 0:
+                        programItemVisit.setFeed_result(result);
+                        programItemVisit.setFeed_time(timestamp);
+                        break;
+                    case 1:
+                        programItemVisit.setChange_result(result);
+                        programItemVisit.setChange_time(timestamp);
+                        break;
+                    case 2:
+                        programItemVisit.setCheck_result(result);
+                        programItemVisit.setCheck_time(timestamp);
+                        break;
+                    case 3:
+                        programItemVisit.setCheck_all_result(result);
+                        programItemVisit.setCheck_all_time(timestamp);
+                        break;
+                    case 4:
+                        programItemVisit.setStore_issue_result(result);
+                        programItemVisit.setStore_issue_time(timestamp);
+                        break;
+                    case 5:
+                        programItemVisit.setFirst_check_all_result(result);
+                        programItemVisit.setFirst_check_all_time(timestamp);
+                        break;
+                }
+                new DBService().updateItemVisitLog(programItemVisit);
             }
         }).start();
     }
@@ -140,32 +201,5 @@ public class GlobalFunc {
         //包含@@
         return false;
     }
-
-
-
-    /**
-     *
-     */
-    //    private void AddAllLog() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                List<OperLogItem> operLogItems = new ArrayList<OperLogItem>();
-//                for (FeedMaterialItem feedMaterialItem:mList)
-//                {
-//                    OperLogItem operLogItem = new OperLogItem();
-//                    operLogItem.setOperator("124325");
-//                    operLogItem.setTime(new Timestamp(System.currentTimeMillis()));
-//                    operLogItem.setType(0);
-//                    operLogItem.setResult("PASS");
-//                    operLogItem.setLineseat(feedMaterialItem.getScanLineSeat());
-//                    operLogItem.setMaterial_no(feedMaterialItem.getScanMaterial());
-//                    operLogItem.setOld_material_no(feedMaterialItem.getOrgMaterial());
-//                    operLogItems.add(operLogItem);
-//                }
-//                new DBService().inserOpertLog(operLogItems);
-//            }
-//        }).start();
-//    }
 
 }

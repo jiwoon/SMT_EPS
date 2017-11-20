@@ -18,7 +18,7 @@ public class DBOpenHelper {
 
     /**
      * 连接数据库
-     * */
+     */
 
     public static Connection getConn(){
         Connection conn = null;
@@ -57,7 +57,7 @@ public class DBOpenHelper {
 
     /**
      * 关闭数据库
-     * */
+     */
 
     public static void closeAll(Connection conn, PreparedStatement ps, ResultSet rs){
         if (conn != null) {

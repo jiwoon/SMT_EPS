@@ -15,7 +15,10 @@ import android.widget.TextView;
 import com.jimi.smt.eps_appclient.ChangeMaterialFragment;
 import com.jimi.smt.eps_appclient.CheckAllMaterialFragment;
 import com.jimi.smt.eps_appclient.FeedMaterialFragment;
+import com.jimi.smt.eps_appclient.Func.Log;
+import com.jimi.smt.eps_appclient.GlobalData;
 import com.jimi.smt.eps_appclient.R;
+import com.jimi.smt.eps_appclient.Unit.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
     private String curOrderNum;
     private String curOperatorNUm;
     private TextView tv_factory_checkAll;
+    private GlobalData globalData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
 //        savedInstanceState=intent.getExtras();
 //        curOrderNum =savedInstanceState.getString("orderNum");
 //        curOperatorNUm =savedInstanceState.getString("operatorNum");
+        globalData = (GlobalData) getApplication();
         initView();
         //设置选中标题
         setSelectTabTitle(0);
@@ -60,6 +65,25 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
         tv_factory_feed.setOnClickListener(this);
         tv_factory_change.setOnClickListener(this);
         tv_factory_checkAll.setOnClickListener(this);
+        //fragment集合
+        final List<Fragment> fragmentList=new ArrayList<Fragment>();
+        fragmentList.add(new FeedMaterialFragment());
+        fragmentList.add(new ChangeMaterialFragment());
+        fragmentList.add(new CheckAllMaterialFragment());
+        //fragment适配器
+        FragmentPagerAdapter fragmentPagerAdapter=new FragmentPagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                return fragmentList.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return fragmentList.size();
+            }
+        };
+        //设置适配器
+        viewpager_factory.setAdapter(fragmentPagerAdapter);
         //设置viewpager切换事件监听
         viewpager_factory.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             //页面滑动事件
@@ -81,25 +105,6 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
 
             }
         });
-        //fragment集合
-        final List<Fragment> fragmentList=new ArrayList<Fragment>();
-        fragmentList.add(new FeedMaterialFragment());
-        fragmentList.add(new ChangeMaterialFragment());
-        fragmentList.add(new CheckAllMaterialFragment());
-        //fragment适配器
-        FragmentPagerAdapter fragmentPagerAdapter=new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return fragmentList.get(position);
-            }
-
-            @Override
-            public int getCount() {
-                return fragmentList.size();
-            }
-        };
-        //设置适配器
-        viewpager_factory.setAdapter(fragmentPagerAdapter);
     }
 
 
@@ -121,15 +126,19 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
         resetTitle();
         switch (tab){
             case 0:
+                globalData.setOperType(Constants.FEEDMATERIAL);
                 tv_factory_feed.setBackgroundResource(R.drawable.factory_feed_click_shape);
                 break;
             case 1:
+                globalData.setOperType(Constants.CHANGEMATERIAL);
                 tv_factory_change.setBackgroundResource(R.drawable.factory_change_click_shape);
                 break;
             case 2:
+                globalData.setOperType(Constants.CHECKALLMATERIAL);
                 tv_factory_checkAll.setBackgroundResource(R.drawable.factory_checkall_click_shape);
                 break;
         }
+        Log.d(TAG,"setSelectTabTitle-globalData-OperType:"+globalData.getOperType());
     }
 
     //设置标题为原状态

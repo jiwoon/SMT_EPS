@@ -5,6 +5,7 @@ import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Unit.OperLogItem;
 import com.jimi.smt.eps_appclient.Unit.Operator;
 import com.jimi.smt.eps_appclient.Unit.Program;
+import com.jimi.smt.eps_appclient.Unit.ProgramItemVisit;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.ResultSet;
@@ -102,6 +103,7 @@ public class DBService {
                 if((conn!=null)&&(!closed)){
                     for(OperLogItem operLogItem:list){
                         ps= (PreparedStatement) conn.prepareStatement(sql);
+                        Log.d(TAG,"inserOpertLog::"+operLogItem.getType());
                         String FileId = operLogItem.getFileId();
                         String Operator = operLogItem.getOperator();
                         Timestamp Time = operLogItem.getTime();
@@ -137,6 +139,246 @@ public class DBService {
             }
         }
         DBOpenHelper.closeAll(conn,ps);//关闭相关操作
+        return result;
+    }
+
+    /**
+     * 更新操作日志
+     * @param programItemVisit
+     * @return int
+     */
+    public int updateItemVisitLog(ProgramItemVisit programItemVisit){
+        int result=-1;
+        String sql = "";
+        //获取链接数据库对象
+        conn= DBOpenHelper.getConn();
+        try {
+            if(conn!=null && (!conn.isClosed())){
+                Log.d(TAG,"updateItemVisitLog::"+programItemVisit.getLast_operation_type());
+                switch (programItemVisit.getLast_operation_type()){
+                    case 0://上料
+                        sql="UPDATE program_item_visit SET last_operation_type = 0, last_operation_time = ?, feed_result = ?,feed_time = ?,scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ? AND material_no = ?";
+                        ps= (PreparedStatement) conn.prepareStatement(sql);
+                        ps.setTimestamp(1,programItemVisit.getLast_operation_time());
+                        ps.setByte(2,programItemVisit.getFeed_result());
+                        ps.setTimestamp(3,programItemVisit.getFeed_time());
+                        ps.setString(4,programItemVisit.getScan_lineseat());
+                        ps.setString(5,programItemVisit.getScan_material_no());
+                        ps.setString(6,programItemVisit.getProgram_id());
+                        ps.setString(7,programItemVisit.getLineseat());
+                        ps.setString(8,programItemVisit.getMaterial_no());
+                        break;
+                    case 1://换料
+                        sql="UPDATE program_item_visit SET last_operation_type = 1, last_operation_time = ?, change_result = ?,change_time = ?,scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ?";
+                        ps= (PreparedStatement) conn.prepareStatement(sql);
+                        ps.setTimestamp(1,programItemVisit.getLast_operation_time());
+                        ps.setByte(2,programItemVisit.getChange_result());
+                        ps.setTimestamp(3,programItemVisit.getChange_time());
+                        ps.setString(4,programItemVisit.getScan_lineseat());
+                        ps.setString(5,programItemVisit.getScan_material_no());
+                        ps.setString(6,programItemVisit.getProgram_id());
+                        ps.setString(7,programItemVisit.getLineseat());
+//                        ps.setString(8,programItemVisit.getMaterial_no());
+                        break;
+                    case 2://抽检
+                        sql="UPDATE program_item_visit SET last_operation_type = 2, last_operation_time = ?, check_result = ?,check_time = ?,scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ?";
+                        ps= (PreparedStatement) conn.prepareStatement(sql);
+                        ps.setTimestamp(1,programItemVisit.getLast_operation_time());
+                        ps.setByte(2,programItemVisit.getCheck_result());
+                        ps.setTimestamp(3,programItemVisit.getCheck_time());
+                        ps.setString(4,programItemVisit.getScan_lineseat());
+                        ps.setString(5,programItemVisit.getScan_material_no());
+                        ps.setString(6,programItemVisit.getProgram_id());
+                        ps.setString(7,programItemVisit.getLineseat());
+//                        ps.setString(8,programItemVisit.getMaterial_no());
+                        break;
+                    case 3://全检
+                        sql="UPDATE program_item_visit SET last_operation_type = 3, last_operation_time = ?, check_all_result = ?,check_all_time = ?,scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ? AND material_no = ?";
+                        ps= (PreparedStatement) conn.prepareStatement(sql);
+                        ps.setTimestamp(1,programItemVisit.getLast_operation_time());
+                        ps.setByte(2,programItemVisit.getCheck_all_result());
+                        ps.setTimestamp(3,programItemVisit.getCheck_all_time());
+                        ps.setString(4,programItemVisit.getScan_lineseat());
+                        ps.setString(5,programItemVisit.getScan_material_no());
+                        ps.setString(6,programItemVisit.getProgram_id());
+                        ps.setString(7,programItemVisit.getLineseat());
+                        ps.setString(8,programItemVisit.getMaterial_no());
+                        break;
+                    case 4://发料
+                        sql="UPDATE program_item_visit SET last_operation_type = 4, last_operation_time = ?, store_issue_result = ?,store_issue_time = ?,scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ?";
+                        ps= (PreparedStatement) conn.prepareStatement(sql);
+                        ps.setTimestamp(1,programItemVisit.getLast_operation_time());
+                        ps.setByte(2,programItemVisit.getStore_issue_result());
+                        ps.setTimestamp(3,programItemVisit.getStore_issue_time());
+                        ps.setString(4,programItemVisit.getScan_lineseat());
+                        ps.setString(5,programItemVisit.getScan_material_no());
+                        ps.setString(6,programItemVisit.getProgram_id());
+                        ps.setString(7,programItemVisit.getLineseat());
+//                        ps.setString(8,programItemVisit.getMaterial_no());
+                        break;
+                    case 5://首检
+                        sql="UPDATE program_item_visit SET last_operation_type = 5, last_operation_time = ?, first_check_all_result = ?,first_check_all_time = ?,scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ? AND material_no = ?";
+                        ps= (PreparedStatement) conn.prepareStatement(sql);
+                        ps.setTimestamp(1,programItemVisit.getLast_operation_time());
+                        ps.setByte(2,programItemVisit.getFirst_check_all_result());
+                        ps.setTimestamp(3,programItemVisit.getFirst_check_all_time());
+                        ps.setString(4,programItemVisit.getScan_lineseat());
+                        ps.setString(5,programItemVisit.getScan_material_no());
+                        ps.setString(6,programItemVisit.getProgram_id());
+                        ps.setString(7,programItemVisit.getLineseat());
+                        ps.setString(8,programItemVisit.getMaterial_no());
+                        break;
+                }
+
+                result = ps.executeUpdate();
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
+        return result;
+    }
+
+    /**
+     * 查询某站位的是否发料(包括替换料情况)
+     * @param materialItem
+     * @return List<Byte>
+     */
+     public List<Byte> getStoreResult(MaterialItem materialItem){
+         Log.d(TAG,"materialItem-"+materialItem.getFileId());
+         Log.d(TAG,"materialItem-"+materialItem.getOrgLineSeat());
+         List<Byte> storeResult = new ArrayList<Byte>();
+         String sql = "SELECT program_item_visit.store_issue_result FROM program_item_visit WHERE program_id = ? AND lineseat = ?";
+         //获取链接数据库对象
+         conn= DBOpenHelper.getConn();
+         try {
+             if(conn!=null && (!conn.isClosed())){
+                 ps= (PreparedStatement) conn.prepareStatement(sql);
+                 ps.setString(1,materialItem.getFileId());
+                 ps.setString(2,materialItem.getOrgLineSeat());
+                 if (ps != null){
+                     rs = (ResultSet) ps.executeQuery();
+                     if (rs != null){
+                         while (rs.next()){
+                             boolean result = storeResult.add(rs.getBytes("store_issue_result")[0]);
+                             Log.d(TAG,"store_issue_result-"+rs.getBytes("store_issue_result")[0]+"-result-"+result);
+                         }
+                     }
+                 }
+             }
+         } catch (SQLException e) {
+             e.printStackTrace();
+             Log.d(TAG,"SQLException-"+e.toString());
+         }
+         return storeResult;
+    }
+
+    /**
+     * 查询某站位的是否上料(包括替换料情况)
+     * @param materialItem
+     * @return List<Byte>
+     */
+    public List<Byte> getFeedResult(MaterialItem materialItem){
+        Log.d(TAG,"materialItem-"+materialItem.getFileId());
+        Log.d(TAG,"materialItem-"+materialItem.getOrgLineSeat());
+        List<Byte> storeResult = new ArrayList<Byte>();
+        String sql = "SELECT program_item_visit.feed_result FROM program_item_visit WHERE program_id = ? AND lineseat = ?";
+        //获取链接数据库对象
+        conn= DBOpenHelper.getConn();
+        try {
+            if(conn!=null && (!conn.isClosed())){
+                ps= (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1,materialItem.getFileId());
+                ps.setString(2,materialItem.getOrgLineSeat());
+                if (ps != null){
+                    rs = (ResultSet) ps.executeQuery();
+                    if (rs != null){
+                        while (rs.next()){
+                            boolean result = storeResult.add(rs.getBytes("feed_result")[0]);
+                            Log.d(TAG,"feed_result-"+rs.getBytes("feed_result")[0]+"-result-"+result);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d(TAG,"SQLException-"+e.toString());
+        }
+        return storeResult;
+    }
+
+
+    /**
+     * 查询某站位的是否首次全检(包括替换料情况)
+     * @param materialItem
+     * @return List<Byte>
+     */
+    public List<Byte> getFirstCheckAllResult(MaterialItem materialItem){
+        Log.d(TAG,"materialItem-"+materialItem.getFileId());
+        Log.d(TAG,"materialItem-"+materialItem.getOrgLineSeat());
+        List<Byte> storeResult = new ArrayList<Byte>();
+        String sql = "SELECT program_item_visit.first_check_all_result FROM program_item_visit WHERE program_id = ? AND lineseat = ?";
+        //获取链接数据库对象
+        conn= DBOpenHelper.getConn();
+        try {
+            if(conn!=null && (!conn.isClosed())){
+                ps= (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1,materialItem.getFileId());
+                ps.setString(2,materialItem.getOrgLineSeat());
+                if (ps != null){
+                    rs = (ResultSet) ps.executeQuery();
+                    if (rs != null){
+                        while (rs.next()){
+                            boolean result = storeResult.add(rs.getBytes("first_check_all_result")[0]);
+                            Log.d(TAG,"first_check_all_result-"+rs.getBytes("first_check_all_result")[0]+"-result-"+result);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d(TAG,"SQLException-"+e.toString());
+        }
+        return storeResult;
+    }
+
+    /**
+     * 判断某个programId的站位表是否全部进行了首次全检
+     * @param programId
+     * @return boolean
+     */
+    public boolean isOrderFirstCheckAll(String programId){
+        boolean result = true;
+        String sql = "SELECT program_item_visit.first_check_all_result FROM program_item_visit WHERE program_id = ?";
+        //获取链接数据库对象
+        conn= DBOpenHelper.getConn();
+        try {
+            if(conn!=null && (!conn.isClosed())){
+                ps= (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1,programId);
+                if (ps != null){
+                    rs = (ResultSet) ps.executeQuery();
+                    if (rs != null){
+//                        Log.d(TAG,"programId:"+programId);
+//                        Log.d(TAG,"rs.next():"+rs.next());
+                        while (rs.next()){
+//                            Log.d(TAG,"first_check_all_result:"+rs.next());
+                            if (rs.getBytes("first_check_all_result")[0] == 0){
+                                result = false;
+                                Log.d(TAG,"first_check_all_result-"+rs.getBytes("first_check_all_result")[0]+"-result-"+ result);
+                                return false;
+                            }
+                        }
+                    }else {
+                        Log.d(TAG,"rs == null");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d(TAG,"SQLException-"+e.toString());
+        }
+//        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
         return result;
     }
 
@@ -242,97 +484,4 @@ public class DBService {
         return  epsAppVersion;
     }
 
-    /**
-     * 修改数据库中某个对象的状态   改
-     * */
-
-//    public int updateUserData(String phone){
-//        int result=-1;
-//        if(!StringUtils.isEmpty(phone)){
-//            //获取链接数据库对象
-//            conn= DBOpenHelper.getConn();
-//            //MySQL 语句
-//            String sql="update user set state=? where phone=?";
-//            try {
-//                boolean closed=conn.isClosed();
-//                if(conn!=null&&(!closed)){
-//                    ps= (PreparedStatement) conn.prepareStatement(sql);
-//                    ps.setString(1,"1");//第一个参数state 一定要和上面SQL语句字段顺序一致
-//
-//
-//                    ps.setString(2,phone);//第二个参数 phone 一定要和上面SQL语句字段顺序一致
-//
-//                    result=ps.executeUpdate();//返回1 执行成功
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
-//        return result;
-//    }
-
-    /**
-     * 批量向数据库插入数据   增
-     * */
-
-//    public int insertUserData(List<User> list){
-//        int result=-1;
-//        if((list!=null)&&(list.size()>0)){
-//            //获取链接数据库对象
-//            conn= DBOpenHelper.getConn();
-//            //MySQL 语句
-//            String sql="INSERT INTO user (name,phone,content,state) VALUES (?,?,?,?)";
-//            try {
-//                boolean closed=conn.isClosed();
-//                if((conn!=null)&&(!closed)){
-//                    for(User user:list){
-//                        ps= (PreparedStatement) conn.prepareStatement(sql);
-//                        String name=user.getName();
-//                        String phone=user.getPhone();
-//                        String content=user.getContent();
-//                        String state=user.getState();
-//                        ps.setString(1,name);//第一个参数 name 规则同上
-//                        ps.setString(2,phone);//第二个参数 phone 规则同上
-//                        ps.setString(3,content);//第三个参数 content 规则同上
-//                        ps.setString(4,state);//第四个参数 state 规则同上
-//                        result=ps.executeUpdate();//返回1 执行成功
-//                    }
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
-//        return result;
-//
-//
-//
-//    }
-
-    /**
-     * 删除数据  删
-     * */
-
-//    public int delUserData(String phone){
-//        int result=-1;
-//        if((!StringUtils.isEmpty(phone))&&(PhoneNumberUtils.isMobileNumber(phone))){
-//            //获取链接数据库对象
-//            conn= DBOpenHelper.getConn();
-//            //MySQL 语句
-//            String sql="delete from user where phone=?";
-//            try {
-//                boolean closed=conn.isClosed();
-//                if((conn!=null)&&(!closed)){
-//                    ps= (PreparedStatement) conn.prepareStatement(sql);
-//                    ps.setString(1, phone);
-//                    result=ps.executeUpdate();//返回1 执行成功
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        DBOpenHelper.closeAll(conn,ps);//关闭相关操作
-//        return result;
-//    }
 }

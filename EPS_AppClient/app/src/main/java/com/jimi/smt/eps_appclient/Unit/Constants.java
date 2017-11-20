@@ -11,10 +11,13 @@ public class Constants {
     public static final int CHECKMATERIAL =2;           //检料
     public static final int CHECKALLMATERIAL =3;        //全检
     public static final int STORE_ISSUE = 4;            //发料
+    public static final int FIRST_CHECK_ALL = 5;        //首次全检
     //返回首页时返回码
-    public static final int ACTIVITY_RESULT = 5;
+    public static final int ACTIVITY_RESULT = 6;
     //apk地址
-    public static final String DOWNLOAD_URL="http://39.108.231.15/SMT_EPS_APK/";
+    public static final String DOWNLOAD_URL="http://39.108.231.15/SMT_EPS_APK";
     //线号301-308
     public static final String[] lines={"301","302","303","304","305","306","307","308"};
+    //报警器域名
+    public static final String alarmIp = "http://10.10.11.11";
 }

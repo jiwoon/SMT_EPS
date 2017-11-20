@@ -103,6 +103,7 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                     break;
                 case TO_WARE_HOUSE:
                     //仓库
+                    globalData.setUserType(TO_WARE_HOUSE);
                     Toast.makeText(getApplicationContext(),"仓库",Toast.LENGTH_SHORT).show();
                     Intent warehouse=new Intent(getApplicationContext(),WareHouseActivity.class);
                     Bundle warehouseBundle=new Bundle();
@@ -114,6 +115,7 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                     break;
                 case TO_FACTORY:
                     //厂线
+                    globalData.setUserType(TO_FACTORY);
                     Toast.makeText(getApplicationContext(),"厂线",Toast.LENGTH_SHORT).show();
                     Intent factory=new Intent(getApplicationContext(),FactoryLineActivity.class);
                     Bundle factoryBundle=new Bundle();
@@ -125,6 +127,7 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                     break;
                 case TO_QC:
                     //QC
+                    globalData.setUserType(TO_QC);
                     Toast.makeText(getApplicationContext(),"QC",Toast.LENGTH_SHORT).show();
                     Intent qc=new Intent(getApplicationContext(),QCActivity.class);
                     Bundle qcBundle=new Bundle();

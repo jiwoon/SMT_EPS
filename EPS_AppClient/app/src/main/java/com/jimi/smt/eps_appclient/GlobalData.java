@@ -41,7 +41,7 @@ public class GlobalData extends Application {
     }
 
     //操作员
-    String Operator = "";
+    private String Operator = "";
 
     public String getOperator() {
         return Operator;
@@ -51,8 +51,18 @@ public class GlobalData extends Application {
         Operator = operator;
     }
 
+    //操作员类型(0:仓库操作员;1:厂线操作员;2:IPQC;3:管理员)
+    private int UserType;
+
+    public int getUserType() {
+        return UserType;
+    }
+
+    public void setUserType(int userType) {
+        UserType = userType;
+    }
+
     //操作类型
-//    private int OperType= Constants.FEEDMATERIAL;
     private int OperType;
 
     public int getOperType() {
@@ -61,6 +71,17 @@ public class GlobalData extends Application {
 
     public void setOperType(int operType) {
         OperType = operType;
+    }
+
+    //更新显示日志类型
+    private int updateType;
+
+    public int getUpdateType() {
+        return updateType;
+    }
+
+    public void setUpdateType(int updateType) {
+        this.updateType = updateType;
     }
 
     //操作线号
@@ -95,6 +116,7 @@ public class GlobalData extends Application {
     public void setBoard_type(int board_type) {
         this.board_type = board_type;
     }
+
 
     //apk下载路径
     private String apkDownloadDir;
