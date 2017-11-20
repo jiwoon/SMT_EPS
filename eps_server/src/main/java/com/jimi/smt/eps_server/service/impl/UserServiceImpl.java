@@ -93,7 +93,8 @@ public class UserServiceImpl implements UserService {
 		if(user.getPassword() != null && !user.getPassword().equals(password)) {
 			return "failed_wrong_password";
 		}
-		return "succeed";
+		
+		return filler.fill(user).getClassTypeName();
 	}
 
 }

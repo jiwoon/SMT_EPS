@@ -28,7 +28,16 @@ public class UserToUserVOFiller extends EntityFieldFiller<User, UserVO> {
 			userVO.setTypeName("IPQC");
 			break;
 		case 3:
-			userVO.setTypeName("管理员");
+			userVO.setTypeName("超级管理员");
+			break;
+		case 4:
+			userVO.setTypeName("生产管理员");
+			break;
+		case 5:
+			userVO.setTypeName("品质管理员");
+			break;
+		case 6:
+			userVO.setTypeName("工程管理员");
 			break;
 		default:
 			break;

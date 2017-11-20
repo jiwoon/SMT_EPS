@@ -88,8 +88,8 @@ public class UserController {
 			return ResultUtil.failed();
 		}
 		String result = userService.login(id, password);
-		if(result.equals("succeed")) {
-			session.setAttribute("logined", true);
+		if(!result.startsWith("failed")) {
+			session.setAttribute("logined", result);
 			return ResultUtil.succeed();
 		}else {
 			return ResultUtil.failed(result);
