@@ -8,7 +8,7 @@ import java.util.List;
  * @author Lenovo
  *
  */
-public abstract class VoFieldFiller<T, K> {
+public abstract class EntityFieldFiller<T, K> {
 	
 	/**
 	 * 封装为vo

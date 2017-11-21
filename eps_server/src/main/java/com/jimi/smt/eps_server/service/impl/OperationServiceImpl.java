@@ -26,7 +26,7 @@ import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.mapper.OperationMapper;
 import com.jimi.smt.eps_server.mapper.ProgramMapper;
 import com.jimi.smt.eps_server.service.OperationService;
-import com.jimi.smt.eps_server.util.ExcelHelper;
+import com.jimi.smt.eps_server.util.ExcelSpringHelper;
 
 @Service
 public class OperationServiceImpl implements OperationService {
@@ -47,18 +47,27 @@ public class OperationServiceImpl implements OperationService {
 		
 		OperationExample operationExample = new OperationExample();
         OperationExample.Criteria operationCriteria = operationExample.createCriteria();
+        
         //筛选PASS
         operationCriteria.andResultEqualTo("PASS");
         
+        //筛选时间
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //转化时间
         if(startTime != null && !startTime.equals("")) {
         	operationCriteria.andTimeGreaterThanOrEqualTo(simpleDateFormat.parse(startTime));
         }
-        
         if(endTime != null && !endTime.equals("")) {
         	operationCriteria.andTimeLessThanOrEqualTo(simpleDateFormat.parse(endTime));
         }
+
+        //筛选工单号
+		if(workOrderNo != null && !workOrderNo.equals("")) {
+			operationCriteria.andWorkOrderEqualTo(workOrderNo);
+		}
+		//筛选线别
+		if(line != null && !line.equals("")) {
+			operationCriteria.andLineEqualTo(line);
+		}
         
         //时间降序
         operationExample.setOrderByClause("time desc");
@@ -77,15 +86,7 @@ public class OperationServiceImpl implements OperationService {
 		}
 		//筛选订单号
 		if(orderNo != null && !orderNo.equals("")) {
-			programCriteria.andProgramNoEqualTo(orderNo);
-		}
-		//筛选工单号
-		if(workOrderNo != null && !workOrderNo.equals("")) {
-			programCriteria.andProgramNoEqualTo(workOrderNo);
-		}
-		//筛选线别
-		if(line != null && !line.equals("")) {
-			programCriteria.andLineEqualTo(line);
+			programCriteria.andWorkOrderEqualTo(orderNo);
 		}
 		
 		List<Program> programs = programMapper.selectByExample(programExample);
@@ -106,7 +107,7 @@ public class OperationServiceImpl implements OperationService {
 	@Override
 	public ResponseEntity<byte[]> downloadClientReport(String client, String programNo, String line, String orderNo,
 			String workOrderNo, String startTime, String endTime) throws ParseException, IOException {
-		ExcelHelper helper = ExcelHelper.create();
+		ExcelSpringHelper helper = ExcelSpringHelper.create();
 		//获取数据
 		List<ClientReport> clientReports = listClientReport(client, programNo, line, orderNo, workOrderNo, startTime, endTime);
 		helper.fill(clientReports);
@@ -125,23 +126,11 @@ public class OperationServiceImpl implements OperationService {
 		Date y = Date.from(yesterday.atZone(ZoneId.systemDefault()).toInstant());
 		operationExample.createCriteria()
 			.andTimeGreaterThanOrEqualTo(y)
-			.andTimeLessThanOrEqualTo(t);
+			.andTimeLessThanOrEqualTo(t)
+			.andLineEqualTo(line);
 		List<Operation> operations = operationMapper.selectByExample(operationExample);
-		//线别筛选
-		List<Operation> operations2 = new ArrayList<Operation>(operations.size());
-		ProgramExample programExample = new ProgramExample();
-		programExample.createCriteria().andLineEqualTo(line);
-		List<Program> programs = programMapper.selectByExample(programExample);
-		for (Operation operation : operations) {
-			for (Program program : programs) {
-				if(program.getId().equals(operation.getProgramId())) {
-					operations2.add(operation);
-					break;
-				}
-			}
-		}
 		//遍历
-		for (Operation operation : operations2) {
+		for (Operation operation : operations) {
 			DisplayReportItem item = null;
 			int hour = new Date().getHours() - operation.getTime().getHours();
 			if(hour < 0){
@@ -182,19 +171,27 @@ public class OperationServiceImpl implements OperationService {
 		OperationExample operationExample = new OperationExample();
         OperationExample.Criteria operationCriteria = operationExample.createCriteria();
         
+        //筛选时间
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //转化时间
         if(startTime != null && !startTime.equals("")) {
         	operationCriteria.andTimeGreaterThanOrEqualTo(simpleDateFormat.parse(startTime));
         }
-        
         if(endTime != null && !endTime.equals("")) {
         	operationCriteria.andTimeLessThanOrEqualTo(simpleDateFormat.parse(endTime));
         }
         
-        //过滤类型
-        operationCriteria.andTypeEqualTo(type);
+        //筛选工单
+  		if(workOrderNo != null && !workOrderNo.equals("")) {
+  			operationCriteria.andWorkOrderEqualTo(workOrderNo);
+  		}
+  		//筛选线别
+  		if(line != null && !line.equals("")) {
+  			operationCriteria.andLineEqualTo(line);
+  		}
         
+  		//过滤类型
+        operationCriteria.andTypeEqualTo(type);
+  		
         //时间降序
         operationExample.setOrderByClause("time desc");
         
@@ -205,14 +202,6 @@ public class OperationServiceImpl implements OperationService {
         //筛选客户
 		if(client != null && !client.equals("")) {
 			programCriteria.andClientEqualTo(client);
-		}
-		//筛选工单
-		if(workOrderNo != null && !workOrderNo.equals("")) {
-			programCriteria.andProgramNoEqualTo(workOrderNo);
-		}
-		//筛选线别
-		if(line != null && !line.equals("")) {
-			programCriteria.andLineEqualTo(line);
 		}
 		
 		List<Program> programs = programMapper.selectByExample(programExample);
@@ -234,7 +223,7 @@ public class OperationServiceImpl implements OperationService {
 	public ResponseEntity<byte[]> downloadOperationReport(String client, String line, String workOrderNo,
 			String startTime, String endTime, Integer type) throws ParseException, IOException {
 		List<OperationReport> operationReports = listOperationReport(client, line, workOrderNo, startTime, endTime, type);
-		ExcelHelper helper = ExcelHelper.create();
+		ExcelSpringHelper helper = ExcelSpringHelper.create();
 		//解析操作类型
 		String title = null;
 		switch (type) {

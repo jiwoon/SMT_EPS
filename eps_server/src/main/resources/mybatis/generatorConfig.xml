@@ -33,9 +33,11 @@
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>
 		<!-- 表和实体类的映射关系 -->
+		<table tableName="config" domainObjectName="Config"/>
 		<table tableName="program" domainObjectName="Program" />
 		<table tableName="program_item" domainObjectName="ProgramItem" />
 		<table tableName="operation" domainObjectName="Operation" />
 		<table tableName="user" domainObjectName="User" />
+		<table tableName="program_item_visit" domainObjectName="ProgramItemVisit"/>
 	</context>
 </generatorConfiguration>

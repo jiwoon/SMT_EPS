@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 
 import com.jimi.smt.eps_server.entity.User;
 import com.jimi.smt.eps_server.entity.vo.UserVO;
-import com.jimi.smt.eps_server.util.VoFieldFiller;
+import com.jimi.smt.eps_server.util.EntityFieldFiller;
 
 @Component
-public class UserToUserVOFiller extends VoFieldFiller<User, UserVO> {
+public class UserToUserVOFiller extends EntityFieldFiller<User, UserVO> {
 
 	@Override
 	public UserVO fill(User user) {

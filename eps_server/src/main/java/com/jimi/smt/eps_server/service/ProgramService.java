@@ -37,7 +37,7 @@ public interface ProgramService {
 	 * @param workOrder
 	 * @return
 	 */
-	boolean cancel(String workOrder, String line, Integer boardType);
+	boolean cancel(String id);
 
 
 	/**
@@ -45,7 +45,7 @@ public interface ProgramService {
 	 * @param workOrder
 	 * @return
 	 */
-	boolean finish(String workOrder, String line, Integer boardType);
+	boolean finish(String id);
 
 
 	/**
@@ -53,7 +53,7 @@ public interface ProgramService {
 	 * @param workOrder
 	 * @return
 	 */
-	boolean start(String workOrder, String line, Integer boardType);
+	boolean start(String id);
 
 
 	/**

@@ -55,11 +55,11 @@ public class ProgramController {
 	
 	@ResponseBody
 	@RequestMapping("/start")
-	public ResultUtil start(String workOrder, String line, Integer boardType) {
-		if(workOrder == null || line == null || boardType == null) {
+	public ResultUtil start(String id) {
+		if(id == null) {
 			return ResultUtil.failed("参数不足");
 		}
-		if(programService.start(workOrder, line, boardType)) {
+		if(programService.start(id)) {
 			return ResultUtil.succeed();
 		}else {
 			return ResultUtil.failed();
@@ -69,11 +69,11 @@ public class ProgramController {
 	
 	@ResponseBody
 	@RequestMapping("/finish")
-	public ResultUtil finish(String workOrder, String line, Integer boardType) {
-		if(workOrder == null || line == null || boardType == null) {
+	public ResultUtil finish(String id) {
+		if(id == null) {
 			return ResultUtil.failed("参数不足");
 		}
-		if(programService.finish(workOrder, line, boardType)) {
+		if(programService.finish(id)) {
 			return ResultUtil.succeed();
 		}else {
 			return ResultUtil.failed();
@@ -83,11 +83,11 @@ public class ProgramController {
 	
 	@ResponseBody
 	@RequestMapping("/cancel")
-	public ResultUtil cancel(String workOrder, String line, Integer boardType) {
-		if(workOrder == null || line == null || boardType == null) {
+	public ResultUtil cancel(String id) {
+		if(id == null) {
 			return ResultUtil.failed("参数不足");
 		}
-		if(programService.cancel(workOrder, line, boardType)) {
+		if(programService.cancel(id)) {
 			return ResultUtil.succeed();
 		}else {
 			return ResultUtil.failed();

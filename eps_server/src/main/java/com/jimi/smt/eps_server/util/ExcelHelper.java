@@ -1,6 +1,5 @@
 package com.jimi.smt.eps_server.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,11 +29,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 处理Excel表的常用工具类
@@ -42,8 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
  * 所需第三方依赖：
  * <br>
  * log4j
- * <br>
- * spring
  * <br>
  * poi
  * @author 沫熊工作室 <a href="http://www.darhao.cc">www.darhao.cc</a>
@@ -61,9 +53,9 @@ public class ExcelHelper{
 		int col();
 	}
 	
-	private static Logger logger = LogManager.getLogger();
+	protected static Logger logger = LogManager.getLogger();
 	
-	private enum RequireType{
+	protected enum RequireType{
 		/**
 		 * 优先尝试转换成整型
 		 */
@@ -91,27 +83,19 @@ public class ExcelHelper{
 	}
 	
 	
-	private Workbook workbook;
+	protected Workbook workbook;
 	
-	private CellStyle headStyle;
+	protected CellStyle headStyle;
 	
-	private CellStyle bodyStyle;
+	protected CellStyle bodyStyle;
 	
-	private int currentSheetNum;
+	protected int currentSheetNum;
 	
 	
 	/**
 	 * 传入一个excel表格，构造Helper
 	 */
 	public static ExcelHelper from(File file) throws IOException {
-		return new ExcelHelper(file);
-	}
-	
-	
-	/**
-	 * 传入一个excel表格，构造Helper
-	 */
-	public static ExcelHelper from(MultipartFile file) throws IOException {
 		return new ExcelHelper(file);
 	}
 	
@@ -143,26 +127,6 @@ public class ExcelHelper{
 			autoColumnWidth();
 		}
 		workbook.write(outputStream);
-	}
-	
-	
-	/**
-	 * 获取下载实体，注意文件名编码必须为UTF-8，需要自行填写后缀名；可以设置是否自动列宽
-	 * @param downloadFileName
-	 * @param autoColumnWidth
-	 * @return
-	 * @throws IOException 
-	 */
-	public ResponseEntity<byte[]> getDownloadEntity(String downloadFileName, boolean autoColumnWidth) throws IOException {
-		//设置头信息	
-		HttpHeaders headers = new HttpHeaders(); 
-		String filename = new String((downloadFileName).getBytes("utf-8"), "iso-8859-1");
-		headers.setContentDispositionFormData("attachment", filename);   
-		headers.setContentType(MediaType.parseMediaType("application/x-xls")); 
-		//返回流
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		write(bos, autoColumnWidth);
-		return new ResponseEntity<byte[]>(bos.toByteArray(), headers, HttpStatus.CREATED);    
 	}
 	
 	
@@ -254,12 +218,15 @@ public class ExcelHelper{
 				cell.setCellValue((Date)value);
 				break;
 			case "double":
+			case "java.lang.Double":
 				cell.setCellValue((double) value);
 				break;
 			case "int":
+			case "java.lang.Integer":
 				cell.setCellValue((int)value);
 				break;
 			case "boolean":
+			case "java.lang.Boolean":
 				cell.setCellValue((boolean)value);
 				break;
 			case "java.lang.String":
@@ -468,10 +435,34 @@ public class ExcelHelper{
 				//填充list
 				field.setAccessible(true);
 				try {
-					Object value = get(i+1, e.col(), RequireType.values()[workbook.getSheetAt(currentSheetNum).getRow(i).getCell(e.col()).getCellType()]);
+					//判断Field类型
+					String type = field.getType().getName();
+					Object value = null;
+					switch (type) {
+						case "java.util.Date":
+							value = get(i+1, e.col(), RequireType.DATE);
+							break;
+						case "double":
+						case "java.lang.Double":
+							value = get(i+1, e.col(), RequireType.DOUBLE);
+							break;
+						case "int":
+						case "java.lang.Integer":
+							value = get(i+1, e.col(), RequireType.INT);
+							break;
+						case "boolean":
+						case "java.lang.Boolean":
+							value = get(i+1, e.col(), RequireType.BOOLEAN);
+							break;
+						case "java.lang.String":
+							value = get(i+1, e.col(), RequireType.STRING);
+							break;
+						default:
+							break;
+					}
 					field.set(entity, value);
 				} catch (IllegalArgumentException | IllegalAccessException e1) {
-					logger.error("调用ExcelHelper.fill()中field.get()方法时出错");
+					logger.error("调用ExcelHelper.unfill()中field.set()方法时出错");
 					e1.printStackTrace();
 				}
 			}
@@ -501,20 +492,21 @@ public class ExcelHelper{
 	}
 
 	
+	
 	/**
-	 * 切换至指定sheet，如果不存在该sheet则创建一个
+	 * 切换至指定sheet，失败返回false
 	 */
-	public void switchSheet(String sheetName) {
+	public boolean switchSheet(String sheetName) {
 		if(workbook.getSheet(sheetName) != null) {
 			this.currentSheetNum = workbook.getSheetIndex(sheetName);
+			return true;
 		}else {
-			workbook.createSheet(sheetName);
-			switchSheet(sheetName);
+			return false;
 		}
 	}
 
 	
-	private Object get(int rowNum, int colNum, RequireType requireType) {
+	protected Object get(int rowNum, int colNum, RequireType requireType) {
 		try {
 			Cell cell = workbook.getSheetAt(currentSheetNum).getRow(rowNum).getCell(colNum);
 			switch (cell.getCellType()) {
@@ -577,22 +569,19 @@ public class ExcelHelper{
 				}
 			}
 		}catch (NullPointerException e) {
-			logger.error("空指针异常，无法获取坐标为("+currentSheetNum+","+rowNum+","+colNum+")的值");
-			e.printStackTrace();
+			logger.error("无法获取坐标为("+currentSheetNum+","+rowNum+","+colNum+")的值，该单元格可能为空");
 			return null;
 		}catch (NumberFormatException e) {
 			logger.error("无法把坐标为("+currentSheetNum+","+rowNum+","+colNum+")的数值转成字符串");
-			e.printStackTrace();
 			return null;
 		}catch (ParseException e) {
 			logger.error("无法把坐标为("+currentSheetNum+","+rowNum+","+colNum+")的字符串转成日期");
-			e.printStackTrace();
 			return null;
 		}
 	}
 
 
-	private ExcelHelper(boolean isNewVersion) {
+	protected ExcelHelper(boolean isNewVersion) {
 		//判断格式
 		if(isNewVersion){
 			workbook = new XSSFWorkbook();
@@ -604,18 +593,7 @@ public class ExcelHelper{
 	}
 
 
-	private ExcelHelper(MultipartFile file) throws IOException {
-		//判断格式
-		if(file.getOriginalFilename().endsWith(".xlsx")){
-			workbook = new XSSFWorkbook(file.getInputStream());
-		}else {
-			workbook = new HSSFWorkbook(file.getInputStream());
-		}
-		init();
-	}
-
-	
-	private ExcelHelper(File file) throws IOException {
+	protected ExcelHelper(File file) throws IOException {
 		//判断格式
 		if(file.getName().endsWith(".xlsx")){
 			workbook = new XSSFWorkbook(new FileInputStream(file));
@@ -626,7 +604,11 @@ public class ExcelHelper{
 	}
 	
 
-	private void init() {
+	protected ExcelHelper() {
+	}
+
+
+	protected void init() {
 		//默认表
 		currentSheetNum = 0;
 		//默认样式
@@ -650,7 +632,7 @@ public class ExcelHelper{
 	}
 	
 	
-	private void autoColumnWidth() {
+	protected void autoColumnWidth() {
 		try {
 			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 				Sheet sheet = workbook.getSheetAt(i);
