@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jimi.smt.eps_server.annotation.Open;
+import com.jimi.smt.eps_server.annotation.Role;
+import com.jimi.smt.eps_server.annotation.Role.RoleType;
 import com.jimi.smt.eps_server.entity.vo.ClientReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReport;
 import com.jimi.smt.eps_server.entity.vo.OperationReport;
@@ -48,20 +49,19 @@ public class OperationController {
 	}
 	
 	
-	@Open
 	@RequestMapping("/goDisplayReport")
 	public ModelAndView goDisplayReport() {
 		return new ModelAndView("operation/goDisplayReport");
 	}
 	
 	
-	@Open
 	@RequestMapping("/goDisplayReport2")
 	public ModelAndView goDisplayReport2() {
 		System.out.println("进入goDisplayReport2-Controller:" + System.currentTimeMillis());
 		return new ModelAndView("operation/goDisplayReport2");
 	}
 	
+	@Role(RoleType.IPQC)
 	@ResponseBody
 	@RequestMapping("/listClientReport")
 	public List<ClientReport> listClientReport(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime) {
@@ -74,6 +74,7 @@ public class OperationController {
 	}
 	
 	
+	@Role(RoleType.IPQC)
 	@RequestMapping("/downloadClientReport")
 	public ResponseEntity<byte[]> downloadClientReport(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime){
 		try {
@@ -87,6 +88,7 @@ public class OperationController {
 	}
 	
 	
+	@Role(RoleType.IPQC)
 	@ResponseBody
 	@RequestMapping("/listOperationReport")
 	public List<OperationReport> listOperationReport(String client, String line, String workOrderNo, String startTime, String endTime, Integer type) {
@@ -103,6 +105,7 @@ public class OperationController {
 	}
 	
 	
+	@Role(RoleType.IPQC)
 	@RequestMapping("/downloadOperationReport")
 	public ResponseEntity<byte[]> downloadOperationReport(String client, String line, String workOrderNo, String startTime, String endTime, Integer type){
 		if(type == null) {
@@ -120,7 +123,7 @@ public class OperationController {
 	}
 	
 	
-	@Open
+	@Role(RoleType.IPQC)
 	@ResponseBody
 	@RequestMapping("/listDisplayReport")
 	public DisplayReport listDisplayReport(String line) {

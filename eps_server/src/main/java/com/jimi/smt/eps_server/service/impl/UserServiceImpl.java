@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 			return "failed_wrong_password";
 		}
 		
-		return filler.fill(user).getClassTypeName();
+		return filler.fill(user).getTypeName();
 	}
 
 }

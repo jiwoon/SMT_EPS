@@ -23,14 +23,20 @@ public class JurisdictionInterceptor extends HandlerInterceptorAdapter {
 			if(open != null) {
 				return true;
 			}
+			//如果是管理员，则放行
+			String loginedRoleName = (String) request.getSession().getAttribute("logined");
+			if("超级管理员".equals(loginedRoleName)) {
+				return true;
+			}
+			//如果没有注解，则拦截
 			Role role = ((HandlerMethod) handler).getMethodAnnotation(Role.class);
 			if(role == null) {
 				response.getWriter().println("{\"result\":\"failed_access_denied\"}");
 				return false;
 			}
-			//如果已登录则放行
-			for (Role.RoleType roleName : role.roles()) {
-				if(roleName.equals(request.getSession().getAttribute("logined"))) {
+			//
+			for (Role.RoleType roleName : role.value()) {
+				if(roleName.toString().equals(loginedRoleName)) {
 					return true;
 				}
 			}

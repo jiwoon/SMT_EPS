@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jimi.smt.eps_server.annotation.Role;
+import com.jimi.smt.eps_server.annotation.Role.*;
 import com.jimi.smt.eps_server.entity.vo.ProgramItemVO;
 import com.jimi.smt.eps_server.entity.vo.ProgramVO;
 import com.jimi.smt.eps_server.service.ProgramService;
@@ -45,14 +47,14 @@ public class ProgramController {
 		return new ModelAndView("program/goManage");
 	}
 	
-	
+	@Role(RoleType.ENGINEER)
 	@ResponseBody
 	@RequestMapping("/list")
 	public List<ProgramVO> list(String programName, String fileName, String line, String workOrder, Integer state, String ordBy) {
 		return programService.list(programName, fileName, line, workOrder, state, ordBy);
 	}
 	
-	
+	@Role(RoleType.PRODUCER)
 	@ResponseBody
 	@RequestMapping("/start")
 	public ResultUtil start(String id) {
@@ -66,7 +68,7 @@ public class ProgramController {
 		}
 	}
 	
-	
+	@Role(RoleType.PRODUCER)
 	@ResponseBody
 	@RequestMapping("/finish")
 	public ResultUtil finish(String id) {
@@ -80,7 +82,7 @@ public class ProgramController {
 		}
 	}
 	
-	
+	@Role(RoleType.ENGINEER)
 	@ResponseBody
 	@RequestMapping("/cancel")
 	public ResultUtil cancel(String id) {
@@ -94,7 +96,7 @@ public class ProgramController {
 		}
 	}
 	
-	
+	@Role(RoleType.ENGINEER)
 	@ResponseBody
 	@RequestMapping("/listItem")
 	public List<ProgramItemVO> listItem(String id) {
@@ -105,7 +107,7 @@ public class ProgramController {
 		return programService.listItem(id);
 	}
 	
-	
+	@Role(RoleType.ENGINEER)
 	@ResponseBody
 	@RequestMapping("/upload")
 	public ResultUtil upload(MultipartFile  programFile, Integer boardType) {

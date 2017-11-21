@@ -17,7 +17,6 @@ public @interface Role {
 	enum RoleType{
 		PRODUCER("生产管理员"),
 		IPQC("品质管理员"),
-		MANAGER("超级管理员"),
 		ENGINEER("工程管理员");
 		private final String text;
         private RoleType(final String text){
@@ -29,9 +28,10 @@ public @interface Role {
         }
 	}
 	/**
-	 * 在该数组内的成员拥有该接口的权限
-	 * 可以写的内容有生产管理员，品质管理员，工程管理员，超级管理员
+	 * 在该数组内的成员拥有该接口的权限（超级管理员默认拥有所有权限，不需要注解）
+	 * <br>
+	 * 可以写的内容有生产管理员，品质管理员，工程管理员
 	 * @return
 	 */
-	RoleType[] roles();
+	RoleType[] value();
 }
