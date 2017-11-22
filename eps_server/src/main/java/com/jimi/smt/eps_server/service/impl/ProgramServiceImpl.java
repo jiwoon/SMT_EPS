@@ -134,7 +134,12 @@ public class ProgramServiceImpl implements ProgramService {
 						result.put("real_parse_num", temp--);
 						break;
 					}
-					programItem.setLineseat(formatLineseat(helper.getString(j, 0)));
+					//排除手盖
+					String lineseat = helper.getString(j, 0);
+					if("手盖".equals(lineseat)) {
+						continue;
+					}
+					programItem.setLineseat(formatLineseat(lineseat));
 					programItem.setMaterialNo(helper.getString(j, 1));
 					programItem.setAlternative(helper.getBoolean(j, 2));
 					programItem.setSpecitification(helper.getString(j, 3));
