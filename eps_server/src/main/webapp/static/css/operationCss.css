@@ -1,10 +1,31 @@
+.showWaiting{
+    display: none;
+    width:100%;
+    height:100%;
+    background-color: rgba(204,204,204,.5);
+    position: absolute;
+    top:0;
+    left:0;
+    z-index: 999;
+}
+.showWaiting span{
+    display: block;
+    width:364px;
+    height:200px;
+    font-size: 30px;
+    background-color: #ffffff;
+    color: #000;
+    margin: 100px auto;
+    text-align: center;
+    line-height: 200px;
+}
 .operation-search{
+    width:1035px;
     background-color: #ffffff;
     font-size: 18px;
     padding:5px;
     line-height: 14px;
     position: relative;
-    border-bottom: 3px solid #77d5f7;
 }
 .operation-search span{
     display: inline-block;
@@ -34,8 +55,8 @@
 }
 .operation-search em{
     position: absolute;
-    top:62px;
-    left:514px;
+    top:3px;
+    left:509px;
 }
 .operation-search select{
     font-size: 18px;
@@ -59,7 +80,7 @@
 .autoCom{
     width:265px ;
     position: relative;
-    z-index: 999;
+    z-index: 900;
 }
 .autoInput{
     float: left;

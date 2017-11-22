@@ -62,6 +62,10 @@ $(function(){
         $("#main-text section").css("display","none");
         $("#positionManage").css("display","block");
     });
+    $("#manage li:eq(2)").on("click",function(){
+        $("#main-text section").css("display","none");
+        $("#warmManage").css("display","block");
+    });
     $("#report li:eq(0)").on("click",function(){
         $("#main-text section").css("display","none");
         $("#clientReport").css("display","block");

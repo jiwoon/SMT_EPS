@@ -14,7 +14,18 @@
 <div class="nav">
     <section id="nav-left">
         <em>当前产线:</em>
-        <span>308线</span>
+        <span>
+        	<select id="line">
+        		<option value=0>301</option>
+        		<option value=1>302</option>
+        		<option value=2>303</option>
+        		<option value=3>304</option>
+        		<option value=4>305</option>
+        		<option value=5>306</option>
+        		<option value=6>307</option>
+        		<option value=7 selected="selected">308</option>
+        	</select>
+        </span>
     </section>
     <section id="click-left">
         <em></em>

@@ -106,6 +106,9 @@ s, i, em {
     font-weight: 800;
     color: #C81623;
 }
+#nav-left select{
+    font-size:30px;
+}
 /*制作点击按钮*/
 #click-left,#click-right{
     float: left;

@@ -14,9 +14,13 @@
 
 </head>
 <body>
+	<div class="showWaiting" id="showWaiting">
+		<span>数据加载中，请等待<i><img src="static/images/shalou.gif"/></i></span>
+	</div>
     <section class="position-table" id="operationReport">
         <span class="manage-staff">操作报表</span>
-        <div class="operation-search" id="operation-search">
+        <div style="width: 100%;background-color: #ffffff;border-bottom: 5px solid #77d5f7;">  
+        	<div class="operation-search" id="operation-search">
         	<span class="span">
         		请选择相应类型：<select id="operationIPQC">
         						<option value=0>上料</option>
@@ -45,12 +49,14 @@
         	    <div class="autoCom">
         	    	<p style="float: left;">工单号 ：</p><input id = "workOrderNum" type="text" class="autoInput"/>
         	    </div>
-        	    
-     		起止时间 ：<input id="startTime" type="date" class="location"/> <em>--</em> <input id="endTime" type="date" />
+        	    <div style="position: relative;">
+        	   		 起止时间 ：<input id="startTime" type="date" class="location"/> <em>--</em> <input id="endTime" type="date" />
+        	    </div>
      		<button id="searchBtn" class = "ui-accordion-header ui-state-default ui-corner-all ui-corner-top commonBtn btnSearch" >查询</button>
      		<button id="loadBtn" class = "ui-accordion-header ui-state-default ui-corner-all ui-corner-top commonBtn btnLoad">下载报表</button>
         </div>
-    	 <!-- 表格显示 -->
+    	</div>
+    	<!-- 表格显示 -->
         <div class="operationTable">
             <table style=word-break:break-all>
                 <thead>
