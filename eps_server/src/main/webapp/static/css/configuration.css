@@ -1,0 +1,195 @@
+@charset "UTF-8";
+/*css 初始化 */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+    margin: 0;
+    padding: 0;
+}
+
+fieldset, img, input, button {
+    border: none;
+    padding: 0;
+    margin: 0;
+    outline-style: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+input {
+    padding-top: 0;
+    padding-bottom: 0;
+    font-family: "SimSun", "宋体";
+}
+
+select, input {
+    vertical-align: middle;
+}
+
+select, input, textarea {
+    font-size: 12px;
+    margin: 0;
+}
+textarea {
+    resize: none;
+}
+
+/*防止拖动*/
+img {
+    border: 0;
+    vertical-align: middle;
+}
+
+/*  去掉图片低测默认的3像素空白缝隙*/
+table {
+    border-collapse: collapse;
+}
+
+body {
+    font: 12px/150% Arial, Verdana, "\5b8b\4f53";
+    color: #666;
+    background: #fff
+}
+
+.clearfix:before, .clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1; /*IE/7/6*/
+}
+
+a {
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #C81623;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 100%;
+}
+
+s, i, em {
+    font-style: normal;
+    text-decoration: none;
+}
+
+.col-red {
+    color: #C81623 !important;
+}
+/*按钮部分*/
+.ui-state-default{
+    border: 1px solid #77d5f7;
+    background: #0078ae url("../images/ui-bg_glass_45_0078ae_1x400.png") 50% 50% repeat-x;
+    font-weight: normal;
+    color: #ffffff;
+    cursor: pointer;
+}
+/*鼠标放置时的样式*/
+.ui-state-hover{
+    border: 1px solid #448dae;
+    background: #79c9ec url("../images/ui-bg_glass_75_79c9ec_1x400.png") 50% 50% repeat-x;
+    font-weight: normal;
+    color: #026890;
+}
+/*圆角样式*/
+.ui-corner-all,.ui-corner-top{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.ui-corner-all{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.mainBox{
+    width:100%;
+    height:100%;
+}
+/*版头部分*/
+.banner{
+    width:100%;
+    height:103px;
+    background-color: #77d5f7;
+    position: relative;
+    line-height: 65px;
+}
+.banner i{
+    display: block;
+    width:330px ;
+    font-size: 40px;
+    color: #000;
+    margin:0 auto;
+}
+.choice{
+    width:340px;
+    height:65px;
+    position: absolute;
+    top:48px;
+    left:145px ;
+    line-height: 55px;
+}
+.choice span{
+    display: inline-block;
+    font-size: 20px;
+    color: #ffffff;
+    font-weight: bold;
+}
+.choice select{
+    font-size: 20px;
+}
+.searchBtn{
+    position: absolute;
+    top:52px;
+    left:0;
+    font-size: 24px;
+    padding:5px;
+    margin-left: 15px;
+}
+.saveBtn{
+    position: absolute;
+    top:52px;
+    left:394px;
+    font-size: 25px;
+    padding  : 5px;
+}
+/*主表格*/
+.mainTable{
+    width:100%;
+    height:400px;
+    position: relative;
+    overflow-y: scroll;
+}
+.mainTable table{
+    width:100%;
+
+}
+.mainTable thead td{
+    padding: 5px;
+    height:50px;
+    font-size: 30px;
+    border: 1px solid black;
+    text-align: center;
+}
+.mainBody td{
+    height:30px;
+    padding:3px;
+    font-size: 18px;
+    border: 1px solid ;
+    text-align: center;
+    color: #000;
+}
+
+.mainBody input[type = "checkbox"]{
+    width:20px;
+    height:20px;
+}
