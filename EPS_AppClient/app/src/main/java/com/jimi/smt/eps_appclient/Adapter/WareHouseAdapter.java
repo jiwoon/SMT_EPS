@@ -56,9 +56,10 @@ public class WareHouseAdapter extends BaseAdapter{
         if (convertView == null){
             viewHolder = new ViewHolder();
             convertView = layoutInflater.inflate(R.layout.warehouse_item,null);
-            viewHolder.tv_lineSeat= (TextView) convertView.findViewById(R.id.tv_wareLineSeat);
-            viewHolder.tv_material= (TextView) convertView.findViewById(R.id.tv_wareMaterial);
-            viewHolder.view_blank=convertView.findViewById(R.id.view_wareBlank);
+            viewHolder.tv_lineSeat = (TextView) convertView.findViewById(R.id.tv_wareLineSeat);
+            viewHolder.tv_material = (TextView) convertView.findViewById(R.id.tv_wareMaterial);
+            viewHolder.tv_remark = (TextView) convertView.findViewById(R.id.tv_wareRemark);
+            viewHolder.tv_scanMaterial = (TextView) convertView.findViewById(R.id.tv_wareScanMaterial);
             convertView.setTag(viewHolder);
         }else {
             viewHolder= (ViewHolder) convertView.getTag();
@@ -67,7 +68,8 @@ public class WareHouseAdapter extends BaseAdapter{
         MaterialItem materialItem=materialItems.get(position);
         viewHolder.tv_lineSeat.setText(materialItem.getOrgLineSeat());
         viewHolder.tv_material.setText(materialItem.getOrgMaterial());
-        viewHolder.view_blank.setBackgroundColor(Color.BLACK);
+        viewHolder.tv_remark.setText(materialItem.getRemark());
+        viewHolder.tv_scanMaterial.setText(materialItem.getScanMaterial());
         //被匹配的项
         Log.d(TAG,"position="+position);
         Log.d(TAG,"OrgLineSeat"+materialItem.getOrgLineSeat());
@@ -75,9 +77,13 @@ public class WareHouseAdapter extends BaseAdapter{
         if (materialItem.getResult()!=null && materialItem.getResult().equalsIgnoreCase("PASS")){
             viewHolder.tv_material.setBackgroundColor(Color.GREEN);
             viewHolder.tv_lineSeat.setBackgroundColor(Color.GREEN);
+            viewHolder.tv_remark.setBackgroundColor(Color.GREEN);
+            viewHolder.tv_scanMaterial.setBackgroundColor(Color.GREEN);
         }else {
             viewHolder.tv_material.setBackgroundColor(Color.TRANSPARENT);
             viewHolder.tv_lineSeat.setBackgroundColor(Color.TRANSPARENT);
+            viewHolder.tv_remark.setBackgroundColor(Color.TRANSPARENT);
+            viewHolder.tv_scanMaterial.setBackgroundColor(Color.TRANSPARENT);
         }
         return convertView;
     }
@@ -85,6 +91,7 @@ public class WareHouseAdapter extends BaseAdapter{
     static final class ViewHolder{
         TextView tv_lineSeat;
         TextView tv_material;
-        View view_blank;
+        TextView tv_remark;
+        TextView tv_scanMaterial;
     }
 }

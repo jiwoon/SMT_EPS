@@ -12,7 +12,6 @@ $(function(){
             $(this).removeClass("ui-state-hover");
         })
         .on("click",function(){
-
             var sT = $("#startTime").val() == "" ? $("#startTime").val() : $("#startTime").val()+" 00:00:00";
             var eT = $("#endTime").val() == "" ? $("#endTime").val() : $("#endTime").val() + " 23:59:59";
             //开始和结束时间都有输入时进行判断
@@ -35,6 +34,7 @@ $(function(){
             }
             //开始时间和终止时间都没有输入
             else if($("#startTime").val() == "" && $("#endTime").val() == ""){
+                $("#showWaiting").css("display","block");
                 searchAjax(sT,eT);
             }
     });
@@ -148,6 +148,7 @@ $(function(){
                 $("#clientMainTable").empty();
                 if(dataLength != 0){
                     autoCreateTable(data,dataLength);
+
                     $(window).on("scroll",function(){
                         newNum = originNum ;
                         if(newNum < dataLength){
@@ -219,6 +220,8 @@ $(function(){
 
 //    工单回调函数
     function workOrderCallBack(a){
+        var sT = $("#startTime").val() == "" ? $("#startTime").val() : $("#startTime").val()+" 00:00:00";
+        var eT = $("#endTime").val() == "" ? $("#endTime").val() : $("#endTime").val() + " 23:59:59";
         $.ajax({
             url : "operation/listClientReport",
             type : "post",
@@ -229,8 +232,8 @@ $(function(){
                 line : $("#line option:selected").text() == "不限" ? null : $("#line option:selected").text() ,
                 orderNo : $("#OrderNum").val(),
                 workOrderNo : a,
-                startTime : $("#startTime").val(),
-                endTime : $("#endTime").val()
+                startTime : sT,
+                endTime :eT
             },
             success : function(data){
                 dataLength  = data.length ; //获取数据长度

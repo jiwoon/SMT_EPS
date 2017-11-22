@@ -33,6 +33,7 @@
                 <ul>
                     <li>人员管理</li>
                     <li>站位表管理</li>
+                    <li>报警配置页面</li>
                 </ul>
             </div>
 
@@ -166,6 +167,12 @@
                 <button id="modify-position-back" class="ui-button ui-corner-all ui-state-default new-position-back">返回</button>
 
             </section>
+			
+			<!--报警配置页面-->
+			<section class="warmManage" id="warmManage" style="display: none"> 
+				<iframe class="connectGoManage" src="config/goConfig" frameborder="0"></iframe>
+			</section>
+			
 			<!--排位表显示-->
 			<section class="positionManage" id="positionManage" style="display: none"> 
 				<iframe class="connectGoManage" src="program/goManage" frameborder="0"></iframe>

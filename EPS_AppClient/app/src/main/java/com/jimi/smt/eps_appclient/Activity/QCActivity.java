@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.jimi.smt.eps_appclient.CheckAllMaterialFragment;
 import com.jimi.smt.eps_appclient.CheckMaterialFragment;
+import com.jimi.smt.eps_appclient.GlobalData;
 import com.jimi.smt.eps_appclient.R;
+import com.jimi.smt.eps_appclient.Unit.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +28,17 @@ import java.util.List;
  */
 public class QCActivity extends FragmentActivity implements View.OnClickListener {
 
+    private final String TAG="QCActivity";
     private TextView tv_check_some;
     private TextView tv_check_all;
+    private GlobalData globalData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_qc);
+        globalData = (GlobalData) getApplication();
         initView();
         //设置选中标题
         setSelectTabTitle(0);
@@ -48,27 +53,6 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
         iv_QC_back.setOnClickListener(this);
         tv_check_some.setOnClickListener(this);
         tv_check_all.setOnClickListener(this);
-        //设置viewpager切换事件监听
-        viewpager_QC.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            //页面滑动事件
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            //页面选中事件
-            @Override
-            public void onPageSelected(int position) {
-                //设置选中标题
-                setSelectTabTitle(position);
-            }
-
-            //页面滚动状态改变事件
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
         //fragment集合
         final List<Fragment> fragmentList=new ArrayList<Fragment>();
         fragmentList.add(new CheckMaterialFragment());
@@ -87,6 +71,27 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
         };
         //设置适配器
         viewpager_QC.setAdapter(fragmentPagerAdapter);
+        //设置viewpager切换事件监听
+        viewpager_QC.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            //页面滑动事件
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                Log.d(TAG,"onPageScrolled:"+position);
+            }
+
+            //页面选中事件
+            @Override
+            public void onPageSelected(int position) {
+                //设置选中标题
+                setSelectTabTitle(position);
+            }
+
+            //页面滚动状态改变事件
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
     }
 
@@ -119,9 +124,11 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
         resetTitle();
         switch (tab){
             case 0:
+                globalData.setOperType(Constants.CHECKMATERIAL);
                 tv_check_some.setBackgroundResource(R.drawable.factory_feed_click_shape);
                 break;
             case 1:
+                globalData.setOperType(Constants.CHECKALLMATERIAL);
                 tv_check_all.setBackgroundResource(R.drawable.factory_checkall_click_shape);
                 break;
         }

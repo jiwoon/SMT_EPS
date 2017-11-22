@@ -20,7 +20,7 @@
     <!--搜索框-->
     <div class="position-table-search" >
     	<div class="completeAuto">
-    		<p style="float: left;">站位：</p><input id="stand-position" type="text">
+    		<p style="float: left;">站位表：</p><input id="stand-position" type="text">
     	</div>
         <div class="completeAuto">
         	工单：<input id="work-num" type="text">

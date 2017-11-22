@@ -2,6 +2,22 @@ $(function(){
     var timer1 = null; //控制播放的定时器
     var timer2 = null;  //控制获取数据的定时器
     var timer3 = null;   //获取时间的定时器
+    var lineNum = "308"
+    var key = 0;
+    $("#line").on("change",function(){
+        for(var i = 1;i<divs.length;i++){    //将第一个后面的div和section全部放到后面去
+            $("#main div").eq(i).css("left",mainWidth);
+            $(".mainText section").eq(i).css("left",screenWidth);
+            $("#main div").eq(0).css("left" , 0);
+            $(".mainText section").eq(0).css("left" , 0);
+        }
+        console.log(111);
+        clearInterval(timer2);
+        key = 0 ;
+        var $thisId = $(this).attr("id");
+        lineNum =   $("#" + $thisId + " option:selected").text();   //获取线号
+        timer2 =setInterval(getAndShow,1000);
+    });
 //    根据屏幕的宽度设置页面宽度
     var screenWidth  =  $(window).width();    //获取屏幕宽度
     var screenHeight = $(window).height();    //获取屏幕高度
@@ -43,7 +59,7 @@ $("#nav-right").on("click",function(){
         timer1 = setInterval(autoPlay,3000);
     }
 });
-    var key = 0;
+
 //左右按键点击事件
 //    左键
     $("#click-left").on("click",function(){
@@ -69,7 +85,7 @@ $("#nav-right").on("click",function(){
     function autoPlay(){
         $("#main div").eq(key).animate({"left":-mainWidth},500);
         $(".mainText section").eq(key).animate({"left":-screenWidth},500);
-        ++key>3?key=0:key;
+        ++key > 3 ? key = 0 : key;
         $("#main div").eq(key).css("left",mainWidth);
         $(".mainText section").eq(key).css("left",screenWidth);
         $("#main div").eq(key).animate({"left":0},500);
@@ -95,13 +111,15 @@ $("#nav-right").on("click",function(){
 
 //往画布填充内容
     getAndShow();
-  timer2 =setInterval(getAndShow,1000);
+    timer2 =setInterval(getAndShow,1000);
     function getAndShow() {
         $.ajax({
             url: "operation/listDisplayReport",
             type: "post",
             dataType: "json",
-            data: {line:"308"},
+            data: {
+                    line : lineNum
+            },
             success: function (data) {
                 var nameArray = ["feed", "changes", "somes","alls"];
                 //    一、创建舞台
@@ -120,7 +138,6 @@ $("#nav-right").on("click",function(){
                     //
                     var dd =nameArray[0].toString();
                     var num = data[nameArray[u]].length;     //数组的个数
-                    //console.log(num);
                     var x01 = 1 / 16 * stage.width();   //设定的原坐标
                     var y01 = 2 / 5 * stage.height();    //第一条底线的纵坐标
                     var y02 = 9 / 10 * stage.height();    //第二条底线的纵坐标
@@ -349,7 +366,7 @@ $("#nav-right").on("click",function(){
                 }
             },
             error: function () {
-                console.log(33);
+                console.log("数据传输错误！");
             }
         });
     }

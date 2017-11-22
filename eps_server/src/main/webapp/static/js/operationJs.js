@@ -22,12 +22,14 @@ $(function(){
                         $("#endTime").val("");
                     }
                     else if( i == 2){
+                        $("#showWaiting").css("display" , "block");
                         searchAndCreate(stime,etime);
                     }
                 }
             }
             //开始时间和终止时间都没有输入
             else if($("#startTime").val() == "" && $("#endTime").val() == ""){
+                $("#showWaiting").css("display" , "block");
                 searchAndCreate(stime,etime);
             }
         });
@@ -59,6 +61,7 @@ $(function(){
                 endTime : b
             },
             success : function(data){
+                $("#showWaiting").css("display" , "none");
                 var dataLength  = data.length ; //获取数据长度
                 array=[];
                 for(var i = 0;i<data.length;i++){
@@ -168,6 +171,36 @@ $(function(){
 //    回调函数
     function searchCallBack (a){
         $(window).unbind();
+        var stime = $("#startTime").val() == "" ? $("#startTime").val() : $("#startTime").val()+ " 00:00:00";
+        var etime = $("#endTime").val() == "" ? $("#endTime").val() : $("#endTime").val() + " 23:59:59";
+        //开始和结束时间都有输入时进行判断
+        if($("#startTime").val() != "" && $("#endTime").val() != ""){
+            var aa = $("#startTime").val().split("-");
+            var bb = $("#endTime").val().split("-");
+            for(var i = 0;i<aa.length;i++){
+                aa[i] = parseInt(aa[i]);
+                bb[i] = parseInt(bb[i])
+                if(aa[i]>bb[i]){
+                    alert("时间输入错误！请重新输入");
+                    $("#startTime").val("");
+                    $("#endTime").val("");
+                }
+                else if( i == 2){
+                    $("#showWaiting").css("display" , "block");
+                    ajaxCreate(a,stime,etime);
+                }
+            }
+        }
+        //开始时间和终止时间都没有输入
+        else if($("#startTime").val() == "" && $("#endTime").val() == ""){
+            $("#showWaiting").css("display" , "block");
+            ajaxCreate(a,stime,etime);
+        }
+
+
+    }
+    //ajax 传输
+    function ajaxCreate(a , st , et){
         $.ajax({
             url : "operation/listOperationReport",
             type : "post",
@@ -177,25 +210,26 @@ $(function(){
                 client :  $("#clientName").val(),
                 line : $("#line option:selected").val(),
                 workOrderNo : a,
-                startTime : $("#startTime").val(),
-                endTime : $("#endTime").val()
+                startTime :st,
+                endTime : et
             },
             success : function(data){
+                $("#showWaiting").css("display" , "none");
                 var dataLength  = data.length ; //获取数据长度
                 $("#clientMainTable").empty();
                 autoCreateTable(data);
-                    $(window).on("scroll",function(){
-                        if(dataLength > 100){
-                            newNum = originNum ;
-                            if(newNum < dataLength){
-                                originNum += 3;
-                                originNum = (originNum >= dataLength ? dataLength : originNum);  //判断加3后是否长度大于数据长度
-                                for(var de = newNum ; de < originNum ; de++){
-                                    CreateOneTable(de ,data);
-                                }
+                $(window).on("scroll",function(){
+                    if(dataLength > 100){
+                        newNum = originNum ;
+                        if(newNum < dataLength){
+                            originNum += 3;
+                            originNum = (originNum >= dataLength ? dataLength : originNum);  //判断加3后是否长度大于数据长度
+                            for(var de = newNum ; de < originNum ; de++){
+                                CreateOneTable(de ,data);
                             }
                         }
-                    });
+                    }
+                });
 
             },
             error : function(){

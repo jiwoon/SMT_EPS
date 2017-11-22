@@ -83,6 +83,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
         globalData = (GlobalData) getApplication();
         globalData.setOperator(curOperatorNUm);
         globalData.setOperType(Constants.STORE_ISSUE);
+        globalData.setUpdateType(Constants.STORE_ISSUE);
         globalFunc = new GlobalFunc(WareHouseActivity.this);
         List<MaterialItem> materialItems=globalData.getMaterialItems();
         //填充数据
@@ -122,7 +123,6 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
         et_ware_scan_material.setOnEditorActionListener(this);
         tv_ware_order.setText(curOrderNum);
         tv_ware_operator.setText(curOperatorNUm);
-
     }
 
     //按钮点击事件
@@ -171,34 +171,48 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
                         scanMaterial = scanMaterial.substring(0, scanMaterial.indexOf("@"));
                         Log.d(TAG,"scan料号="+scanMaterial);
                     }
-                    ArrayList<Integer> lineSeatIndexs=new ArrayList<Integer>();
-                    ArrayList<String> lineSeatList=new ArrayList<String>();
+//                    ArrayList<Integer> lineSeatIndexs = new ArrayList<Integer>();
+                    ArrayList<String> lineSeatList = new ArrayList<String>();
                     for (int i = 0;i < wareHouseMaterialItems.size();i++) {
                         MaterialItem materialItem=wareHouseMaterialItems.get(i);
                         if (materialItem.getOrgMaterial().equalsIgnoreCase(scanMaterial)){
-                            materialItem.setScanMaterial(scanMaterial);
-                            materialItem.setResult("PASS");
-                            Log.d(TAG,"scan站位="+materialItem.getOrgLineSeat());
+//                            materialItem.setScanMaterial(scanMaterial);
+//                            materialItem.setResult("PASS");
                             //获取料号对应的所有站位
                             lineSeatList.add(materialItem.getOrgLineSeat());
                             //获取对应站位的索引
-                            lineSeatIndexs.add(i);
-                            sucIssueCount++;
+//                            lineSeatIndexs.add(i);
+//                            sucIssueCount++;
                             //刷新数据
-                            wareHouseAdapter.notifyDataSetChanged();
+//                            wareHouseAdapter.notifyDataSetChanged();
                             //将其置顶
-                            lv_ware_materials.setSelection(i);
+//                            lv_ware_materials.setSelection(i);
                         }
                     }
-                    if (lineSeatIndexs.size() > 0){
-                        //写日志
-                        setOperateLog(lineSeatIndexs,"");
+                    //arrayLists的外部长度等于lineSeatList的长度
+                    ArrayList<ArrayList<Integer>> arrayLists = new ArrayList<ArrayList<Integer>>();
+                    for (int k = 0;k < lineSeatList.size();k ++){
+                        ArrayList<Integer> lineSeatIndex = new ArrayList<Integer>();
+                        for (int j = 0;j < wareHouseMaterialItems.size();j ++){
+                            MaterialItem innerItem = wareHouseMaterialItems.get(j);
+                            if (innerItem.getOrgLineSeat().equalsIgnoreCase(lineSeatList.get(k))){
+                                innerItem.setScanMaterial(scanMaterial);
+                                innerItem.setResult("PASS");
+                                lineSeatIndex.add(j);
+                                //成功次数加1
+                                sucIssueCount++;
+                            }
+                        }
+                        arrayLists.add(lineSeatIndex);
                     }
+
                     //弹出站位
                     showInfo("料号:"+scanMaterial,lineSeatList,1);
                     //启动子线程
                     mDissMissThread=new DissMissThread();
                     mDissMissThread.start();
+                    //写日志
+                    setOperateLog(arrayLists,"");
                     //刷新数据
                     wareHouseAdapter.notifyDataSetChanged();
                 }
@@ -346,12 +360,26 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
     }
 
     //写日志
-    private void setOperateLog(final ArrayList<Integer> integers, final String scanMaterial){
-        GlobalFunc globalFunc = new GlobalFunc();
-        if ((integers != null) && (integers.size() > 0)){
-            for (int j = 0; j < integers.size(); j++){
-                MaterialItem materialItem=wareHouseMaterialItems.get(integers.get(j));
-                globalFunc.AddDBLog(globalData,materialItem);
+    private void setOperateLog(ArrayList<ArrayList<Integer>> integerLists, String scanMaterial){
+        if ((integerLists !=null) && (integerLists.size() > 0)){
+            ArrayList<Integer> lineSeatIndex = new ArrayList<Integer>();
+            for (int m = 0;m < integerLists.size();m++){
+                lineSeatIndex.clear();
+                lineSeatIndex.addAll(integerLists.get(m));
+                for (int n = 0;n < lineSeatIndex.size();n++){
+                    MaterialItem innerItem = wareHouseMaterialItems.get(lineSeatIndex.get(n));
+                    if (lineSeatIndex.size() > 1){
+                        innerItem.setRemark("主替有一项成功");
+                    }else {
+                        innerItem.setRemark("发料成功");
+                    }
+                    //添加日志
+                    globalFunc.AddDBLog(globalData,innerItem);
+                    //更新显示日志
+                    globalFunc.updateVisitLog(globalData,innerItem);
+                    //刷新数据
+                    wareHouseAdapter.notifyDataSetChanged();
+                }
             }
         }else {
             MaterialItem failMaterialItem=new MaterialItem(wareHouseMaterialItems.get(0).getFileId(),"","","",scanMaterial,"FAIL","不存在该料号的站位!");
