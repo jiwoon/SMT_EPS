@@ -31,6 +31,7 @@ import com.jimi.smt.eps.printer.entity.Material;
 import com.jimi.smt.eps.printer.entity.MaterialProperties;
 import com.jimi.smt.eps.printer.util.DateUtil;
 import com.jimi.smt.eps.printer.util.ExcelHelper;
+import com.jimi.smt.eps.printer.util.ResourcesUtil;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -38,8 +39,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -49,6 +54,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -57,6 +64,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
+/**
+ * 主页控制器
+ * @author 沫熊工作室 <a href="http://www.darhao.cc">www.darhao.cc</a>
+ */
 public class MainController implements Initializable {
 
 	private static final String CONFIG_FILE_NAME = "printer.cfg";
@@ -67,6 +78,8 @@ public class MainController implements Initializable {
 	
 	private Logger logger = LogManager.getRootLogger();
 	
+	@FXML
+	private AnchorPane parentAp;
 	@FXML
 	private TextField fileSelectTf;
 	@FXML
@@ -139,6 +152,10 @@ public class MainController implements Initializable {
 	private TableColumn quantityCol;
 	@FXML
 	private TableColumn remarkCol;
+	@FXML
+	private Button configBt;
+	@FXML
+	private TextField copyTf;
 	
 	private Stage primaryStage;
 	
@@ -151,6 +168,9 @@ public class MainController implements Initializable {
 	
 	//打印控制socket
 	private Socket printerSocket;
+	
+	//打印任务的份数
+	private int copies;
 	
 	
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -218,6 +238,27 @@ public class MainController implements Initializable {
 		
 	
 	public void onPrintBtClick() {
+		//份数校验
+		String s = copyTf.getText();
+		try{
+			int i = Integer.parseInt(s);
+			if(i < 1) {
+				throw new NumberFormatException();
+			}
+			copies = i;
+			print();
+		}catch (NumberFormatException e) {
+			error("请输入正确的打印份数");
+		}
+	}
+
+
+	public void onCallConfig() {
+		showWindow("fxml/config.fxml");
+	}
+
+
+	private void print() {
 		//准备操作
 		printBt.setDisable(true);
 		printBt.setText("打印中...");
@@ -250,6 +291,10 @@ public class MainController implements Initializable {
 							    	materialNoTf.setText("");
 							    	materialNoTf.requestFocus();
 							    	info("打印成功");
+							    	copies--;
+							    	if(copies != 0) {
+							    		print();
+							    	}
 							    }
 							});
 						}else {
@@ -301,7 +346,7 @@ public class MainController implements Initializable {
 		stringBuffer.append("@");
 		stringBuffer.append(quantityLb.getText().equals("") ? "0" : quantityLb.getText());
 		stringBuffer.append("@");
-		stringBuffer.append(timeLb.getText());
+		stringBuffer.append(System.currentTimeMillis());
 		Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();  
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");  
         try {
@@ -369,7 +414,7 @@ public class MainController implements Initializable {
 		try {
 			materials = excel.unfill(Material.class, 1);
 		} catch (Exception e) {
-			error("数据解析失败，请按照模版表格编写供应商料号表文件");
+			error("数据解析失败，请参考\"标准范例表\"编写供应商料号表文件");
 			materialTb.setItems(null);
 			return;
 		}
@@ -384,6 +429,17 @@ public class MainController implements Initializable {
 	}
 
 	private void init() {
+		//初始化打印热键
+		parentAp.setOnKeyReleased(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if(event.getCode().compareTo(KeyCode.ENTER) == 0){
+					if(!printBt.isDisable()) {
+						onPrintBtClick();
+					}
+				}
+			}
+		});
 		//读取上次文件路径和表名
 		properties = new Properties();
 		try {
@@ -530,7 +586,10 @@ public class MainController implements Initializable {
 						
 						printBt.setDisable(false);
 						
-						info("料号存在，打印已就绪");
+						//焦点移至数量输入框
+						quantityTf.requestFocus();
+						
+						info("料号存在，打印已就绪（热键：回车）");
 						break;
 					}
 					nameTf.setDisable(true);
@@ -624,6 +683,24 @@ public class MainController implements Initializable {
 			default:
 				break;
 			}
+		}
+		
+	}
+	
+	
+	private void showWindow(String resources) {
+		try {
+			FXMLLoader loader = new FXMLLoader(ResourcesUtil.getResourceURL(resources));
+			Parent root = loader.load();
+			ConfigController configController = loader.getController();
+	        //显示
+			Stage stage = new Stage();
+			configController.setStage(stage);
+			stage.setScene(new Scene(root));
+			stage.show();
+		}catch (IOException e) {
+			e.printStackTrace();
+			error("加载窗口时出错");
 		}
 		
 	}
