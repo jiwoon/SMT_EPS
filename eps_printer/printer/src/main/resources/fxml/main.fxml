@@ -162,7 +162,8 @@
       </AnchorPane>
       <Label layoutX="589.0" layoutY="424.0" prefHeight="15.0" prefWidth="60.0" text="打印份数：" />
       <TextField fx:id="copyTf" layoutX="649.0" layoutY="420.0" prefHeight="23.0" prefWidth="60.0" text="1" />
-      <Button fx:id="confgBt" layoutX="882.0" layoutY="420.0" mnemonicParsing="false" onAction="#onCallConfig" text="其他设置" />
-      <Separator layoutX="589.0" layoutY="456.0" prefHeight="0.0" prefWidth="357.0" />
+      <Button fx:id="configBt" layoutX="882.0" layoutY="420.0" mnemonicParsing="false" onAction="#onCallConfig" text="其他设置" />
+      <Separator layoutX="589.0" layoutY="458.0" prefHeight="3.0" prefWidth="357.0" />
+      <CheckBox fx:id="ignoreCb" layoutX="801.0" layoutY="424.0" mnemonicParsing="false" onAction="#onIgnoreClick" text="忽略校验" />
    </children>
 </AnchorPane>

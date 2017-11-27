@@ -31,6 +31,8 @@ public class ConfigController implements Initializable {
 	@FXML
 	private TextField marginTopTf;
 	@FXML
+	private TextField resolutionTf;
+	@FXML
 	private Button adjustBt;
 	
 	private Stage stage;
@@ -38,13 +40,13 @@ public class ConfigController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		try {
-			String xy = TextFileUtil.readFromFile("e.cfg");
-			String[] margins = xy.split(",");
-			marginLeftTf.setText(margins[0]);
-			marginTopTf.setText(margins[1]);
+			String[] configs = TextFileUtil.readFromFile("e.cfg").split(",");
+			marginLeftTf.setText(configs[0]);
+			marginTopTf.setText(configs[1]);
+			resolutionTf.setText(configs[2]);
 		} catch (IOException e) {
 			try {
-				TextFileUtil.writeToFile("e.cfg", "0,0");
+				TextFileUtil.writeToFile("e.cfg", "0,0,300");
 				initialize(arg0, arg1);
 			} catch (IOException e1) {
 				logger.error("e.cfg文件创建失败");
@@ -56,11 +58,17 @@ public class ConfigController implements Initializable {
 	
 	public void onAdjustClick() {
 		try {
-			TextFileUtil.writeToFile("e.cfg", marginLeftTf.getText() + "," + marginTopTf.getText());
+			Integer.parseInt(marginLeftTf.getText());
+			Integer.parseInt(marginTopTf.getText());
+			Integer.parseInt(resolutionTf.getText());
+			TextFileUtil.writeToFile("e.cfg", marginLeftTf.getText() + "," + marginTopTf.getText() + "," + resolutionTf.getText());
 			stage.close();
 		} catch (IOException e) {
 			new Alert(AlertType.ERROR, "保存失败", ButtonType.OK).show();
 			logger.error("e.cfg文件保存失败");
+		}catch(NumberFormatException e) {
+			new Alert(AlertType.ERROR, "只能填数字", ButtonType.OK).show();
+			logger.error("e.cfg文件只能填数字");
 		}
 	}
 
