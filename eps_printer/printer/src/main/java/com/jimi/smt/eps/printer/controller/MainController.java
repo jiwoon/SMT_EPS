@@ -180,12 +180,13 @@ public class MainController implements Initializable {
 	
 	
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		initPrinter();
-		initTableSelectorCb();
 		initTableCol();
-		initMaterialNoTf();
-		initMaterialPropertiesTfs();
-		initOthers();
+		initMaterialNoTfListener();
+		initTableSelectorCbListener();
+		initMaterialPropertiesTfsListener();
+		initHotKey();
+		initDataFromConfig();
+		initPrinter();
 	}
 
 
@@ -463,18 +464,8 @@ public class MainController implements Initializable {
 		materialNoTf.requestFocus();
 	}
 
-	private void initOthers() {
-		//初始化打印热键
-		parentAp.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				if(event.getCode().compareTo(KeyCode.ENTER) == 0){
-					if(!printBt.isDisable()) {
-						onPrintBtClick();
-					}
-				}
-			}
-		});
+	private void initDataFromConfig() {
+		
 		//读取上次文件路径和表名
 		properties = new Properties();
 		try {
@@ -537,6 +528,21 @@ public class MainController implements Initializable {
 	}
 
 
+	private void initHotKey() {
+		//初始化打印热键
+		parentAp.setOnKeyReleased(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if(event.getCode().compareTo(KeyCode.ENTER) == 0){
+					if(!printBt.isDisable()) {
+						onPrintBtClick();
+					}
+				}
+			}
+		});
+	}
+
+
 	private void initPrinter() {
 		//初始化打印机
 		try {
@@ -564,7 +570,7 @@ public class MainController implements Initializable {
 	}
 
 
-	private void initTableSelectorCb() {
+	private void initTableSelectorCbListener() {
 		//初始化下拉框监听器
 		tableSelectCb.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -596,7 +602,7 @@ public class MainController implements Initializable {
 	}
 
 
-	private void initMaterialNoTf() {
+	private void initMaterialNoTfListener() {
 		//初始化物料编号文本域监听器
 		materialNoTf.textProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -650,7 +656,7 @@ public class MainController implements Initializable {
 	}
 	
 
-	private void initMaterialPropertiesTfs() {
+	private void initMaterialPropertiesTfsListener() {
 		nameTf.textProperty().addListener(new MaterialPropertiesTfChangeListener("name"));
 		descriptionTf.textProperty().addListener(new MaterialPropertiesTfChangeListener("description"));
 		seatNoTf.textProperty().addListener(new MaterialPropertiesTfChangeListener("seat"));
