@@ -601,7 +601,7 @@ public class MainController implements Initializable {
 		materialNoTf.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if(ignoreCb.isSelected()) {
+				if(ignoreCb.isSelected() || materials == null) {
 					materialNoLb.setText(materialNoTf.getText());
 					printBt.setDisable(false);
 					return;
