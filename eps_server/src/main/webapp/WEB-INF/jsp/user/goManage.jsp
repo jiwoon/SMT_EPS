@@ -74,10 +74,13 @@
 		                    </div>                   
 		                    	 岗位：<select id="type">
 		                            <option value =>不限</option>
-		                            <option value =0>0、仓库操作员</option>
-		                            <option value =1>1、厂线操作员</option>
-		                            <option value=2>2、IPQC</option>
-		                            <option value=3>3、管理员</option>
+		                            <option value =0>仓库操作员</option>
+		                            <option value =1>厂线操作员</option>
+		                            <option value=2>IPQC</option>
+		                            <option value=3>超级管理员</option>
+		                            <option value=4>生产管理员</option>
+		                            <option value=5>品质管理员</option>
+		                            <option value=6>工程管理员</option>
 		                        </select>                                
 		                                        班别：<select id="classType">
 		                                <option value =>不限</option>
@@ -123,11 +126,14 @@
                    工号：<input type="text" id="newId"> <br>
                    姓名：<input type="text" id="newName"><br>
                    岗位：<select id="newType">
-                       <option value=>不限</option>
-                       <option value=0>仓库操作员</option>
-                       <option value=1>厂线操作员</option>
-                       <option value=2>IPQC</option>
-                       <option value=3>管理员</option>
+                       <option value =>不限</option>
+		                            <option value =0>仓库操作员</option>
+		                            <option value =1>厂线操作员</option>
+		                            <option value=2>IPQC</option>
+		                            <option value=3>超级管理员</option>
+		                            <option value=4>生产管理员</option>
+		                            <option value=5>品质管理员</option>
+		                            <option value=6>工程管理员</option>
                    </select><br>
                    班别：<select id="newClassType">
                        <option value=>不限</option>
@@ -146,11 +152,14 @@
                     工号：<input type="text" id="modifyId"> <br>
                     姓名：<input type="text" id="modifyName"><br>
                     岗位：<select id="modifyType">
-                    <option value=>不限</option>
-                    <option value=0>仓库操作员</option>
-                    <option value=1>厂线操作员</option>
-                    <option value=2>IPQC</option>
-                    <option value=3>管理员</option>
+                    <option value =>不限</option>
+		                            <option value =0>仓库操作员</option>
+		                            <option value =1>厂线操作员</option>
+		                            <option value=2>IPQC</option>
+		                            <option value=3>超级管理员</option>
+		                            <option value=4>生产管理员</option>
+		                            <option value=5>品质管理员</option>
+		                            <option value=6>工程管理员</option>
                 </select><br>
                     班别：<select id="modifyClassType">
                     <option value=>不限</option>
