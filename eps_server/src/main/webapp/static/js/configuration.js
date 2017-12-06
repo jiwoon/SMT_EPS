@@ -13,19 +13,32 @@ $(function(){
     var $306 = [];
     var $307 = [];
     var $308 = [];
-//    鼠标查询按钮
+//    查询按钮
     $("#searchBtn").hover(function(){
         $(this).addClass("ui-state-hover");
     },function(){
         $(this).removeClass("ui-state-hover");
-    })
-        .on("click",function(){
+    }).on("click",function(){
+        for( var i = 0 ; i < $("#lineChoice option").length ; i++){
+            $("#lineChoice option").eq(i).removeAttr("selected");
+        }
+        $("#lineChoice option").eq(0).attr("selected",true);
+            $timeId1 = 0;
+            $("#main").empty();
             $.ajax({
                 url : "config/list" ,
                 type : "post",
                 dataType : "json",
                 data : {},
                 success : function(data){
+                    $301 = [];
+                    $302 = [];
+                    $303 = [];
+                    $304 = [];
+                    $305 = [];
+                    $306 = [];
+                    $307 = [];
+                    $308 = [];
                     var dataLength = data.length;
                     for( var i = 0 ; i < dataLength ; i++){
                         var $value = data[i].line;
@@ -59,36 +72,6 @@ $(function(){
                         lineChoice = $("#lineChoice option:selected").text();
                         select(lineChoice ,flag);
                     });
-                    //保存按钮
-                    $("#saveBtn").on("click",function(){
-                        lineChoice = $("#lineChoice option:selected").text();
-                        sendArray =[];  //每次清空数组
-                        idNum = 0;
-                        flag = 1 ;
-                        select(lineChoice ,flag);
-                    //将所有数组放到array中
-                        for( var i =  1; i < 9 ; i++){
-                            getAndPush(eval("$30"+i))
-                        }
-                    var $newJson =  JSON.stringify(sendArray);
-                        $.ajax({
-                            url : "config/set",
-                            type : "post",
-                            dataType : "json",
-                            data : {
-                                configs : $newJson
-                            },
-                            success : function(data){
-                                if(data.result == "succeed"){
-                                    alert("保存成功");
-                                }
-                            },
-                            error : function(){
-                                console.log("数据传输错误！！");
-                            }
-
-                        });
-                    });
                 },
                 error : function(){
                     console.log("数据传输错误！！");
@@ -99,16 +82,45 @@ $(function(){
     $("#saveBtn").hover(function(){
         $(this).addClass("ui-state-hover");
     },function(){
-        $(this).removeClass("ui-state-hover");
-    });
+                    $(this).removeClass("ui-state-hover");})
+        .on("click",function(){
+            lineChoice = $("#lineChoice option:selected").text();
+            sendArray =[];  //每次清空数组
+            idNum = 0;
+            flag = 1 ;
+            select(lineChoice ,flag);
+            //将所有数组放到array中
+            console.log($301);
+            for( var i =  1; i < 9 ; i++){
+                getAndPush(eval("$30"+i))
+            }
+            var $newJson =  JSON.stringify(sendArray);
+                    $.ajax({
+                        url : "config/set",
+                        type : "post",
+                        dataType : "json",
+                        data : {
+                            configs : $newJson
+                        },
+                        success : function(data){
+                            if(data.result == "succeed"){
+                                alert("保存成功");
+                            }
+                        },
+                        error : function(){
+                            console.log("数据传输错误！！");
+                        }
+                    });
+        });
     //针对一个线号对应多个数据
     function createMulTable(data,w){
         var html = "" ;
+        var checkBox = data[0].enabled == true ? "<input id='0" + $timeId1 + "' type='checkbox' checked="+ false +">" :"<input id='0" + $timeId1 + "' type='checkbox'>";
         html += "<tr>"
         html +=     "<td rowspan='"+ w +"'>"+ data[0].line +"</td>"
         html +=     "<td>" + data[0].alias +"</td>"
         html +=     "<td>" + "<input id='"+ $timeId1+"'  type='text' value='"+ data[0].value+"' style='border: 1px solid black;padding: 5px;'>" + "</td>"
-        html +=     "<td>" + "<input id='0" + $timeId1 + "' type='checkbox' checked="+ data[0].enabled +">" + "</td>"
+        html +=     "<td>" + checkBox + "</td>"
         html +=     "<td>" + data[0].description + "</td>"
         html += "</tr>";
         $("#main").append(html);
@@ -116,11 +128,12 @@ $(function(){
     }
 //    生成缩进一格的一行table
     function createOneTable(data , k){
+        var checkBox = data[k].enabled == true ? "<input id='0" + $timeId1 + "' type='checkbox' checked="+ false +">" :"<input id='0" + $timeId1 + "' type='checkbox'>";
         var html = "" ;
         html += "<tr>"
         html +=     "<td>" + data[k].alias +"</td>"
         html +=     "<td>" + "<input id='"+ $timeId1 +"'  type='text' value='"+ data[k].value+"' style='border: 1px solid black;padding: 5px'>" + "</td>"
-        html +=     "<td>" + "<input id='0"+ $timeId1 + "' type='checkbox' checked='"+ data[k].enabled +"'>" + "</td>"
+        html +=     "<td>" + checkBox + "</td>"
         html +=     "<td>" + data[k].description + "</td>"
         html += "</tr>";
         $("#main").append(html);
@@ -128,12 +141,13 @@ $(function(){
     }
     //生成单独一行表格
     function createTwoTable(data , k){
+        var checkBox = data[k].enabled == true ? "<input id='0" + $timeId1 + "' type='checkbox' checked="+ false +">" :"<input id='0" + $timeId1 + "' type='checkbox'>";
         var html = "" ;
         html += "<tr>"
         html +=     "<td>" + data[k].line +"</td>"
         html +=     "<td>" + data[k].alias +"</td>"
         html +=     "<td>" + "<input id='" + $timeId1 +"' type='text' value='"+ data[k].value+"' style='border: 1px solid black;padding: 5px'>" + "</td>"
-        html +=     "<td>" + "<input id='0"+ $timeId1 +"' type='checkbox' checked='" + data[k].enabled +"'>" + "</td>"
+        html +=     "<td>" + checkBox + "</td>"
         html +=     "<td>" + data[k].description + "</td>"
         html += "</tr>";
         $("#main").append(html);
@@ -155,7 +169,6 @@ $(function(){
         var index = 0 ;
         for( var i = num ; i <num + array.length ; i++){
             array[index].value = $("#"+i).val();
-            console.log($("#0"+i).prop("checked"));
             array[index].enabled = $("#0"+i).prop("checked");
             index++;
         }

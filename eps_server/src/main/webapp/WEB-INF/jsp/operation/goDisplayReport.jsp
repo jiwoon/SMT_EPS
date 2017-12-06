@@ -12,8 +12,26 @@
     <script src="static/js/table_js.js"></script>
 </head>
 <body>
-<div class="box">
-    <table id="table">
+	<section class="banner">
+		<div class="banner-main">
+			<p>实时显示表格</p>
+			<span>
+				请选择需要查看的线号
+				<select name="" id="banner-line">
+					<option value=0>301</option>
+					<option value=1>302</option>
+					<option value=2>303</option>
+					<option value=3>304</option>
+					<option value=4>305</option>
+					<option value=5>306</option>
+					<option value=6>307</option>
+					<option value=7 selected="selected">308</option>
+				</select>
+			</span>
+		</div>
+	</section>
+	<div class="box">
+    	<table id="table">
         <tr id="top-left">
             <td >
                 <div class="out">
@@ -449,6 +467,6 @@
             <td>10</td>
         </tr>
     </table>
-</div>
+	</div>
 </body>
 </html>

@@ -25,7 +25,8 @@ $(function(){
                 fileName : standPosition,
                 workOrder : workNum ,
                 state :state,
-                line : line
+                line : line,
+                ordBy : "state"
             },
             success :function(data){
                 autoCreateTable(data);
@@ -94,7 +95,9 @@ $(function(){
         url :"program/list",
         type: "post",
         dataType: "json",
-        data :{},
+        data :{
+            ordBy : "state"
+        },
         success :function(data){
             autoCreateTable(data);
             bindEvent(data);

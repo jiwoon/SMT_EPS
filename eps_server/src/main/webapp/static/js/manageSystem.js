@@ -92,7 +92,7 @@ $(function(){
                 name:$("#name").val()==""?null:$("#name").val(),
                 type:$("#type").val(),
                 classType:$("#classType").val(),
-                enabled :$("#enabled").val()
+                enabled :$("#enabled").val(),
             },
             success: function (data){
                 autoCreateTable(data);

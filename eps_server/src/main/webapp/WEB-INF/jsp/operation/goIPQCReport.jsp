@@ -30,10 +30,9 @@
         						<option value=4>仓库</option>
         			       </select>
         	</span><br />
-        	<div>
-        		<input type="text" readonly = "readonly" class="youhua"/>
+        	<div class="userline">
         		客户名 ：<input id="clientName" type="text" />
-     		线号 ：<select id="line">
+     		 线号 ：<select id="line">
 	        		<option value=>不限</option>
 	        		<option value=0>301</option>
 	        		<option value=1>302</option>
@@ -46,10 +45,10 @@
         	    </select>
         	</div>
      		<br />
-        	    <div class="autoCom">
+        	<div class="autoCom">
         	    	<p style="float: left;">工单号 ：</p><input id = "workOrderNum" type="text" class="autoInput"/>
-        	    </div>
-        	    <div style="position: relative;">
+        	</div>
+        	    <div class="seTime">
         	   		 起止时间 ：<input id="startTime" type="date" class="location"/> <em>--</em> <input id="endTime" type="date" />
         	    </div>
      		<button id="searchBtn" class = "ui-accordion-header ui-state-default ui-corner-all ui-corner-top commonBtn btnSearch" >查询</button>
