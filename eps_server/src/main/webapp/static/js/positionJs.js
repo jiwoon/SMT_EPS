@@ -29,20 +29,24 @@ $(function(){
                 ordBy : "state"
             },
             success :function(data){
-                autoCreateTable(data);
-                bindEvent(data);
-                //超过100个数据时边滚动边加载
-                if(data.length > 100){
-                    $(window).on("scroll",function(){
-                        newNum = originNum ;
-                        if(newNum < data.length){
-                            originNum += 3;
-                            originNum = (originNum >= data.length ? data.length : originNum);  //判断加3后是否长度大于数据长度
-                            for(var de = newNum ; de < originNum ; de++){
-                                CreateOneTable(de ,data);
+                if(data.result){
+                    alert("您没有权限！");
+                }else{
+                    autoCreateTable(data);
+                    bindEvent(data);
+                    //超过100个数据时边滚动边加载
+                    if(data.length > 100){
+                        $(window).on("scroll",function(){
+                            newNum = originNum ;
+                            if(newNum < data.length){
+                                originNum += 3;
+                                originNum = (originNum >= data.length ? data.length : originNum);  //判断加3后是否长度大于数据长度
+                                for(var de = newNum ; de < originNum ; de++){
+                                    CreateOneTable(de ,data);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             },
             error : function(){

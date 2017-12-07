@@ -55,23 +55,26 @@ $(function(){
             data : {
                 type : $("#operationIPQC option:selected").val(),
                 client :  $("#clientName").val(),
-                line : $("#line option:selected").val(),
+                line : $("#line option:selected").text() == "不限" ? "" : $("#line option:selected").text(),
                 workOrderNo : $("#workOrderNum").val(),
                 startTime : a,
                 endTime : b
             },
             success : function(data){
                 $("#showWaiting").css("display" , "none");
-                var dataLength  = data.length ; //获取数据长度
-                array=[];
-                for(var i = 0;i<data.length;i++){
-                    var $json = {};
-                    $json.label = data[i].workOrderNo;
-                    array.push($json);
-                }
-                $("#clientMainTable").empty();
-                autoCreateTable(data);
-                autoComplete("workOrderNum",array,searchCallBack);
+                if(data.result){
+                    alert("您没有权限");
+                }else{
+                    var dataLength  = data.length ; //获取数据长度
+                    array=[];
+                    for(var i = 0;i<data.length;i++){
+                        var $json = {};
+                        $json.label = data[i].workOrderNo;
+                        array.push($json);
+                    }
+                    $("#clientMainTable").empty();
+                    autoCreateTable(data);
+                    autoComplete("workOrderNum",array,searchCallBack);
                     $(window).on("scroll",function(){
                         if(dataLength > 100){
                             newNum = originNum ;
@@ -84,6 +87,7 @@ $(function(){
                             }
                         }
                     });
+                }
             },
             error : function(){
                 console.log("数据传输失败");

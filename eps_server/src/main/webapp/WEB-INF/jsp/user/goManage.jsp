@@ -17,7 +17,7 @@
     <div class="banner" id="banner">
         <span class="name">SMT防错料管理系统</span>
         <span id="showUser" class="showUser"></span>
-<!--        <span class="logout"></span>-->
+        <span class="logout"></span>
     </div>
     <!--主要显示框-->
     <div class="main" id="main">

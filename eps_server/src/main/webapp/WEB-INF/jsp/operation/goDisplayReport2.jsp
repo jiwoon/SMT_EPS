@@ -28,8 +28,7 @@
         </span>
     </section>
     <section id="click-left">
-        <em></em>
-        <span></span>
+        <em class="out"></em>
     </section>
     <section id="main">
         <div>上料情况</div>
@@ -38,8 +37,7 @@
         <div>全检情况</div>
     </section>
     <section id="click-right">
-        <em></em>
-        <span></span>
+        <em class="out"></em>
     </section>
     <section id="nav-right" >
         <div class="start"></div>

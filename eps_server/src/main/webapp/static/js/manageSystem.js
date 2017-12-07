@@ -1,6 +1,8 @@
 $(function(){
-
-
+    //设置退出按钮
+    $(".logout").on("click",function(){
+        window.location.href = "user/goLogin";
+    });
     //设置登录时人的账号
    var screenWidth = $(window).width();     //获取屏幕宽度
     var screenHeight = $(window).height(); //获取屏幕高度
@@ -95,8 +97,12 @@ $(function(){
                 enabled :$("#enabled").val(),
             },
             success: function (data){
-                autoCreateTable(data);
-                btnBindEvent(data);
+                if(data.result){
+                    alert("您没有权限！");
+                }else {
+                    autoCreateTable(data);
+                    btnBindEvent(data);
+                }
             },
             error:function(){
                 console.log("数据传输失败!!!");

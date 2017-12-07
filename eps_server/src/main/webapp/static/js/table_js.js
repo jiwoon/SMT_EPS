@@ -1,4 +1,5 @@
 $(function(){
+    var flag = true ;
     //设置初始样式
     var screenWidth  = $(window).width();
     $(".box").css({       //设置盒子的宽度跟随屏幕改?
@@ -17,7 +18,6 @@ $(function(){
     $("#top-left td").eq(2).css({"width":QCWidth});
 
     var changDu = $("#kong").width()+3;
-    console.log(changDu);
     $(".first div").css({"border-left":changDu+"px #BDBABD solid"});
     $(".common em").css({"right":0.5*$("#kong").width()});
 
@@ -41,33 +41,37 @@ $(function(){
         var lineNum = $("#banner-line option:selected").text();
         $.ajax({
             url:"operation/listDisplayReport?line="+lineNum,
-            type:"get",
+            type:"post",
             dataType:"json",
             success:function(data){
-                var feeds  = data.feed;    //获得上料数组
-                var changes = data.changes;    //获得换料数组
-                var some   = data.somes;     //获得抽检数组
-                var alls   = data.alls;        //获得全检数组
-                var times  = feeds[0].time;
-                $("#span").text("("+ times+")");
-                for( var i = 0 ; i <$(".first").length;i++){
-                    $(".time").eq(i).text(feeds[i+1].time);
-                    $(".second:eq("+i+") td").eq(1).text(feeds[i].suc).end() //将上料数组的第i个元素即第i时间的成功数填入表格
-                                            .eq(2).text(changes[i].suc).end()  //将换料数组的第i个元素即第i时间的成功数填入表格
-                                            .eq(3).text(some[i].suc).end()   //将抽检数组的第i个元素即第i时间的成功数填入表格
-                                            .eq(4).text(alls[i].suc);  //将全检数组的第i个元素即第i时间的成功数填入表格
+                if(data.result && flag == true){
+                    alert("您没有权限");
+                    flag = false ;
+                }else{
+                    var feeds  = data.feed;    //获得上料数组
+                    var changes = data.changes;    //获得换料数组
+                    var some   = data.somes;     //获得抽检数组
+                    var alls   = data.alls;        //获得全检数组
+                    var times  = feeds[0].time;
+                    $("#span").text("("+ times+")");
+                    for( var i = 0 ; i <$(".first").length;i++){
+                        $(".time").eq(i).text(feeds[i+1].time);
+                        $(".second:eq("+i+") td").eq(1).text(feeds[i].suc).end() //将上料数组的第i个元素即第i时间的成功数填入表格
+                            .eq(2).text(changes[i].suc).end()  //将换料数组的第i个元素即第i时间的成功数填入表格
+                            .eq(3).text(some[i].suc).end()   //将抽检数组的第i个元素即第i时间的成功数填入表格
+                            .eq(4).text(alls[i].suc);  //将全检数组的第i个元素即第i时间的成功数填入表格
 
-                    $(".third:eq("+ i+") td").eq(1).text(feeds[i].fail).end() //将上料数组的第i个元素即第i时间的失败数填入表格
-                                             .eq(2).text(changes[i].fail).end()  //将抽料数组的第i个元素即第i时间的失败数填入表格
-                                             .eq(3).text(some[i].fail).end()  //将抽检数组的第i个元素即第i时间的失败数填入表格
-                                             .eq(4).text(alls[i].fail);  //将全检数组的第i个元素即第i时间的失败数填入表格
+                        $(".third:eq("+ i+") td").eq(1).text(feeds[i].fail).end() //将上料数组的第i个元素即第i时间的失败数填入表格
+                            .eq(2).text(changes[i].fail).end()  //将抽料数组的第i个元素即第i时间的失败数填入表格
+                            .eq(3).text(some[i].fail).end()  //将抽检数组的第i个元素即第i时间的失败数填入表格
+                            .eq(4).text(alls[i].fail);  //将全检数组的第i个元素即第i时间的失败数填入表格
 
-                    $(".four:eq("+ i+") td").eq(1).text(feeds[i].total).end()  //将上料数组的第i个元素即第i时间的总数填入表格
-                                            .eq(2).text(changes[i].total).end()//将抽料数组的第i个元素即第i时间的总数填入表格
-                                            .eq(3).text(some[i].total).end()  //将抽检数组的第i个元素即第i时间的总数填入表格
-                                            .eq(4).text(alls[i].total).end();//将全检数组的第i个元素即第i时间的总数填入表格
+                        $(".four:eq("+ i+") td").eq(1).text(feeds[i].total).end()  //将上料数组的第i个元素即第i时间的总数填入表格
+                            .eq(2).text(changes[i].total).end()//将抽料数组的第i个元素即第i时间的总数填入表格
+                            .eq(3).text(some[i].total).end()  //将抽检数组的第i个元素即第i时间的总数填入表格
+                            .eq(4).text(alls[i].total).end();//将全检数组的第i个元素即第i时间的总数填入表格
+                    }
                 }
-
             },
             error:function(){
                 console.log("数据传输错误");

@@ -134,17 +134,30 @@ s, i, em {
     border-style:dashed   dashed dashed solid;
     border-color:transparent   transparent transparent #B9B9C8;
 }
-#click-left span,#click-right span{
-    display: block;
+#click-left .out::before ,#click-right .out::before{
+    content: "";
     height:50px;
     width:6px;
     background-color:#B9B9C8 ;
     position: absolute;
-    top:25px;
-    left:30px;
+    top:-25px;
+    left:-4px;
 }
-#click-right span{
-    left:54%;
+#click-right .out::before{
+    left:0;
+}
+
+#click-left .in::before ,#click-right .in::before{
+    content: "";
+    height:50px;
+    width:6px;
+    background-color:#000 ;
+    position: absolute;
+    top:-25px;
+    left:-4px;
+}
+#click-right .in::before{
+    left:0;
 }
 /*滑动栏*/
 #main{

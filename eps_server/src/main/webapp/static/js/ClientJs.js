@@ -133,33 +133,38 @@ $(function(){
             },
             success : function(data){
                 $("#showWaiting").css("display","none");
-                dataLength  = data.length ; //获取数据长度
-                for(var i = 0;i<data.length;i++){
-                    var $json = {};
-                    $json.label = data[i].orderNo;
-                    array1.push($json);
+                if(data.result){
+                    alert("您没有权限！");
+                }else{
+                    dataLength  = data.length ; //获取数据长度
+                    for(var i = 0;i<data.length;i++){
+                        var $json = {};
+                        $json.label = data[i].orderNo;
+                        array1.push($json);
 
-                    var $json1 = {};
-                    $json1.label = data[i].workOrderNo;
-                    array2.push($json1);
-                }
-                autoComplete("OrderNum",array1,orderCallBack);
-                autoComplete("workOrderNum",array2,workOrderCallBack);
-                $("#clientMainTable").empty();
-                if(dataLength != 0){
-                    autoCreateTable(data,dataLength);
+                        var $json1 = {};
+                        $json1.label = data[i].workOrderNo;
+                        array2.push($json1);
+                    }
+                    autoComplete("OrderNum",array1,orderCallBack);
+                    autoComplete("workOrderNum",array2,workOrderCallBack);
+                    $("#clientMainTable").empty();
+                    if(dataLength != 0){
+                        autoCreateTable(data,dataLength);
 
-                    $(window).on("scroll",function(){
-                        newNum = originNum ;
-                        if(newNum < dataLength){
-                            originNum += 3;
-                            originNum = (originNum >= dataLength ? dataLength : originNum);  //判断加3后是否长度大于数据长度
-                            for(var de = newNum ; de < originNum ; de++){
-                                CreateOneTable(de ,data);
+                        $(window).on("scroll",function(){
+                            newNum = originNum ;
+                            if(newNum < dataLength){
+                                originNum += 3;
+                                originNum = (originNum >= dataLength ? dataLength : originNum);  //判断加3后是否长度大于数据长度
+                                for(var de = newNum ; de < originNum ; de++){
+                                    CreateOneTable(de ,data);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
+
             },
             error : function(){
                 console.log("数据传输失败！");
