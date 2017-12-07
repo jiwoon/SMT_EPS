@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String login(String id, String password) {
 		User user = userMapper.selectByPrimaryKey(id);
-		if(user == null || user.getType() != 3) {
+		if(user == null || user.getType() < 3) {
 			return "failed_not_admin";
 		}
 		if(user.getEnabled() == false) {

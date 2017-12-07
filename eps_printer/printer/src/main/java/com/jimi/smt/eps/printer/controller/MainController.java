@@ -465,13 +465,19 @@ public class MainController implements Initializable {
 	}
 
 	private void initDataFromConfig() {
-		
+		//检查e.cfg存在与否，不存在则重新创建
+		if(!new File("e.cfg").exists()) {
+			try {
+				TextFileUtil.writeToFile("e.cfg", "0,0,300");
+			} catch (IOException e1) {
+				logger.error("e.cfg文件创建失败");
+			}
+		}
 		//读取上次文件路径和表名
 		properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File(CONFIG_FILE_NAME)));
 		} catch (FileNotFoundException | NullPointerException e) {
-			e.printStackTrace();
 			try {
 				new File(CONFIG_FILE_NAME).createNewFile();
 			} catch (IOException e1) {

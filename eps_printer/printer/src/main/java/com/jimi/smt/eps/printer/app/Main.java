@@ -22,7 +22,7 @@ public class Main extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader loader = new FXMLLoader(ResourcesUtil.getResourceURL("fxml/main.fxml"));
+		FXMLLoader loader = new FXMLLoader(ResourcesUtil.getResourceURL("fxml/app.fxml"));
 		Parent root = loader.load();
 		//把Stage存入MainController
 		mainController = loader.getController();

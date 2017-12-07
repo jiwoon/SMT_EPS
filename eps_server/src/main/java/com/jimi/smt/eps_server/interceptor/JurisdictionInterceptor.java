@@ -18,6 +18,10 @@ public class JurisdictionInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		if(handler.getClass().isAssignableFrom(HandlerMethod.class)){
+			//如果不是POST则放行
+			if(!request.getMethod().equals("POST")) {
+				return true;
+			}
 			//如果是带@Open注解直接放行
 			Open open = ((HandlerMethod) handler).getMethodAnnotation(Open.class);
 			if(open != null) {

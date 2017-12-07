@@ -76,86 +76,86 @@
          </children>
       </AnchorPane>
       <ChoiceBox fx:id="tableSelectCb" layoutX="407.0" layoutY="52.0" prefHeight="23.0" prefWidth="141.0" />
-      <AnchorPane fx:id="previewAp1" layoutX="126.0" layoutY="72.0" prefHeight="413.0" prefWidth="768.0" style="-fx-background-color: white;" visible="false">
+      <AnchorPane fx:id="previewAp1" layoutX="126.0" layoutY="72.0" prefHeight="413.0" prefWidth="768.0" style="-fx-background-color: white;">
          <children>
-            <Label layoutX="32.0" layoutY="42.0" prefHeight="33.0" prefWidth="78.0" text="编号：">
+            <Label layoutX="32.0" layoutY="34.0" prefHeight="44.0" prefWidth="101.0" text="编号：">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label fx:id="remarkLb1" layoutX="110.0" layoutY="363.0" prefHeight="34.0" prefWidth="390.0">
+            <Label fx:id="remarkLb1" layoutX="110.0" layoutY="355.0" prefHeight="34.0" prefWidth="390.0">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label fx:id="timeLb1" layoutX="110.0" layoutY="313.0" prefHeight="34.0" prefWidth="390.0">
+            <Label fx:id="timeLb1" layoutX="110.0" layoutY="305.0" prefHeight="34.0" prefWidth="390.0">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label fx:id="seatLb1" layoutX="110.0" layoutY="260.0" prefHeight="34.0" prefWidth="390.0">
+            <Label fx:id="seatLb1" layoutX="110.0" layoutY="252.0" prefHeight="34.0" prefWidth="390.0">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label fx:id="quantityLb1" layoutX="110.0" layoutY="202.0" prefHeight="33.0" prefWidth="390.0">
+            <Label fx:id="quantityLb1" layoutX="110.0" layoutY="194.0" prefHeight="33.0" prefWidth="390.0">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label fx:id="nameLb1" layoutX="110.0" layoutY="146.0" prefHeight="33.0" prefWidth="390.0">
+            <Label fx:id="nameLb1" layoutX="110.0" layoutY="138.0" prefHeight="33.0" prefWidth="390.0">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label fx:id="descriptionLb1" layoutX="110.0" layoutY="95.0" prefHeight="33.0" prefWidth="431.0">
+            <Label fx:id="descriptionLb1" layoutX="110.0" layoutY="87.0" prefHeight="33.0" prefWidth="431.0">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label fx:id="materialNoLb1" layoutX="110.0" layoutY="42.0" prefHeight="33.0" prefWidth="431.0">
+            <Label fx:id="materialNoLb1" layoutX="110.0" layoutY="34.0" prefHeight="33.0" prefWidth="431.0">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <ImageView fitHeight="73.0" fitWidth="163.0" layoutX="553.0" layoutY="40.0" pickOnBounds="true">
+            <ImageView fitHeight="73.0" fitWidth="163.0" layoutX="553.0" layoutY="32.0" pickOnBounds="true">
                <image>
                   <Image url="@../img/jimi.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="codeIv1" fitHeight="228.0" fitWidth="228.0" layoutX="520.0" layoutY="160.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="codeIv1" fitHeight="228.0" fitWidth="228.0" layoutX="520.0" layoutY="152.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../img/code.png" />
                </image>
             </ImageView>
-            <Label layoutX="32.0" layoutY="363.0" prefHeight="33.0" prefWidth="78.0" text="备注：">
+            <Label layoutX="32.0" layoutY="355.0" prefHeight="44.0" prefWidth="101.0" text="备注：">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label layoutX="32.0" layoutY="313.0" prefHeight="30.0" prefWidth="78.0" text="时间：">
+            <Label layoutX="32.0" layoutY="305.0" prefHeight="44.0" prefWidth="108.0" text="时间：">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label layoutX="32.0" layoutY="260.0" prefHeight="33.0" prefWidth="78.0" text="位置：">
+            <Label layoutX="32.0" layoutY="252.0" prefHeight="44.0" prefWidth="101.0" text="位置：">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label layoutX="32.0" layoutY="202.0" prefHeight="33.0" prefWidth="78.0" text="数量：">
+            <Label layoutX="32.0" layoutY="194.0" prefHeight="44.0" prefWidth="101.0" text="数量：">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label layoutX="32.0" layoutY="146.0" prefHeight="33.0" prefWidth="78.0" text="名称：">
+            <Label layoutX="32.0" layoutY="138.0" prefHeight="44.0" prefWidth="101.0" text="名称：">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
-            <Label layoutX="32.0" layoutY="95.0" prefHeight="33.0" prefWidth="78.0" text="型号：">
+            <Label layoutX="32.0" layoutY="87.0" prefHeight="44.0" prefWidth="101.0" text="型号：">
                <font>
-                  <Font name="Microsoft YaHei" size="26.0" />
+                  <Font name="STSong" size="32.0" />
                </font>
             </Label>
          </children>

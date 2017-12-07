@@ -47,7 +47,7 @@ public class ProgramController {
 		return new ModelAndView("program/goManage");
 	}
 	
-	@Role(RoleType.ENGINEER)
+	@Role({RoleType.ENGINEER, RoleType.PRODUCER})
 	@ResponseBody
 	@RequestMapping("/list")
 	public List<ProgramVO> list(String programName, String fileName, String line, String workOrder, Integer state, String ordBy) {
