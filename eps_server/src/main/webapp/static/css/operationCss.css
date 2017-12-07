@@ -1,10 +1,33 @@
+.showWaiting{
+    display: none;
+    width:100%;
+    height:100%;
+    background-color: rgba(204,204,204,.5);
+    position: absolute;
+    top:0;
+    left:0;
+    z-index: 999;
+}
+.showWaiting span{
+    display: block;
+    width:364px;
+    height:200px;
+    font-size: 30px;
+    background-color: #ffffff;
+    color: #000;
+    margin: 100px auto;
+    text-align: center;
+    line-height: 200px;
+}
 .operation-search{
+    width:950px;
+    height:80px;
+    margin:0 auto;
     background-color: #ffffff;
     font-size: 18px;
     padding:5px;
     line-height: 14px;
     position: relative;
-    border-bottom: 3px solid #77d5f7;
 }
 .operation-search span{
     display: inline-block;
@@ -15,12 +38,20 @@
     left:0;
 }
 
-.operation-search .youhua{
-    width:243px;
-    border: 1px solid #ffffff;
+.autoCom p{
+    width:80px ;
+    height:20px;
 }
-.operation-search input{
+.userline{
+    width:400px;
+    height:30px;
+    position: absolute;
+    top:10px;
+    left:282px;
+}
+.userline input ,.autoCom input {
     border: 1px solid black;
+    width:169px;
     font-size: 16px;
     padding-left: 5px;
     margin-left: -8px;
@@ -33,9 +64,10 @@
     margin-right: 22px;
 }
 .operation-search em{
+    width:12px;
     position: absolute;
-    top:62px;
-    left:514px;
+    top:4px;
+    left:250px;
 }
 .operation-search select{
     font-size: 18px;
@@ -58,8 +90,22 @@
 
 .autoCom{
     width:265px ;
-    position: relative;
-    z-index: 999;
+    z-index: 900;
+    position: absolute;
+    top:53px;
+    left:0;
+}
+.seTime{
+    position: absolute;
+    top:48px;
+    left:278px;
+}
+.seTime input{ border: 1px solid black;
+    font-size: 16px;
+    padding-left: 5px;
+    margin-left: -8px;
+    margin-bottom: 5px;
+    width:152px;
 }
 .autoInput{
     float: left;

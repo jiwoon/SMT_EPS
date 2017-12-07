@@ -83,7 +83,6 @@ s, i, em {
     font-style: normal;
     text-decoration: none;
 }
-
 /*版头样式*/
 .banner{
     height:80px;
@@ -241,12 +240,11 @@ s, i, em {
 .guard{
     width:100%;
     height:100%;
-    /*position: relative;*/
 }
 .guard span{
     position: absolute;
-    top:16%;
-    left:22%;
+    top:100px;
+    left:265px;
     width:100px;
     height:100px;
     background: url("../images/pointguard.png") no-repeat;
@@ -454,4 +452,8 @@ s, i, em {
 .connectGoManage{
     width:100%;
     height:100%
+}
+.warmManage{
+    width:100%;
+    height:100%;
 }

@@ -29,6 +29,8 @@
 		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
 		<!-- 登录拦截器 -->
 		<bean class="com.jimi.smt.eps_server.interceptor.LoginInterceptor"/>
+		<!-- 权限拦截器 -->
+		<bean class="com.jimi.smt.eps_server.interceptor.JurisdictionInterceptor"/>
 	</mvc:interceptors>
 
 	

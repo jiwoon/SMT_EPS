@@ -33,6 +33,7 @@
                 <ul>
                     <li>人员管理</li>
                     <li>站位表管理</li>
+                    <li>报警配置页面</li>
                 </ul>
             </div>
 
@@ -73,10 +74,13 @@
 		                    </div>                   
 		                    	 岗位：<select id="type">
 		                            <option value =>不限</option>
-		                            <option value =0>0、仓库操作员</option>
-		                            <option value =1>1、厂线操作员</option>
-		                            <option value=2>2、IPQC</option>
-		                            <option value=3>3、管理员</option>
+		                            <option value =0>仓库操作员</option>
+		                            <option value =1>厂线操作员</option>
+		                            <option value=2>IPQC</option>
+		                            <option value=3>超级管理员</option>
+		                            <option value=4>生产管理员</option>
+		                            <option value=5>品质管理员</option>
+		                            <option value=6>工程管理员</option>
 		                        </select>                                
 		                                        班别：<select id="classType">
 		                                <option value =>不限</option>
@@ -122,11 +126,14 @@
                    工号：<input type="text" id="newId"> <br>
                    姓名：<input type="text" id="newName"><br>
                    岗位：<select id="newType">
-                       <option value=>不限</option>
-                       <option value=0>仓库操作员</option>
-                       <option value=1>厂线操作员</option>
-                       <option value=2>IPQC</option>
-                       <option value=3>管理员</option>
+                       <option value =>不限</option>
+		                            <option value =0>仓库操作员</option>
+		                            <option value =1>厂线操作员</option>
+		                            <option value=2>IPQC</option>
+		                            <option value=3>超级管理员</option>
+		                            <option value=4>生产管理员</option>
+		                            <option value=5>品质管理员</option>
+		                            <option value=6>工程管理员</option>
                    </select><br>
                    班别：<select id="newClassType">
                        <option value=>不限</option>
@@ -145,11 +152,14 @@
                     工号：<input type="text" id="modifyId"> <br>
                     姓名：<input type="text" id="modifyName"><br>
                     岗位：<select id="modifyType">
-                    <option value=>不限</option>
-                    <option value=0>仓库操作员</option>
-                    <option value=1>厂线操作员</option>
-                    <option value=2>IPQC</option>
-                    <option value=3>管理员</option>
+                    <option value =>不限</option>
+		                            <option value =0>仓库操作员</option>
+		                            <option value =1>厂线操作员</option>
+		                            <option value=2>IPQC</option>
+		                            <option value=3>超级管理员</option>
+		                            <option value=4>生产管理员</option>
+		                            <option value=5>品质管理员</option>
+		                            <option value=6>工程管理员</option>
                 </select><br>
                     班别：<select id="modifyClassType">
                     <option value=>不限</option>
@@ -166,6 +176,12 @@
                 <button id="modify-position-back" class="ui-button ui-corner-all ui-state-default new-position-back">返回</button>
 
             </section>
+			
+			<!--报警配置页面-->
+			<section class="warmManage" id="warmManage" style="display: none"> 
+				<iframe class="connectGoManage" src="config/goConfig" frameborder="0"></iframe>
+			</section>
+			
 			<!--排位表显示-->
 			<section class="positionManage" id="positionManage" style="display: none"> 
 				<iframe class="connectGoManage" src="program/goManage" frameborder="0"></iframe>

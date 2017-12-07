@@ -1,5 +1,6 @@
 package com.jimi.smt.eps.printer.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -7,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Date;
@@ -31,6 +33,8 @@ import com.jimi.smt.eps.printer.entity.Material;
 import com.jimi.smt.eps.printer.entity.MaterialProperties;
 import com.jimi.smt.eps.printer.util.DateUtil;
 import com.jimi.smt.eps.printer.util.ExcelHelper;
+import com.jimi.smt.eps.printer.util.ResourcesUtil;
+import com.jimi.smt.eps.printer.util.TextFileUtil;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -38,9 +42,14 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -49,6 +58,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -57,6 +68,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
+/**
+ * 主页控制器
+ * @author 沫熊工作室 <a href="http://www.darhao.cc">www.darhao.cc</a>
+ */
 public class MainController implements Initializable {
 
 	private static final String CONFIG_FILE_NAME = "printer.cfg";
@@ -67,6 +82,8 @@ public class MainController implements Initializable {
 	
 	private Logger logger = LogManager.getRootLogger();
 	
+	@FXML
+	private AnchorPane parentAp;
 	@FXML
 	private TextField fileSelectTf;
 	@FXML
@@ -139,6 +156,12 @@ public class MainController implements Initializable {
 	private TableColumn quantityCol;
 	@FXML
 	private TableColumn remarkCol;
+	@FXML
+	private Button configBt;
+	@FXML
+	private TextField copyTf;
+	@FXML
+	private CheckBox ignoreCb;
 	
 	private Stage primaryStage;
 	
@@ -152,13 +175,18 @@ public class MainController implements Initializable {
 	//打印控制socket
 	private Socket printerSocket;
 	
+	//打印任务的份数
+	private int copies;
+	
 	
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		initTableSelectorCb();
 		initTableCol();
-		initMaterialNoTf();
-		initMaterialPropertiesTfs();
-		init();
+		initMaterialNoTfListener();
+		initTableSelectorCbListener();
+		initMaterialPropertiesTfsListener();
+		initHotKey();
+		initDataFromConfig();
+		initPrinter();
 	}
 
 
@@ -218,6 +246,44 @@ public class MainController implements Initializable {
 		
 	
 	public void onPrintBtClick() {
+		//份数校验
+		String s = copyTf.getText();
+		try{
+			int i = Integer.parseInt(s);
+			if(i < 1) {
+				throw new NumberFormatException();
+			}
+			copies = i;
+			print();
+		}catch (NumberFormatException e) {
+			error("请输入正确的打印份数");
+		}
+	}
+
+
+	public void onCallConfig() {
+		showWindow("fxml/config.fxml");
+	}
+
+	
+	public void onIgnoreClick() {
+		if(ignoreCb.isSelected()) {
+			nameTf.setDisable(false);
+			descriptionTf.setDisable(false);
+			seatNoTf.setDisable(false);
+			quantityTf.setDisable(false);
+			remarkTf.setDisable(true);
+			remarkTf.setText("该条码打印时忽略了料号表校验");
+			remarkLb.setText("该条码打印时忽略了料号表校验");
+			printBt.setDisable(false);
+			info("已开启忽略校验模式，请确保正确输入料号，并且尽早完善料号表格式并退出该模式");
+		}else {
+			resetControllers();
+		}
+	}
+	
+
+	private void print() {
 		//准备操作
 		printBt.setDisable(true);
 		printBt.setText("打印中...");
@@ -246,8 +312,15 @@ public class MainController implements Initializable {
 							Platform.runLater(new Runnable() {
 							    @Override
 							    public void run() {
-							        //更新JavaFX的主线程的代码放在此处
-							    	info("打印成功");
+							        //更新JavaFX的主线程的代码放在此处、
+							    	copies--;
+							    	if(copies != 0) {
+							    		print();
+							    	}else {
+							    		materialNoTf.setText("");
+								    	materialNoTf.requestFocus();
+								    	info("打印成功");
+							    	}
 							    }
 							});
 						}else {
@@ -255,6 +328,7 @@ public class MainController implements Initializable {
 							    @Override
 							    public void run() {
 							        //更新JavaFX的主线程的代码放在此处
+							    	printBt.setDisable(false);
 							    	error("打印失败");
 							    }
 							});
@@ -264,6 +338,7 @@ public class MainController implements Initializable {
 						    @Override
 						    public void run() {
 						        //更新JavaFX的主线程的代码放在此处
+						    	printBt.setDisable(false);
 						    	error("无法接收打印结果");
 						    }
 						});
@@ -274,7 +349,6 @@ public class MainController implements Initializable {
 						    public void run() {
 						        //更新JavaFX的主线程的代码放在此处
 						    	//收尾操作
-								printBt.setDisable(false);
 								printBt.setText("打印");
 						    }
 						});
@@ -298,7 +372,7 @@ public class MainController implements Initializable {
 		stringBuffer.append("@");
 		stringBuffer.append(quantityLb.getText().equals("") ? "0" : quantityLb.getText());
 		stringBuffer.append("@");
-		stringBuffer.append(timeLb.getText());
+		stringBuffer.append(System.currentTimeMillis());
 		Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();  
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");  
         try {
@@ -333,7 +407,17 @@ public class MainController implements Initializable {
 		previewAp1.setVisible(true);
 	    Image image = previewAp1.snapshot(null, null);
 	    try {
-	        if(!ImageIO.write(SwingFXUtils.fromFXImage(image, null), "gif", new File("Picture.gif"))) {
+	    	//根据分辨率设置尺寸
+	    	int resolution = Integer.parseInt(TextFileUtil.readFromFile("e.cfg").split(",")[2]);
+	    	BufferedImage bi = SwingFXUtils.fromFXImage(image, null);
+	    	if(resolution != 300) {
+	    		int width = (int)(bi.getWidth() / 300.0 * resolution);
+	    		int height = (int)(bi.getHeight() / 300.0 * resolution);
+		    	BufferedImage newBi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		    	newBi.getGraphics().drawImage(bi, 0, 0, width, height ,null);
+		    	bi = newBi;
+	    	}
+	        if(!ImageIO.write(bi, "gif", new File("Picture.gif"))) {
 	        	throw new IOException();
 	        }
 	    } catch (IOException e) {
@@ -350,7 +434,7 @@ public class MainController implements Initializable {
 	 */
 	private void loadTableSelectorData() {
 		ObservableList<String> list = FXCollections.observableArrayList();
-		for (int i = 0; i < excel.getBook().getNumberOfSheets(); i++) {
+		for (int i = 0; i <  excel.getBook().getNumberOfSheets(); i++) {
 			String name = excel.getBook().getSheetAt(i).getSheetName();
 			list.add(name);
 		}
@@ -366,7 +450,7 @@ public class MainController implements Initializable {
 		try {
 			materials = excel.unfill(Material.class, 1);
 		} catch (Exception e) {
-			error("数据解析失败，请按照模版表格编写供应商料号表文件");
+			error("数据解析失败，请参考\"标准范例表\"编写供应商料号表文件");
 			materialTb.setItems(null);
 			return;
 		}
@@ -377,9 +461,11 @@ public class MainController implements Initializable {
 		}
 		materialTb.setItems(materialPropertiesList);
 		info("数据解析成功，请在右上方扫入或输入料号");
+		materialNoTf.requestFocus();
 	}
 
-	private void init() {
+	private void initDataFromConfig() {
+		
 		//读取上次文件路径和表名
 		properties = new Properties();
 		try {
@@ -408,44 +494,66 @@ public class MainController implements Initializable {
 		File materialFile = new File(filePath);
 		try {
 			excel = ExcelHelper.from(materialFile);
+			
+			//设置当前文件名
+			fileSelectTf.setText(filePath);
+			info("文件加载成功");
+			
+			//加载表选择下拉菜单数据
+			loadTableSelectorData();
+			
+			//切换到指定sheet
+			if(sheetName == null || sheetName.equals("")) {
+				return;
+			}
+			if(!excel.switchSheet(sheetName)) {
+				error("表\""+ sheetName +"\"不存在");
+				return;
+			}
+			//设置当前下拉选项
+			tableSelectCb.getSelectionModel().select(excel.getBook().getSheetIndex(sheetName));
+			
+			//加载表数据
+			loadTableData();
 		} catch (IOException e) {
 			e.printStackTrace();
 			error("供应商料号表文件\""+ materialFile.getName() +"\"不存在");
 		}
-		//设置当前文件名
-		fileSelectTf.setText(filePath);
-		info("文件加载成功");
 		
-		
-		//加载表选择下拉菜单数据
-		loadTableSelectorData();
-		
-		//切换到指定sheet
-		if(sheetName == null || sheetName.equals("")) {
-			return;
-		}
-		if(!excel.switchSheet(sheetName)) {
-			error("表\""+ sheetName +"\"不存在");
-			return;
-		}
-		//设置当前下拉选项
-		tableSelectCb.getSelectionModel().select(excel.getBook().getSheetIndex(sheetName));
-		
-		//加载表数据
-		loadTableData();
 		
 		//初始化时间
 		timeLb.setText(DateUtil.yyyyMMddHHmmss(new Date()));
 		
+		
+	}
+
+
+	private void initHotKey() {
+		//初始化打印热键
+		parentAp.setOnKeyReleased(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if(event.getCode().compareTo(KeyCode.ENTER) == 0){
+					if(!printBt.isDisable()) {
+						onPrintBtClick();
+					}
+				}
+			}
+		});
+	}
+
+
+	private void initPrinter() {
 		//初始化打印机
 		try {
 			if(!new File("printer.exe").exists()) {
 				throw new IOException();
 			}
 			Runtime.getRuntime().exec("printer.exe");
-			printerSocket = new Socket("127.0.0.1", 10101);
+			printerSocket = new Socket();
+			printerSocket.connect(new InetSocketAddress("localhost", 10101), 3000);
 		} catch (IOException e) {
-			error("启动打印机程序失败");
+			error("启动打印机程序失败，请检查打印机是否在工作并重启程序");
 			e.printStackTrace();
 		}
 	}
@@ -462,7 +570,7 @@ public class MainController implements Initializable {
 	}
 
 
-	private void initTableSelectorCb() {
+	private void initTableSelectorCbListener() {
 		//初始化下拉框监听器
 		tableSelectCb.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -494,11 +602,16 @@ public class MainController implements Initializable {
 	}
 
 
-	private void initMaterialNoTf() {
+	private void initMaterialNoTfListener() {
 		//初始化物料编号文本域监听器
 		materialNoTf.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if(ignoreCb.isSelected() || materials == null) {
+					materialNoLb.setText(materialNoTf.getText());
+					printBt.setDisable(false);
+					return;
+				}
 				for (Material material : materials) {
 					//如果存在该料号则显示属性，并且允许更改和打印，并且把料号显示为绿色，否则不显示属性，禁止更改和打印，且料号为黑色
 					if(newValue != null && !newValue.equals("") && material.getNo().toUpperCase().equals(newValue.toUpperCase())) {
@@ -525,40 +638,25 @@ public class MainController implements Initializable {
 						
 						printBt.setDisable(false);
 						
-						info("料号存在，打印已就绪");
+						//焦点移至数量输入框
+						quantityTf.requestFocus();
+						
+						info("料号存在，打印已就绪（热键：回车）");
 						break;
 					}
-					nameTf.setDisable(true);
-					descriptionTf.setDisable(true);
-					seatNoTf.setDisable(true);
-					quantityTf.setDisable(true);
-					remarkTf.setDisable(true);
-					
-					nameTf.setText("");
-					descriptionTf.setText("");
-					seatNoTf.setText("");
-					quantityTf.setText("");
-					remarkTf.setText("");
-					
-					materialNoLb.setText("");
-					nameLb.setText("");
-					descriptionLb.setText("");
-					seatLb.setText("");
-					quantityLb.setText("");
-					remarkLb.setText("");
+					resetControllers();
 					
 					materialNoTf.setStyle("-fx-text-fill: black;");
-					
-					printBt.setDisable(true);
 					
 					info("请确认输入的料号是否存在");
 				}
 			}
+
 		});
 	}
 	
 
-	private void initMaterialPropertiesTfs() {
+	private void initMaterialPropertiesTfsListener() {
 		nameTf.textProperty().addListener(new MaterialPropertiesTfChangeListener("name"));
 		descriptionTf.textProperty().addListener(new MaterialPropertiesTfChangeListener("description"));
 		seatNoTf.textProperty().addListener(new MaterialPropertiesTfChangeListener("seat"));
@@ -621,6 +719,48 @@ public class MainController implements Initializable {
 			}
 		}
 		
+	}
+	
+	
+	private void showWindow(String resources) {
+		try {
+			FXMLLoader loader = new FXMLLoader(ResourcesUtil.getResourceURL(resources));
+			Parent root = loader.load();
+			ConfigController configController = loader.getController();
+	        //显示
+			Stage stage = new Stage();
+			configController.setStage(stage);
+			stage.setScene(new Scene(root));
+			stage.show();
+		}catch (IOException e) {
+			e.printStackTrace();
+			error("加载窗口时出错");
+		}
+		
+	}
+	
+	
+	private void resetControllers() {
+		nameTf.setDisable(true);
+		descriptionTf.setDisable(true);
+		seatNoTf.setDisable(true);
+		quantityTf.setDisable(true);
+		remarkTf.setDisable(true);
+		
+		nameTf.setText("");
+		descriptionTf.setText("");
+		seatNoTf.setText("");
+		quantityTf.setText("");
+		remarkTf.setText("");
+		
+		materialNoLb.setText("");
+		nameLb.setText("");
+		descriptionLb.setText("");
+		seatLb.setText("");
+		quantityLb.setText("");
+		remarkLb.setText("");
+		
+		printBt.setDisable(true);
 	}
 	
 

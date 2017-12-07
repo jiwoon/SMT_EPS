@@ -1,5 +1,6 @@
 $(function(){
-
+    var originNum = 100;  //一开始加载的个数
+    var newNum = 0;
     //鼠标放置样式
     $("#pcBtn,#fileBtn").hover(function(){
         $(this).addClass("ui-state-hover")
@@ -11,6 +12,7 @@ $(function(){
     var array2 = []; //放置工单号
 //    查询按钮事件
     $("#pcBtn").on("click",function(){
+        $(window).unbind();
         var standPosition = $("#stand-position").val() =="" ? null:$("#stand-position").val();     //站位的输入内容   对应fileName
         var workNum = $("#work-num").val() == "" ? null : $("#work-num").val();     //工单的输入内容  workOrder
         var state = $("#state option:selected").val();   //状态  state
@@ -23,11 +25,25 @@ $(function(){
                 fileName : standPosition,
                 workOrder : workNum ,
                 state :state,
-                line : line
+                line : line,
+                ordBy : "state"
             },
             success :function(data){
                 autoCreateTable(data);
                 bindEvent(data);
+                //超过100个数据时边滚动边加载
+                if(data.length > 100){
+                    $(window).on("scroll",function(){
+                        newNum = originNum ;
+                        if(newNum < data.length){
+                            originNum += 3;
+                            originNum = (originNum >= data.length ? data.length : originNum);  //判断加3后是否长度大于数据长度
+                            for(var de = newNum ; de < originNum ; de++){
+                                CreateOneTable(de ,data);
+                            }
+                        }
+                    });
+                }
             },
             error : function(){
                 console.log("数据传输失败");
@@ -74,38 +90,42 @@ $(function(){
         });
     });
 
-    //设置按钮位置
-
 //    生成表格部分
     $.ajax({
         url :"program/list",
         type: "post",
         dataType: "json",
-        data :{},
+        data :{
+            ordBy : "state"
+        },
         success :function(data){
             autoCreateTable(data);
             bindEvent(data);
             completeAuto("stand-position",array1,fileCallBack);
             completeAuto("work-num",array2,workOrderCallBack);
+            if(data.length > 100){
+                $(window).on("scroll",function(){
+                    newNum = originNum ;
+                    if(newNum < data.length){
+                        originNum += 3;
+                        originNum = (originNum >= data.length ? data.length : originNum);  //判断加3后是否长度大于数据长度
+                        for(var de = newNum ; de < originNum ; de++){
+                            CreateOneTable(de ,data);
+                        }
+                    }
+                });
+            }
         },
         error : function(){
             console.log("数据传输失败");
         }
     });
 
-
 //    动态生成表格
     function autoCreateTable(data){
-        var stateChange = "";    //用于显示
-        var stateChange1 = 0 ;   //用于传递到后台
-        var gdh = "";          //传递工单号到后台
-        var modifyUrl ="";     //用于传递链接
-        var originState = "";  //用于存储原先的状态
-        var originStateVal = 0;  //用于比较是否允许进行保存
         $("#positionTable").empty();
         $("#stateModify").empty();
         var dataLength = data.length;     //获取数据长度
-        var html = "";
         for(var i = 0;i<dataLength;i++){
             var $json = {};
             $json.label = data[i].fileName;
@@ -114,18 +134,43 @@ $(function(){
             var $json1 = {};
             $json1.label = data[i].workOrder;
             array2.push($json1);
-            //
-            html += "<tr>";
-            html += "<td>" + data[i].fileName + "</td>"
-            html += "<td>" + data[i].workOrder + "</td>"
-            html += "<td>" + data[i].stateName + "</td>"
-            html += "<td>" + data[i].line + "</td>"
-            html += "<td>" + "<div class='commonDiv'><button id='" + i + "' class='ui-button ui-corner-all ui-state-default stateModifyCommon stateModifyBtn'>修改状态</button>" +
-                "<select id='0" + i + "' class='stateModifyCommon stateModifySel'style='display: none'><option value=0>未开始</option><option value=1>进行中</option><option value=2>已完成</option> <option value=3>已作废</option></select>"+
-                "<button id='00" + i + "' class='ui-button ui-corner-all ui-state-default stateModifyCommon stateModifyBtn' style='display: none'>取消</button></div>"+"</td>"
-            html += "</tr>";
-            $("#positionTable").html(html);
+        }
+        createOneTr(data);
     }
+
+    //生成表格
+    function  createOneTr (data){
+        var originLength = data.length > 100 ? 100 : data.length;  //判断数据个数是否大于100，大于100个先加载100个
+        for(var q = 0; q < originLength ; q++){
+            var html = "";
+            html += "<tr>";
+            html += "<td>" + data[q].fileName + "</td>"
+            html += "<td>" + data[q].workOrder + "</td>"
+            html += "<td>" + data[q].stateName + "</td>"
+            html += "<td>" + data[q].line + "</td>"
+            html += "<td>" + "<div class='commonDiv'><button id='" + q + "' class='ui-button ui-corner-all ui-state-default stateModifyCommon stateModifyBtn'>修改状态</button>" +
+                "<select id='0" + q + "' class='stateModifyCommon stateModifySel'style='display: none'><option value=0>未开始</option><option value=1>进行中</option><option value=2>已完成</option> <option value=3>已作废</option></select>"+
+                "<button id='00" + q + "' class='ui-button ui-corner-all ui-state-default stateModifyCommon stateModifyBtn' style='display: none'>取消</button></div>"+"</td>"
+            html += "</tr>";
+            $("#positionTable").append(html);
+        }
+    }
+    //    动态生成一行表格
+    function CreateOneTable(k ,data){
+        var html = "";
+        html += "<tr>";
+        html += "<td>" + data[k].line + "</td>"
+        html += "<td>" + data[k].workOrderNo + "</td>"
+        html += "<td>" + data[k].orderNo + "</td>"
+        html += "<td>" + data[k].lineseat + "</td>"
+        html += "<td>" + data[k].materialNo + "</td>"
+        html += "<td>" + data[k].materialDescription + "</td>"
+        html += "<td>" + data[k].materialSpecitification + "</td>"
+        html += "<td>" + data[k].operationType + "</td>"
+        html += "<td>" + data[k].operator + "</td>"
+        html += "<td>" + data[k].time + "</td>"
+        html += "</tr>";
+        $("#clientMainTable").append(html);
     }
 
     //            绑定事件
@@ -148,7 +193,6 @@ $(function(){
                      $id = $(this).attr("id");
                     var $numId = parseInt($id);
                     dataId = data[$numId].id;
-                    console.log("站位表的ID为："+dataId);
                     if ($(this).text() == "修改状态") {
                         $(this).text("保存");
                         gdh = $("#positionTable td").eq(1 + 5 * $id).text();  //获取工单号
@@ -261,6 +305,7 @@ $(function(){
 
 //    站位表回调函数
     function fileCallBack(a){
+        $(window).unbind();
         var workNum = $("#work-num").val() == "" ? null : $("#work-num").val();     //工单的输入内容  workOrder
         var state = $("#state option:selected").val();   //状态  state
         var line = $("#line-num option:selected").text() == "不限" ? null : $("#line-num option:selected").text() ;  //线号 line
@@ -286,6 +331,7 @@ $(function(){
 
 //    工单回调函数
     function  workOrderCallBack(a){
+        $(window).unbind();
         var standPosition = $("#stand-position").val() =="" ? null:$("#stand-position").val();     //站位的输入内容   对应fileName
         var state = $("#state option:selected").val();   //状态  state
         var line = $("#line-num option:selected").text() == "不限" ? null : $("#line-num option:selected").text() ;  //线号 line

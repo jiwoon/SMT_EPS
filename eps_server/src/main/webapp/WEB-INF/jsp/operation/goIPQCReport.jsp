@@ -14,9 +14,13 @@
 
 </head>
 <body>
+	<div class="showWaiting" id="showWaiting">
+		<span>数据加载中，请等待<i><img src="static/images/shalou.gif"/></i></span>
+	</div>
     <section class="position-table" id="operationReport">
         <span class="manage-staff">操作报表</span>
-        <div class="operation-search" id="operation-search">
+        <div style="width: 100%;background-color: #ffffff;border-bottom: 5px solid #77d5f7;">  
+        	<div class="operation-search" id="operation-search">
         	<span class="span">
         		请选择相应类型：<select id="operationIPQC">
         						<option value=0>上料</option>
@@ -26,10 +30,9 @@
         						<option value=4>仓库</option>
         			       </select>
         	</span><br />
-        	<div>
-        		<input type="text" readonly = "readonly" class="youhua"/>
+        	<div class="userline">
         		客户名 ：<input id="clientName" type="text" />
-     		线号 ：<select id="line">
+     		 线号 ：<select id="line">
 	        		<option value=>不限</option>
 	        		<option value=0>301</option>
 	        		<option value=1>302</option>
@@ -42,15 +45,17 @@
         	    </select>
         	</div>
      		<br />
-        	    <div class="autoCom">
+        	<div class="autoCom">
         	    	<p style="float: left;">工单号 ：</p><input id = "workOrderNum" type="text" class="autoInput"/>
+        	</div>
+        	    <div class="seTime">
+        	   		 起止时间 ：<input id="startTime" type="date" class="location"/> <em>--</em> <input id="endTime" type="date" />
         	    </div>
-        	    
-     		起止时间 ：<input id="startTime" type="date" class="location"/> <em>--</em> <input id="endTime" type="date" />
      		<button id="searchBtn" class = "ui-accordion-header ui-state-default ui-corner-all ui-corner-top commonBtn btnSearch" >查询</button>
      		<button id="loadBtn" class = "ui-accordion-header ui-state-default ui-corner-all ui-corner-top commonBtn btnLoad">下载报表</button>
         </div>
-    	 <!-- 表格显示 -->
+    	</div>
+    	<!-- 表格显示 -->
         <div class="operationTable">
             <table style=word-break:break-all>
                 <thead>

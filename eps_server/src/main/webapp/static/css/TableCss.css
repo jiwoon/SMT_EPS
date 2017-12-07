@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 /*css 初始化 */
 html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
     margin: 0;
@@ -83,7 +83,37 @@ s, i, em {
     font-style: normal;
     text-decoration: none;
 }
-
+/*版头*/
+.banner{
+    width:100%;
+    height:80px;
+    background-color: #77d5f7;
+}
+.banner-main{
+    width:800px;
+    height:80px;
+    margin:0 auto;
+    background-color: #6eac2c;
+    line-height: 80px;
+    color: #fff;
+    position: relative;
+}
+.banner-main p{
+    font-size: 40px;
+    font-weight: bold;
+}
+.banner-main span{
+    display: block;
+    font-size: 25px;
+    width:370px;
+    height:80px;
+    position: absolute;
+    top:0;
+    left:302px;
+}
+.banner-main select{
+    font-size: 24px;
+}
 /*页头*/
 .box{
     height:100%;
