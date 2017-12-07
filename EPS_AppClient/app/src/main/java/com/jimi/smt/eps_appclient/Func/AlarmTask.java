@@ -3,6 +3,9 @@ package com.jimi.smt.eps_appclient.Func;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 /**
  * 类名:AlarmTask
  * 创建人:Liang GuoChang
@@ -28,7 +31,16 @@ public class AlarmTask extends AsyncTask<String,Integer,String>{
 
     @Override
     protected String doInBackground(String... params) {
-        String url = params[0];
+        String urlStr = params[0];
+        try {
+            URL url = new URL(urlStr);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

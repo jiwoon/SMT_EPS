@@ -117,6 +117,16 @@ public class GlobalData extends Application {
         this.board_type = board_type;
     }
 
+    //报警状态 0 正在报警 , 1 未报警 初始值为 1
+    private int alarmState;
+
+    public int getAlarmState() {
+        return alarmState;
+    }
+
+    public void setAlarmState(int alarmState) {
+        this.alarmState = alarmState;
+    }
 
     //apk下载路径
     private String apkDownloadDir;

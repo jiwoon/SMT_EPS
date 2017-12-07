@@ -63,11 +63,10 @@
                 android:textSize="22dp" />
 
             <EditText
-                android:id="@+id/edt_lineseat"
+                android:id="@+id/edt_check_lineseat"
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
                 android:singleLine="true"
-                android:text=""
                 android:textSize="22dp" />
         </TableRow>
 
@@ -83,11 +82,10 @@
                 android:textSize="22dp" />
 
             <EditText
-                android:id="@+id/edt_material"
+                android:id="@+id/edt_check_material"
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
                 android:singleLine="true"
-                android:text=""
                 android:textSize="22dp" />
         </TableRow>
 

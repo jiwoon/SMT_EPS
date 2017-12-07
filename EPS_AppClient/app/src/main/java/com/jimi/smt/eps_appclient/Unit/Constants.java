@@ -19,5 +19,5 @@ public class Constants {
     //线号301-308
     public static final String[] lines={"301","302","303","304","305","306","307","308"};
     //报警器域名
-    public static final String alarmIp = "http://10.10.11.11";
+    public static final String alarmIp = "http://10.10.11.11/15";
 }

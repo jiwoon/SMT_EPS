@@ -42,7 +42,6 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
     private String curOrderNum;//当前工单号
     private String curOperatorNUm;//当前操作员
     private GlobalData globalData;
-//    private List<MaterialItem> materialItems=new ArrayList<MaterialItem>();//料号表
     private List<MaterialItem> wareHouseMaterialItems=new ArrayList<MaterialItem>();//料号表
     private ListView lv_ware_materials;//所有料号列表
     private EditText et_ware_scan_material;//扫描的料号
@@ -59,10 +58,10 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
             super.handleMessage(msg);
             switch (msg.what){
                 case DISSMIASS_DIALOG:
-                    //取消窗口
-                    infoDialog.dismiss();
-                    /*et_ware_scan_material.requestFocus();
-                    et_ware_scan_material.setText("");*/
+                    if ((infoDialog != null) && infoDialog.isShowing()){
+                        //取消窗口
+                        infoDialog.dismiss();
+                    }
                     break;
             }
         }
@@ -167,26 +166,13 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
                     Log.i(TAG,"sacnMaterial="+scanMaterial);
                     //料号,若为二维码则提取@@前的料号
                     //提取有效料号
-                    if (scanMaterial.indexOf("@") != -1) {
-                        scanMaterial = scanMaterial.substring(0, scanMaterial.indexOf("@"));
-                        Log.d(TAG,"scan料号="+scanMaterial);
-                    }
-//                    ArrayList<Integer> lineSeatIndexs = new ArrayList<Integer>();
+                    scanMaterial = globalFunc.getMaterial(scanMaterial);
+                    v.setText(scanMaterial);
                     ArrayList<String> lineSeatList = new ArrayList<String>();
                     for (int i = 0;i < wareHouseMaterialItems.size();i++) {
                         MaterialItem materialItem=wareHouseMaterialItems.get(i);
                         if (materialItem.getOrgMaterial().equalsIgnoreCase(scanMaterial)){
-//                            materialItem.setScanMaterial(scanMaterial);
-//                            materialItem.setResult("PASS");
-                            //获取料号对应的所有站位
                             lineSeatList.add(materialItem.getOrgLineSeat());
-                            //获取对应站位的索引
-//                            lineSeatIndexs.add(i);
-//                            sucIssueCount++;
-                            //刷新数据
-//                            wareHouseAdapter.notifyDataSetChanged();
-                            //将其置顶
-//                            lv_ware_materials.setSelection(i);
                         }
                     }
                     //arrayLists的外部长度等于lineSeatList的长度
@@ -217,11 +203,6 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
                     wareHouseAdapter.notifyDataSetChanged();
                 }
             }else {
-                /*
-                globalFunc.showInfo("警告","请检查网络是否连接!","请连接网络!");
-                v.setText("");
-                v.requestFocus();
-                */
                 showInfo("警告",null,2);
             }
         }
@@ -269,8 +250,6 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
                 switch (view.getId()){
                     case R.id.info_trust:
                         dialog.dismiss();
-                        /*et_ware_scan_material.requestFocus();
-                        et_ware_scan_material.setText("");*/
                         break;
                 }
             }

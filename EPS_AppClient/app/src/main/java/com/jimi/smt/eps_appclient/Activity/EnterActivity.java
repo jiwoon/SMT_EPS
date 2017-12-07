@@ -110,7 +110,6 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                     warehouseBundle.putString("orderNum",curOrderNum);
                     warehouseBundle.putString("operatorNum",curOperatorNum);
                     warehouse.putExtras(warehouseBundle);
-//                    startActivity(warehouse);
                     startActivityForResult(warehouse,Constants.ACTIVITY_RESULT);
                     break;
                 case TO_FACTORY:
@@ -122,7 +121,6 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                     factoryBundle.putString("orderNum",curOrderNum);
                     factoryBundle.putString("operatorNum",curOperatorNum);
                     factory.putExtras(factoryBundle);
-//                    startActivity(factory);
                     startActivityForResult(factory,Constants.ACTIVITY_RESULT);
                     break;
                 case TO_QC:
@@ -134,7 +132,6 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                     qcBundle.putString("orderNum",curOrderNum);
                     qcBundle.putString("operatorNum",curOperatorNum);
                     qc.putExtras(qcBundle);
-//                    startActivity(qc);
                     startActivityForResult(qc,Constants.ACTIVITY_RESULT);
                     break;
                 case ADMIN:
@@ -271,19 +268,13 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                                     //目前站位格式
                                     // 100805100 -> 308线 05-10 站位
                                     // 100805084 -> 308线 05-08 站位
-                                    boolean lineExit = false;
+
                                     //扫描线号
-                                    String scanLine = scanValue;
-                                    if (scanValue.length() >= 8){
-                                        scanLine="30"+scanValue.substring(3,4);
-                                    }
-                                    scanValue = scanLine;
-                                    for (int i = 0;i < Constants.lines.length;i++){
-                                        if (scanLine.equals(Constants.lines[i])){
-                                            lineExit = true;
-                                        }
-                                    }
-                                    if (lineExit){
+                                    String scanLine = globalFunc.getLineNum(scanValue);
+                                    v.setText(scanLine);
+                                    boolean lineExist = globalFunc.checkLineNum(scanLine);
+
+                                    if (lineExist){
                                         //根据线号获取工单
                                         getPrograms(scanLine);
                                         et_enter_operator.requestFocus();
@@ -476,15 +467,6 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                     //更新app
                     boolean result = updateApp();
                     Log.d(TAG,"updateApp-result::"+result);
-/*
-
-                    //刷新工单号列表 // TODO: 2017/11/8
-                    getPrograms("308");
-                    //获取上一个活动返回的工单号
-                    Bundle bundle=data.getExtras();
-                    String curOrderNum=bundle.getString("orderNum");
-                    Log.d(TAG,"orderNum----"+curOrderNum);
-*/
 
                 }else {
                     showInfo("警告","请检查网络连接是否正常!");

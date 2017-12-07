@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.jimi.smt.eps_appclient.GlobalData;
 import com.jimi.smt.eps_appclient.R;
+import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Unit.OperLogItem;
 import com.jimi.smt.eps_appclient.Unit.ProgramItemVisit;
@@ -78,9 +79,9 @@ public class GlobalFunc {
             @Override
             public void run() {
                 ProgramItemVisit programItemVisit = new ProgramItemVisit();
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                 programItemVisit.setLast_operation_type(globalData.getUpdateType());
-                programItemVisit.setLast_operation_time(timestamp);
+//                programItemVisit.setLast_operation_time(timestamp);
                 programItemVisit.setProgram_id(materialItem.getFileId());
                 programItemVisit.setLineseat(materialItem.getOrgLineSeat());
                 programItemVisit.setMaterial_no(materialItem.getOrgMaterial());
@@ -95,27 +96,27 @@ public class GlobalFunc {
                 switch (globalData.getUpdateType()){
                     case 0:
                         programItemVisit.setFeed_result(result);
-                        programItemVisit.setFeed_time(timestamp);
+//                        programItemVisit.setFeed_time(timestamp);
                         break;
                     case 1:
                         programItemVisit.setChange_result(result);
-                        programItemVisit.setChange_time(timestamp);
+//                        programItemVisit.setChange_time(timestamp);
                         break;
                     case 2:
                         programItemVisit.setCheck_result(result);
-                        programItemVisit.setCheck_time(timestamp);
+//                        programItemVisit.setCheck_time(timestamp);
                         break;
                     case 3:
                         programItemVisit.setCheck_all_result(result);
-                        programItemVisit.setCheck_all_time(timestamp);
+//                        programItemVisit.setCheck_all_time(timestamp);
                         break;
                     case 4:
                         programItemVisit.setStore_issue_result(result);
-                        programItemVisit.setStore_issue_time(timestamp);
+//                        programItemVisit.setStore_issue_time(timestamp);
                         break;
                     case 5:
                         programItemVisit.setFirst_check_all_result(result);
-                        programItemVisit.setFirst_check_all_time(timestamp);
+//                        programItemVisit.setFirst_check_all_time(timestamp);
                         break;
                 }
                 new DBService().updateItemVisitLog(programItemVisit);
@@ -200,6 +201,48 @@ public class GlobalFunc {
     public boolean checkMaterial(){
         //包含@@
         return false;
+    }
+
+    //获取扫描的线号
+    public String getLineNum(String scanValue){
+        String lineNum = scanValue.replaceAll(" ","").trim();;
+        if (scanValue.length() >= 8){
+            lineNum = "30"+scanValue.substring(3,4);
+        }
+        return lineNum;
+    }
+
+    //检测线号是否存在
+    public boolean checkLineNum(String lineNo){
+        boolean lineExist = false;
+        for (int i = 0; i < Constants.lines.length; i++){
+            if (lineNo.equals(Constants.lines[i])){
+                lineExist = true;
+            }
+        }
+        return lineExist;
+    }
+
+    //根据扫的站位条码获取站位值 (两者兼容100805118,3040101)
+    public String getLineSeat(String scanValue){
+        scanValue = scanValue.replaceAll(" ","").trim();
+        String linSeat = scanValue;
+        if (scanValue.length() >= 8){
+            linSeat = scanValue.substring(4,6) + "-" + scanValue.substring(6,8);
+        }else if (scanValue.length() == 7){
+            linSeat = scanValue.substring(3,5) + "-" + scanValue.substring(5,7);
+        }
+        return linSeat;
+    }
+
+    //获取料号(新料号格式 03.01.0001@0@2017-11-16 21:32:20 ; 旧料号格式 )
+    public String getMaterial(String scanValue){
+        scanValue = scanValue.replaceAll(" ","").trim();
+        String material = scanValue;
+        if (scanValue.indexOf("@") != -1) {
+            material = scanValue.substring(0, scanValue.indexOf("@"));
+        }
+        return material;
     }
 
 }

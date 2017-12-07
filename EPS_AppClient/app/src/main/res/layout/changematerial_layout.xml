@@ -82,13 +82,12 @@
                 android:textSize="22sp" />
 
             <EditText
-                android:id="@+id/edt_lineseat"
+                android:id="@+id/edt_change_lineseat"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_toEndOf="@id/tv_ls"
                 android:layout_toRightOf="@id/tv_ls"
                 android:singleLine="true"
-                android:text=""
                 android:textSize="22sp" />
         </RelativeLayout>
 
@@ -109,13 +108,12 @@
                 android:textSize="22sp" />
 
             <EditText
-                android:id="@+id/edt_OrgMaterial"
+                android:id="@+id/edt_change_OrgMaterial"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_toRightOf="@id/tv_orgM"
                 android:layout_toEndOf="@id/tv_orgM"
                 android:singleLine="true"
-                android:text=""
                 android:textSize="22sp" />
         </RelativeLayout>
 
@@ -137,14 +135,14 @@
                 />
 
             <EditText
-                android:id="@+id/edt_ChgMaterial"
+                android:id="@+id/edt_change_ChgMaterial"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_toRightOf="@id/tv_chgM"
                 android:layout_toEndOf="@id/tv_chgM"
                 android:singleLine="true"
-                android:text=""
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                />
 
         </RelativeLayout>
     </TableLayout>

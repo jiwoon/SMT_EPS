@@ -31,7 +31,7 @@
                 android:text="线    号:"
                 android:textSize="22sp"
                 android:layout_gravity="center"
-                android:textColor="#b6ab11"
+                android:textColor="@android:color/black"
                 />
             <EditText
                 android:id="@+id/et_enter_line"

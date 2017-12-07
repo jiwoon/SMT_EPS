@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,26 +16,27 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jimi.smt.eps_appclient.Func.AlarmUtil;
 import com.jimi.smt.eps_appclient.Func.DBService;
 import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Views.InfoDialog;
+import com.jimi.smt.eps_appclient.Views.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by caobotao on 16/1/4.
  * @ 描述:换料
  */
-public class ChangeMaterialFragment extends Fragment implements TextView.OnEditorActionListener {
+public class ChangeMaterialFragment extends Fragment implements TextView.OnEditorActionListener, View.OnFocusChangeListener {
     private final String TAG = this.getClass().getSimpleName();
 
     //全局变量
     private GlobalData globalData;
-
+    private LoadingDialog loadingDialog;
     //换料视图
     private View vChangeMaterialFragment;
     //操作员　站位　料号
@@ -47,8 +49,11 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     //当前的站位，线上料号，更换料号
     private String curLineSeat,curOrgMaterial,curChgMaterial;
 
-    //当前上料时用到的排位料号表x
+    //当前换料时用到的排位料号表x
     private List<MaterialItem> lChangeMaterialItem = new ArrayList<MaterialItem>();
+    //该站位的料号(包括替换料)、和位置
+    private ArrayList<String> materialList=new ArrayList<String>();
+    private ArrayList<Integer> materialIndex=new ArrayList<Integer>();
 
     //当前换料项
     private int curChangeMaterialId = -1;
@@ -66,20 +71,21 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     private Handler changeHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            if (loadingDialog != null && loadingDialog.isShowing()){
+                loadingDialog.cancel();
+                loadingDialog.dismiss();
+            }
             switch (msg.what){
                 case FIRST_CHECKALL_TRUE:
-                    // TODO: 2017/11/14
-//                    first_checkAll_result = true;
                     setFirst_checkAll_result(true);
                     break;
+
                 case FIRST_CHECKALL_FALSE:
-//                    first_checkAll_result = false;
                     setFirst_checkAll_result(false);
                     edt_LineSeat.setText("");
                     if (checkType == 0){
                         showInfo("提示","IPQC未做首次全检","请联系管理员！");
                     }
-                    // TODO: 2017/11/14  
                     break;
             }
         }
@@ -103,7 +109,6 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         initData();
         initViews(savedInstanceState);
         initEvents();
-//        initData();
 
         return vChangeMaterialFragment;
     }
@@ -117,9 +122,9 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         Log.i(TAG, "initViews");
         TextView tv_change_order= (TextView) vChangeMaterialFragment.findViewById(R.id.tv_change_order);
         edt_Operation = (TextView) vChangeMaterialFragment.findViewById(R.id.tv_change_Operation);
-        edt_LineSeat = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_lineseat);
-        edt_OrgMaterial = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_OrgMaterial);
-        edt_ChgMaterial = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_ChgMaterial);
+        edt_LineSeat = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_change_lineseat);
+        edt_OrgMaterial = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_change_OrgMaterial);
+        edt_ChgMaterial = (EditText) vChangeMaterialFragment.findViewById(R.id.edt_change_ChgMaterial);
         tv_Result = (TextView) vChangeMaterialFragment.findViewById(R.id.tv_Result);
         tv_lastInfo= (TextView) vChangeMaterialFragment.findViewById(R.id.tv_LastInfo);
         tv_Remark= (TextView) vChangeMaterialFragment.findViewById(R.id.tv_Remark);
@@ -140,18 +145,9 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         edt_LineSeat.setOnEditorActionListener(this);
         edt_OrgMaterial.setOnEditorActionListener(this);
         edt_ChgMaterial.setOnEditorActionListener(this);
-
-        edt_LineSeat.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus){
-                    checkType = 0;
-                    //判断是否首次全检
-                    getFirstCheckAllResult(lChangeMaterialItem.get(0).getFileId());
-                    Log.d(TAG,"globalData-OperType:"+globalData.getOperType());
-                }
-            }
-        });
+        edt_LineSeat.setOnFocusChangeListener(this);
+        edt_OrgMaterial.setOnFocusChangeListener(this);
+        edt_ChgMaterial.setOnFocusChangeListener(this);
 
         //点击结果后换下一个料
         tv_Result.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +157,49 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                 clearResultRemark();
             }
         });
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        switch (v.getId()){
+
+            case R.id.edt_change_lineseat:
+                if (hasFocus){
+                    checkType = 0;
+                    //判断是否首次全检
+                    getFirstCheckAllResult(lChangeMaterialItem.get(0).getFileId());
+                    Log.d(TAG,"globalData-OperType:"+globalData.getOperType());
+                }
+                break;
+
+            case R.id.edt_change_OrgMaterial:
+                if (hasFocus){
+                    if (TextUtils.isEmpty(edt_LineSeat.getText())){
+                        edt_OrgMaterial.setCursorVisible(false);
+                        edt_LineSeat.setText("");
+                        edt_LineSeat.requestFocus();
+                    }else {
+                        edt_OrgMaterial.setCursorVisible(true);
+                    }
+                }
+                break;
+
+            case R.id.edt_change_ChgMaterial:
+                if (hasFocus){
+                    if (TextUtils.isEmpty(edt_LineSeat.getText())){
+                        edt_ChgMaterial.setCursorVisible(false);
+                        edt_LineSeat.setText("");
+                        edt_LineSeat.requestFocus();
+                    }else if (TextUtils.isEmpty(edt_OrgMaterial.getText())){
+                        edt_ChgMaterial.setCursorVisible(false);
+                        edt_OrgMaterial.setText("");
+                        edt_OrgMaterial.requestFocus();
+                    }else {
+                        edt_ChgMaterial.setCursorVisible(true);
+                    }
+                }
+                break;
+        }
     }
 
     /**
@@ -202,19 +241,12 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                             strValue = strValue.replaceAll("\r", "");
                             Log.i(TAG, "strValue:" + strValue);
                             textView.setText(strValue);
-                            //该站位的料号(包括替换料)、和位置
-                            ArrayList<String> materialList=new ArrayList<String>();
-                            ArrayList<Integer> materialIndex=new ArrayList<Integer>();
 
                             //将扫描的内容更新至列表中
                             switch (textView.getId()) {
-                                case R.id.edt_lineseat:
+                                case R.id.edt_change_lineseat:
                                     changeNextMaterial();
-                                    String scanLineSeat=strValue;
-                                    if (strValue.length()>=8){
-                                        scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
-                                    }
-                                    strValue=scanLineSeat;
+                                    strValue = globalFunc.getLineSeat(strValue);
                                     edt_LineSeat.setText(strValue);
                                     //站位
                                     //String scanLineSeat=strValue.substring(4,6)+"-"+strValue.substring(6,8);
@@ -223,37 +255,37 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                         if (materialItem.getOrgLineSeat().equalsIgnoreCase(strValue)) {
                                             curChangeMaterialId = j;
                                             materialItem.setScanLineSeat(strValue);
+                                            //保存料号、和位置 // TODO: 2017/12/4
+                                            materialList.add(materialItem.getOrgMaterial());
+                                            materialIndex.add(j);
                                         }
                                     }
                                     if (curChangeMaterialId < 0) {
+                                        //报警
+                                        new AlarmUtil(globalData).turnOnAlarm(Constants.alarmIp,0);
                                         curLineSeat=strValue;
                                         displayResult(1,"","排位表不存在此站位！",0);
+                                        //清空列表
+                                        materialIndex.clear();
+                                        materialList.clear();
                                         return true;
                                     }
+                                    //关闭报警
+                                    new AlarmUtil(globalData).turnOffAlarm(Constants.alarmIp,1);
                                     curLineSeat=strValue;
                                     edt_OrgMaterial.requestFocus();
                                     break;
 
-                                case R.id.edt_OrgMaterial:
+                                case R.id.edt_change_OrgMaterial:
                                     //站位正确后才进入这里
-                                    if (strValue.indexOf("@") != -1) {
-                                        strValue = strValue.substring(0, strValue.indexOf("@"));
-                                        textView.setText(strValue);
-                                    }
+                                    strValue = globalFunc.getMaterial(strValue);
+                                    textView.setText(strValue);
                                     curOrgMaterial = strValue;
                                     //初始化换料位置
                                     curChangeMaterialId = -1;
                                     //先获取扫描到的站位
                                     String scanSeatNo = curLineSeat;
                                     Log.d(TAG,"scanSeatNo-"+scanSeatNo);
-                                    for (int j = 0;j < lChangeMaterialItem.size();j++){
-                                        MaterialItem materialItem = lChangeMaterialItem.get(j);
-                                        if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanSeatNo)){
-                                            //保存料号、和位置
-                                            materialList.add(materialItem.getOrgMaterial());
-                                            materialIndex.add(j);
-                                        }
-                                    }
                                     //判断扫到的料号是否等于站位的原始料号
                                     for (int jj = 0;jj < materialList.size();jj++){
                                         if (materialList.get(jj).equalsIgnoreCase(curOrgMaterial)){
@@ -262,6 +294,8 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     }
                                     //扫描到的料号不存在表中
                                     if (curChangeMaterialId < 0){
+                                        //报警
+                                        new AlarmUtil(globalData).turnOnAlarm(Constants.alarmIp,0);
                                         displayResult(1,scanSeatNo,"料号与站位不对应！",1);
                                         materialIndex.clear();
                                         materialList.clear();
@@ -270,29 +304,18 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     edt_ChgMaterial.requestFocus();
                                     break;
 
-                                case R.id.edt_ChgMaterial:
+                                case R.id.edt_change_ChgMaterial:
                                     //站位且线上料号正确后才进入这里
-                                    if (strValue.indexOf("@") != -1) {
-                                        strValue = strValue.substring(0, strValue.indexOf("@"));
-                                        textView.setText(strValue);
-                                    }
+                                    strValue = globalFunc.getMaterial(strValue);
+                                    textView.setText(strValue);
                                     curChgMaterial = strValue;
                                     //初始化换料位置
                                     curChangeMaterialId = -1;
-                                    materialIndex.clear();
-                                    materialList.clear();
                                     //先获取扫描到的站位
                                     String scanSeatNum = curLineSeat;
                                     Log.d(TAG,"scanSeatNum-"+scanSeatNum);
+
                                     //判断扫到的料号是否等于站位的原始料号
-                                    for (int k = 0;k < lChangeMaterialItem.size();k++){
-                                        MaterialItem materialItem = lChangeMaterialItem.get(k);
-                                        if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanSeatNum)){
-                                            //保存料号、和位置
-                                            materialList.add(materialItem.getOrgMaterial());
-                                            materialIndex.add(k);
-                                        }
-                                    }
                                     for (int kk = 0;kk < materialList.size();kk++){
                                         if (materialList.get(kk).equalsIgnoreCase(curChgMaterial)){
                                             curChangeMaterialId = materialIndex.get(kk);
@@ -300,6 +323,8 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     }
                                     //扫描到的料号不存在表中
                                     if (curChangeMaterialId < 0){
+                                        //报警
+                                        new AlarmUtil(globalData).turnOnAlarm(Constants.alarmIp,0);
                                         displayResult(1,scanSeatNum,"料号与站位不对应！",1);
                                         materialIndex.clear();
                                         materialList.clear();
@@ -334,6 +359,11 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
 
     //判断是否全部进行了首次全检
     private void getFirstCheckAllResult(final String programId){
+        if (!isFirst_checkAll_result()){
+            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.show();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -461,4 +491,5 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     private void setFirst_checkAll_result(boolean first_checkAll_result) {
         this.first_checkAll_result = first_checkAll_result;
     }
+
 }

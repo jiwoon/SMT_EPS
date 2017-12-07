@@ -67,11 +67,18 @@
         </LinearLayout>
 
     </RelativeLayout>
-
+<!--
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager_factory"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </android.support.v4.view.ViewPager>
+    -->
+    <com.jimi.smt.eps_appclient.Views.CustomViewPager
+        android:id="@+id/viewpager_factory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.jimi.smt.eps_appclient.Views.CustomViewPager>
 
 </LinearLayout>

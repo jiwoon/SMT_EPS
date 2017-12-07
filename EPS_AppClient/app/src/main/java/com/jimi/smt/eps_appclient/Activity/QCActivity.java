@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -16,6 +15,7 @@ import com.jimi.smt.eps_appclient.CheckMaterialFragment;
 import com.jimi.smt.eps_appclient.GlobalData;
 import com.jimi.smt.eps_appclient.R;
 import com.jimi.smt.eps_appclient.Unit.Constants;
+import com.jimi.smt.eps_appclient.Views.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
     private TextView tv_check_some;
     private TextView tv_check_all;
     private GlobalData globalData;
+    private CustomViewPager viewpager_qc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
         ImageView iv_QC_back= (ImageView) findViewById(R.id.iv_QC_back);
         tv_check_some = (TextView) findViewById(R.id.tv_check_some);
         tv_check_all = (TextView) findViewById(R.id.tv_check_all);
-        ViewPager viewpager_QC= (ViewPager) findViewById(R.id.viewpager_QC);
+        viewpager_qc = (CustomViewPager) findViewById(R.id.viewpager_QC);
         iv_QC_back.setOnClickListener(this);
         tv_check_some.setOnClickListener(this);
         tv_check_all.setOnClickListener(this);
@@ -70,9 +71,11 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
             }
         };
         //设置适配器
-        viewpager_QC.setAdapter(fragmentPagerAdapter);
+        viewpager_qc.setAdapter(fragmentPagerAdapter);
+        viewpager_qc.setScanScroll(false);
+        /*
         //设置viewpager切换事件监听
-        viewpager_QC.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewpager_qc.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             //页面滑动事件
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -92,7 +95,7 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
 
             }
         });
-
+*/
     }
 
     @Override
@@ -104,6 +107,18 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
                 intent.putExtras(bundle);
                 setResult(RESULT_OK,intent);
                 this.finish();
+                break;
+
+            case R.id.tv_check_some://抽检
+                //设置选中标题
+                setSelectTabTitle(0);
+                viewpager_qc.setCurrentItem(0);
+                break;
+
+            case R.id.tv_check_all://全捡
+                //设置选中标题
+                setSelectTabTitle(1);
+                viewpager_qc.setCurrentItem(1);
                 break;
         }
     }

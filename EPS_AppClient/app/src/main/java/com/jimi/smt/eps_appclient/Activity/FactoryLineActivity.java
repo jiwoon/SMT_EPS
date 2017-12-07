@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -19,6 +18,7 @@ import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.GlobalData;
 import com.jimi.smt.eps_appclient.R;
 import com.jimi.smt.eps_appclient.Unit.Constants;
+import com.jimi.smt.eps_appclient.Views.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +38,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
     private String curOperatorNUm;
     private TextView tv_factory_checkAll;
     private GlobalData globalData;
+    private CustomViewPager viewpager_factory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
         tv_factory_feed = (TextView) findViewById(R.id.tv_factory_feed);
         tv_factory_change = (TextView) findViewById(R.id.tv_factory_change);
         tv_factory_checkAll = (TextView) findViewById(R.id.tv_factory_checkAll);
-        ViewPager viewpager_factory= (ViewPager) findViewById(R.id.viewpager_factory);
+        viewpager_factory = (CustomViewPager) findViewById(R.id.viewpager_factory);
         iv_factory_back.setOnClickListener(this);
         tv_factory_feed.setOnClickListener(this);
         tv_factory_change.setOnClickListener(this);
@@ -84,6 +85,8 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
         };
         //设置适配器
         viewpager_factory.setAdapter(fragmentPagerAdapter);
+        viewpager_factory.setScanScroll(false);
+        /*
         //设置viewpager切换事件监听
         viewpager_factory.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             //页面滑动事件
@@ -105,18 +108,39 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
 
             }
         });
+        */
+
     }
 
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+
             case R.id.iv_factory_back:
                 Intent intent=getIntent();
                 Bundle bundle=intent.getExtras();
                 intent.putExtras(bundle);
                 setResult(RESULT_OK,intent);
                 this.finish();
+                break;
+
+            case R.id.tv_factory_feed://上料
+                //设置选中标题
+                setSelectTabTitle(0);
+                viewpager_factory.setCurrentItem(0);
+                break;
+
+            case R.id.tv_factory_change://换料
+                //设置选中标题
+                setSelectTabTitle(1);
+                viewpager_factory.setCurrentItem(1);
+                break;
+
+            case R.id.tv_factory_checkAll://全检
+                //设置选中标题
+                setSelectTabTitle(2);
+                viewpager_factory.setCurrentItem(2);
                 break;
         }
     }

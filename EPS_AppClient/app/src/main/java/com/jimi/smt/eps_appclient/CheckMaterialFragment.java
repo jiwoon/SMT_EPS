@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Views.InfoDialog;
+import com.jimi.smt.eps_appclient.Views.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,7 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
 
     //全局变量
     private GlobalData globalData;
-
+    private LoadingDialog loadingDialog;
     //检料视图
     private View vCheckMaterialFragment;
 
@@ -64,6 +66,10 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
     private Handler checkHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            if (loadingDialog != null && loadingDialog.isShowing()){
+                loadingDialog.cancel();
+                loadingDialog.dismiss();
+            }
             switch (msg.what){
                 case FIRST_CHECKALL_TRUE:
                     setFirst_checkAll_result(true);
@@ -110,8 +116,8 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
         Log.i(TAG, "initViews");
         TextView tv_check_order= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_check_order);
         edt_Operation = (TextView) vCheckMaterialFragment.findViewById(R.id.tv_check_Operation);
-        edt_LineSeat = (EditText) vCheckMaterialFragment.findViewById(R.id.edt_lineseat);
-        edt_Material = (EditText) vCheckMaterialFragment.findViewById(R.id.edt_material);
+        edt_LineSeat = (EditText) vCheckMaterialFragment.findViewById(R.id.edt_check_lineseat);
+        edt_Material = (EditText) vCheckMaterialFragment.findViewById(R.id.edt_check_material);
         tv_Result= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_Result);
         tv_Remark= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_Remark);
         tv_LastInfo= (TextView) vCheckMaterialFragment.findViewById(R.id.tv_LastInfo);
@@ -140,6 +146,21 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                     //判断是否首次全检
                     getFirstCheckAllResult(lCheckMaterialItems.get(0).getFileId());
                     Log.d(TAG,"globalData-OperType:"+globalData.getOperType());
+                }
+            }
+        });
+
+        edt_Material.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus){
+                    if (TextUtils.isEmpty(edt_LineSeat.getText())){
+                        edt_Material.setCursorVisible(false);
+                        edt_LineSeat.setText("");
+                        edt_LineSeat.requestFocus();
+                    }else {
+                        edt_Material.setCursorVisible(true);
+                    }
                 }
             }
         });
@@ -197,14 +218,11 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                             //将扫描的内容更新至列表中
                             switch (textView.getId()) {
 
-                                case R.id.edt_lineseat:
-                                    //站位
-                                    String scanLineSeat=scanValue;
-                                    if (scanValue.length()>=8){
-                                        scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
-                                    }
-                                    scanValue=scanLineSeat;
+                                case R.id.edt_check_lineseat:
                                     checkAgain();
+                                    //站位
+                                    scanValue = globalFunc.getLineSeat(scanValue);
+                                    edt_LineSeat.setText(scanValue);
                                     for (int j = 0; j < lCheckMaterialItems.size(); j++) {
                                         MaterialItem materialItem = lCheckMaterialItems.get(j);
                                         if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanValue)) {
@@ -223,12 +241,10 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
                                     curLineSeat=scanValue;
                                     edt_Material.requestFocus();
                                     break;
-                                case R.id.edt_material:
+                                case R.id.edt_check_material:
                                     //料号
-                                    if (scanValue.indexOf("@") != -1) {
-                                        scanValue = scanValue.substring(0, scanValue.indexOf("@"));
-                                        textView.setText(scanValue);
-                                    }
+                                    scanValue = globalFunc.getMaterial(scanValue);
+                                    textView.setText(scanValue);
                                     //扫描到的站位
                                     String scanSeatNo=curLineSeat;
                                     //扫到的料号
@@ -341,6 +357,11 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
 
     //判断是否全部进行了首次全检
     private void getFirstCheckAllResult(final String programId){
+        if (!isFirst_checkAll_result()){
+            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.show();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -393,7 +414,8 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
      */
     private void checkAgain(){
         Log.i(TAG, "testAgain");
-        initData();
+//        initData();
+        curCheckMaterialId = -1;
         tv_Remark.setText("");
         tv_Result.setText("");
         tv_Result.setBackgroundColor(Color.TRANSPARENT);

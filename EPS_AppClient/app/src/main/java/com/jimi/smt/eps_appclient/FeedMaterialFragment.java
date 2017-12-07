@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.jimi.smt.eps_appclient.Adapter.MaterialAdapter;
+import com.jimi.smt.eps_appclient.Func.AlarmUtil;
 import com.jimi.smt.eps_appclient.Func.DBService;
 import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
@@ -54,6 +56,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
     //当前上料时用到的排位料号表
     private List<MaterialItem> lFeedMaterialItem = new ArrayList<MaterialItem>();
+    //扫描的站位在列表中的位置
+    private ArrayList<Integer> scanLineIndex = new ArrayList<Integer>();
 
     //当前上料项
     private int curFeedMaterialId = 0;
@@ -81,8 +85,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                 case STORE_FAIL:
                     ArrayList<Integer> sameLineIndex = (ArrayList<Integer>) msg.obj;
                     //未发料
-                    for (int  a = 0;a < sameLineIndex.size();a++){
-                        lFeedMaterialItem.get(sameLineIndex.get(a))
+                    for (int  a = 0;a < scanLineIndex.size();a++){
+                        lFeedMaterialItem.get(scanLineIndex.get(a))
                                 .setResultRemark("WARN","该料号未发料");
                     }
                     //更新显示
@@ -113,6 +117,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
         globalData = (GlobalData) getActivity().getApplication();
         globalData.setOperator(savedInstanceState.getString("operatorNum"));
+        //设置报警状态为未报警
+        globalData.setAlarmState(1);
 //        globalData.setOperType(Constants.FEEDMATERIAL);
         globalFunc = new GlobalFunc(getActivity());
 
@@ -125,10 +131,6 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     /**
      * @author connie
@@ -139,8 +141,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         Log.i(TAG, "initViews");
         TextView tv_feed_order= (TextView) vFeedMaterialFragment.findViewById(R.id.tv_feed_order);
         edt_Operation = (TextView) vFeedMaterialFragment.findViewById(R.id.tv_feed_Operation);
-        edt_LineSeat = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_lineseat);
-        edt_Material = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_material);
+        edt_LineSeat = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_feed_lineseat);
+        edt_Material = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_feed_material);
 
         lv_FeedMaterial = (ListView) vFeedMaterialFragment.findViewById(R.id.list_view);
         tv_feed_order.setText(bundle.getString("orderNum"));
@@ -156,6 +158,20 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         Log.i(TAG, "initEvents");
         edt_LineSeat.setOnEditorActionListener(this);
         edt_Material.setOnEditorActionListener(this);
+        edt_Material.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus){
+                    if (TextUtils.isEmpty(edt_LineSeat.getText().toString().trim())){
+                        edt_Material.setCursorVisible(false);
+                        edt_LineSeat.setText("");
+                        edt_LineSeat.requestFocus();
+                    }else {
+                        edt_Material.setCursorVisible(true);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -215,33 +231,28 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                         Log.i(TAG, "scan Value:" + scanValue);
                         textView.setText(scanValue);
 
-                        //将扫描的内容更新至列表中
-                        //MaterialItem feedMaterialItem = lFeedMaterialItem.get(curFeedMaterialId);
                         switch (textView.getId()) {
-                            case R.id.edt_lineseat:
+                            case R.id.edt_feed_lineseat:
+                                matchFeedMaterialId = -1;
                                 //站位
+                                scanValue = globalFunc.getLineSeat(scanValue);
+                                edt_LineSeat.setText(scanValue);
                                 Log.i(TAG, "lineseat:" + scanValue);
-                                //转化成站位表站位格式
-                                String scanLineSeat=scanValue;
-                                if (scanValue.length()>=8){
-                                    scanLineSeat=scanValue.substring(4,6)+"-"+scanValue.substring(6,8);
-                                }
-                                scanValue=scanLineSeat;
-                                Log.i(TAG, "sublineseat:" + scanValue);
                                 //相同站位在列表中的位置
-                                ArrayList<Integer> sameLineIndex = new ArrayList<Integer>();
                                 for (int j = 0; j < lFeedMaterialItem.size(); j++) {
                                     MaterialItem materialItem = lFeedMaterialItem.get(j);
                                     //扫到的站位在表中存在
                                     if (materialItem.getOrgLineSeat().equalsIgnoreCase(scanValue)) {
-                                        sameLineIndex.add(j);
+                                        scanLineIndex.add(j);
                                         matchFeedMaterialId = j;
                                         materialItem.setScanLineSeat(scanValue);
-//                                    break;
                                     }
                                 }
                                 //无匹配的站位
                                 if (matchFeedMaterialId < 0){
+                                    //报警
+                                    new AlarmUtil(globalData).turnOnAlarm(Constants.alarmIp,0);
+                                    //重新上料
                                     feedNextMaterial();
                                     return true;
                                 } else{
@@ -275,68 +286,67 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                                         return true;
                                     }
                                     */
-                                    boolean storeIssue = getOperateLastType(lFeedMaterialItem.get(matchFeedMaterialId),sameLineIndex);
+                                    //关闭报警
+                                    new AlarmUtil(globalData).turnOffAlarm(Constants.alarmIp,1);
+                                    //检验该站位是否发料
+                                    boolean storeIssue = getOperateLastType(lFeedMaterialItem.get(matchFeedMaterialId),scanLineIndex);
                                     Log.d(TAG,"storeIssue--"+storeIssue);
                                 }
                                 break;
-                            case R.id.edt_material:
-                                //料号,若为二维码则提取@@前的料号
-                                //checkMaterial
-                                //提取有效料号
-                                if (scanValue.indexOf("@") != -1) {
-                                    scanValue = scanValue.substring(0, scanValue.indexOf("@"));
-//                                textView.setText(scanValue);
-                                }
+
+                            case R.id.edt_feed_material:
+                                //站位存在且已发料才会进入这里
+                                scanValue = globalFunc.getMaterial(scanValue);
                                 textView.setText(scanValue);
                                 //站位不存在
                                 if (matchFeedMaterialId < 0){
                                     feedNextMaterial();
                                     return true;
                                 }
-                                //先获取扫描到的站位
-                                int lineSeatIndex=matchFeedMaterialId;
-                                String scanSeatNo = lFeedMaterialItem.get(matchFeedMaterialId).getScanLineSeat();
-                                Log.d(TAG,"scanSeatNo-"+scanSeatNo);
+                                //扫料号后的结果
+                                boolean materialResult;
                                 //比对料号，包含替代料
                                 matchFeedMaterialId = -1;
-                                //站位在料号表中的索引
-                                ArrayList<Integer> lineSeatIndexs=new ArrayList<Integer>();
-                                for (int x = 0;x < lFeedMaterialItem.size();x++){
-                                    if (lFeedMaterialItem.get(x).getOrgLineSeat().equalsIgnoreCase(scanSeatNo)){
-                                        lineSeatIndexs.add(x);
-                                    }
-                                }
-                                if (lineSeatIndexs.size() == 1){
-                                    MaterialItem singleMaterialItem=lFeedMaterialItem.get(lineSeatIndexs.get(0));
+
+                                if (scanLineIndex.size() == 1){
+                                    MaterialItem singleMaterialItem=lFeedMaterialItem.get(scanLineIndex.get(0));
                                     singleMaterialItem.setScanMaterial(scanValue);
                                     if (singleMaterialItem.getOrgMaterial().equalsIgnoreCase(scanValue)){
                                         singleMaterialItem.setResultRemark("PASS","上料成功");
                                         //成功次数加1
                                         sucFeedCount++;
+                                        materialResult = true;
                                     }else {
                                         singleMaterialItem.setResultRemark("FAIL","料号与站位不相符");
+                                        materialResult = false;
                                     }
                                     //添加显示日志
                                     globalData.setUpdateType(Constants.FEEDMATERIAL);
                                     globalFunc.updateVisitLog(globalData,singleMaterialItem);
                                     //当前上料索引
-                                    matchFeedMaterialId = lineSeatIndexs.get(0);
+                                    matchFeedMaterialId = scanLineIndex.get(0);
                                 }else {
-                                    checkMultiItem(lineSeatIndexs,scanValue);
+                                    materialResult = checkMultiItem(scanLineIndex,scanValue);
                                 }
 
                                 if (matchFeedMaterialId < 0){
                                     feedNextMaterial();
                                     return true;
                                 }
+
+                                if (materialResult){
+                                    //关闭报警
+                                    new AlarmUtil(globalData).turnOffAlarm(Constants.alarmIp,1);
+                                }else {
+                                    //报警
+                                    new AlarmUtil(globalData).turnOnAlarm(Constants.alarmIp,0);
+                                }
+
                                 //更新数据显示
                                 materialAdapter.notifyDataSetChanged();
                                 //增加数据库日志
                                 globalData.setOperType(Constants.FEEDMATERIAL);
-//                                new GlobalFunc().AddDBLog(globalData, lFeedMaterialItem.get(matchFeedMaterialId));
                                 globalFunc.AddDBLog(globalData, lFeedMaterialItem.get(matchFeedMaterialId));
-                                //清空站位数组
-                                lineSeatIndexs.clear();
                                 //上下一个料
                                 feedNextMaterial();
                                 break;
@@ -378,7 +388,6 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                     message.what = STORE_SUCCESS;
                 }else {
                     message.what = STORE_FAIL;
-                    message.obj = sameLineIndex;
                 }
                 feedHandler.sendMessage(message);
             }
@@ -386,7 +395,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         return storeIssue[0];
     }
 
-    private void checkMultiItem(ArrayList<Integer> integers,String mScanValue){
+    private boolean checkMultiItem(ArrayList<Integer> integers,String mScanValue){
+        boolean result = true;
         //多个相同的站位,即有替换料
         for (int z = 0;z < integers.size();z++){
             MaterialItem multiMaterialItem = lFeedMaterialItem.get(integers.get(z));
@@ -409,8 +419,9 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                     globalData.setUpdateType(Constants.FEEDMATERIAL);
                     globalFunc.updateVisitLog(globalData,innerMaterialItem);
                 }
+                result = true;
                 //跳出循环
-                return;
+                return true;
             }else {
                 multiMaterialItem.setResult("FAIL");
                 multiMaterialItem.setRemark("料号与站位不相符");
@@ -419,8 +430,11 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                 //添加显示日志
                 globalData.setUpdateType(Constants.FEEDMATERIAL);
                 globalFunc.updateVisitLog(globalData,multiMaterialItem);
+                result = false;
             }
         }
+
+        return result;
     }
 
 
@@ -430,6 +444,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
      * @describe 上下一个料
      */
     private void feedNextMaterial() {
+        //清空站位位置表
+        scanLineIndex.clear();
         Log.i(TAG, "feedNextMaterial:" + matchFeedMaterialId);
         //显示最新的上料结果
         if (matchFeedMaterialId >= 0) {
@@ -444,16 +460,6 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
             showInfo(titleMsg,msgStyle,false,0);
         }
 
-        /*
-        //循环上料
-        if (curFeedMaterialId < lFeedMaterialItem.size() - 1) {
-            curFeedMaterialId++;
-            clearLineSeatMaterialScan();
-        }else {
-            //上料结束,显示结果
-            showFeedMaterialResult();
-        }
-        */
         Log.d(TAG,"sucFeedCount-"+sucFeedCount
                 +"\nlFeedMaterialItem-"+lFeedMaterialItem.size()+"\nallCount-"+allCount);
         if (sucFeedCount < lFeedMaterialItem.size() || sucFeedCount < allCount){

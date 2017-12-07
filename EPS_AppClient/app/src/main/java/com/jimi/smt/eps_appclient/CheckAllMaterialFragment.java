@@ -28,17 +28,17 @@ import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
 import com.jimi.smt.eps_appclient.Views.InfoDialog;
 import com.jimi.smt.eps_appclient.Views.InputDialog;
+import com.jimi.smt.eps_appclient.Views.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by caobotao on 16/1/4.
- */
+
 public class CheckAllMaterialFragment extends Fragment implements TextView.OnEditorActionListener {
     private final String TAG = this.getClass().getSimpleName();
 
     private Context context;
+    private LoadingDialog loadingDialog;
     //全局变量
     private GlobalData globalData;
     //上料视图
@@ -60,26 +60,48 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
     //用户类型
     private int user_type;
     private boolean first_checkAll_result;
-    private static final int FIRST_CHECKALL_TRUE = 105;
-    private static final int FIRST_CHECKALL_FALSE = 106;
-    private int checkType;
+    private boolean feed_result;
+    private static final int FEED_TRUE = 103;//上对
+    private static final int FEED_FALSE = 104;//上错
+    private static final int FIRST_CHECKALL_TRUE = 105;//首对
+    private static final int FIRST_CHECKALL_FALSE = 106;//首错
+    private int checkType;//0 首次访问数据库 ; 1 非首次访问数据库
     private Handler checkAllHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            //取消弹出窗
+            if (loadingDialog != null && loadingDialog.isShowing()){
+                loadingDialog.cancel();
+                loadingDialog.dismiss();
+            }
             switch (msg.what){
-                case FIRST_CHECKALL_TRUE:
-                    setFirst_checkAll_result(true);
+                case FEED_TRUE://上对
+                    setFeed_result(true);
+                    getFirstCheckAllResult(lCheckAllMaterialItem.get(0).getFileId());
                     break;
-                case FIRST_CHECKALL_FALSE:
-                    setFirst_checkAll_result(false);
+                case FEED_FALSE://上错
+                    setFeed_result(false);
                     edt_ScanMaterial.setText("");
                     if (checkType == 0){
-                        if (user_type == 1){
-                            showInfo("提示","IPQC未做首次全检","请联系管理员！",1);
-                        }else if (user_type == 2){
-                            showInfo("提示","将进行首次全检","请进行首次全检！",2);
+                        if (user_type == 2){
+                            showInfo("提示","操作员未完成上料!","将进行首次全检！",2);
                         }
                     }
+                    break;
+                case FIRST_CHECKALL_TRUE://首对
+                    setFirst_checkAll_result(true);
+                    break;
+                case FIRST_CHECKALL_FALSE://首错
+                    setFirst_checkAll_result(false);
+                    if (user_type == 1){
+                        edt_ScanMaterial.setText("");
+                        if (checkType == 0){
+                            showInfo("提示","IPQC未做首次全检","请联系管理员！",1);
+                        }
+                    }else if (user_type == 2){
+                        showInfo("提示","将进行首次全检","将进行首次全检！",3);
+                    }
+
                     break;
             }
         }
@@ -139,22 +161,44 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus){
                     Log.d(TAG,"globalData-OperType:"+globalData.getOperType());
-                    Log.d(TAG,"用户类型UserType："+globalData.getUserType());
+                    Log.d(TAG,"用户类型UserType："+user_type);
                     //操作员1，ipqc 2
                     checkType = 0;
-                    getFirstCheckAllResult(lCheckAllMaterialItem.get(0).getFileId());
+                    if (user_type == 1){
+                        getFirstCheckAllResult(lCheckAllMaterialItem.get(0).getFileId());
+                    }else if (user_type == 2){
+                        getFeedResult(lCheckAllMaterialItem.get(0).getFileId());
+                    }
                 }
             }
         });
+        //长按弹出框
         lv_CheckAllMaterial.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int row, long l) {
-                //弹出对话框
-                selectRow=row;
-                showLongClickDialog("请重新扫描新的料号");
+                //若未扫过不弹出框
+                if (isFirstScaned()){
+                    //弹出对话框
+                    selectRow=row;
+                    showLongClickDialog("请重新扫描新的料号");
+                }
                 return true;
             }
             });
+    }
+
+    //是否扫过了
+    private boolean isFirstScaned(){
+        boolean firstScaned = false;
+        for (MaterialItem materialItem:lCheckAllMaterialItem) {
+            if (!(materialItem.getResult().equalsIgnoreCase(""))){
+                firstScaned = true;
+                Log.d(TAG,"isFirstScaned::"+true);
+                break;
+            }
+        }
+        Log.d(TAG,"isFirstScaned::"+firstScaned);
+        return firstScaned;
     }
 
     //弹出长按对话框
@@ -174,16 +218,19 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                         case KeyEvent.ACTION_UP:
                             //先判断是否联网
                             if (globalFunc.isNetWorkConnected()){
-                                if ((!isFirst_checkAll_result()) && user_type == 1){
+                                if ((user_type == 1) && (!isFirst_checkAll_result())){
                                     showInfo("提示","IPQC未做首次全检","请联系管理员！",1);
-                                }else {
+                                }
+                                else if ((user_type == 2) && (!isFeed_result())){
+                                    showInfo("提示","操作员未完成上料!","将进行首次全检！",2);
+                                }
+                                else {
                                     switch (v.getId()){
                                         case R.id.et_input:
                                             //扫描内容
                                             String scanValue = String.valueOf(((EditText) v).getText());
-                                            if (scanValue.indexOf("@") != -1) {
-                                                scanValue = scanValue.substring(0, scanValue.indexOf("@"));
-                                            }
+                                            scanValue = globalFunc.getMaterial(scanValue);
+                                            v.setText(scanValue);
                                             MaterialItem checkAllMaterialItem = lCheckAllMaterialItem.get(selectRow);
                                             checkAllMaterialItem.setScanMaterial(scanValue);
                                             //调用全捡方法
@@ -210,7 +257,6 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                 return false;
             }
         });
-//        inputDialog.show();
     }
 
 
@@ -262,9 +308,13 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                 case KeyEvent.ACTION_UP:
                     //先判断是否联网
                     if (globalFunc.isNetWorkConnected()){
-                        if ((!isFirst_checkAll_result()) && user_type == 1){
+                        if ((user_type == 1) && (!isFirst_checkAll_result())){
                             showInfo("提示","IPQC未做首次全检","请联系管理员！",1);
-                        }else {
+                        }
+                        else if ((user_type == 2) && (!isFeed_result())){
+                            showInfo("提示","操作员未完成上料!","将进行首次全检！",2);
+                        }
+                        else {
                             //扫描内容
                             String scanValue = String.valueOf(((EditText) textView).getText());
                             scanValue = scanValue.replaceAll("\r", "");
@@ -277,10 +327,8 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                             switch (textView.getId()) {
                                 case R.id.edt_material:
                                     //料号,若为二维码则提取@@前的料号
-                                    if (scanValue.indexOf("@") != -1) {
-                                        scanValue = scanValue.substring(0, scanValue.indexOf("@"));
-                                        textView.setText(scanValue);
-                                    }
+                                    scanValue = globalFunc.getMaterial(scanValue);
+                                    textView.setText(scanValue);
                                     //当前操作的站位
                                     String curCheckLineSeat = checkAllMaterialItem.getOrgLineSeat();
                                     //相同站位的索引数组
@@ -385,7 +433,6 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         ArrayList<Integer> sameLineSeatIndexs = new ArrayList<Integer>();
         //当前操作的位置
         int curOperateIndex = curCheckIndex;
-//        curCheckIndex=curCheckIndex-1;
         //向上遍历所有相同站位的位置
         for (int j = curOperateIndex-1; j >= 0; j--){
             if (lCheckAllMaterialItem.get(j).getOrgLineSeat().equalsIgnoreCase(curCheckLineSeat)){
@@ -398,8 +445,6 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         for (int k = curOperateIndex; k < lCheckAllMaterialItem.size();k++){
             if (lCheckAllMaterialItem.get(k).getOrgLineSeat().equalsIgnoreCase(curCheckLineSeat)){
                 sameLineSeatIndexs.add(k);
-                //将检查的位置往后移
-//                curCheckIndex ++;
             }
         }
         //根据站位索引数组检查料号与扫到的料号比对
@@ -439,15 +484,43 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         globalFunc.updateVisitLog(globalData,materialItem);
     }
 
+    //判断是否全部上料
+    private void getFeedResult(final String programId){
+        if (!isFeed_result()){
+            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.show();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG,"getFeedResult-programId-"+programId);
+                boolean feedResult = new DBService().isFeeded(programId);
+                Message message = Message.obtain();
+                if (feedResult){
+                   message.what = FEED_TRUE;
+                }else {
+                    message.what = FEED_FALSE;
+                }
+                checkAllHandler.sendMessage(message);
+            }
+        }).start();
+    }
+
     //判断是否全部进行了首次全检
     private void getFirstCheckAllResult(final String programId){
+        if (!isFirst_checkAll_result()){
+            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.show();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG,"getFirstCheckAllResult-programId-"+programId);
-                boolean result = new DBService().isOrderFirstCheckAll(programId);
+                boolean firstResult = new DBService().isOrderFirstCheckAll(programId);
                 Message message = Message.obtain();
-                if (result){
+                if (firstResult){
                     message.what = FIRST_CHECKALL_TRUE;
                 }else {
                     message.what = FIRST_CHECKALL_FALSE;
@@ -458,19 +531,21 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
     }
 
     //IPQC未做首次全检
-    public void showInfo(String title, String message, final String netFailToastStr,int userType){
+    public void showInfo(String title, String message, final String netFailToastStr, final int userType){
         //对话框所有控件id
         int itemResIds[]=new int[]{R.id.dialog_title_view,
                 R.id.dialog_title,R.id.tv_alert_info,R.id.info_trust};
         //标题和内容
         String titleMsg[]=new String[]{title,message};
         //内容的样式
-        int msgStype[] = new int[0];
-        if (userType == 1){
-            msgStype=new int[]{22, Color.RED};
-        }else if (userType == 2){
+        int msgStype[];
+
+        if (userType == 3){
             msgStype=new int[]{22, Color.argb(255,102,153,0)};
+        }else {
+            msgStype=new int[]{22, Color.RED};
         }
+
         InfoDialog infoDialog=new InfoDialog(getActivity(),
                 R.layout.info_dialog_layout,itemResIds,titleMsg,msgStype);
 
@@ -483,7 +558,12 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
 //                        Toast.makeText(getActivity(),netFailToastStr,Toast.LENGTH_LONG).show();
                         clearLineSeatMaterialScan();
                         checkType = 1;
-                        getFirstCheckAllResult(lCheckAllMaterialItem.get(0).getFileId());
+                        //操作员1，ipqc 2
+                        if (userType == 1){
+                            getFirstCheckAllResult(lCheckAllMaterialItem.get(0).getFileId());
+                        }else if (userType == 2){
+                            getFeedResult(lCheckAllMaterialItem.get(0).getFileId());
+                        }
                         break;
                 }
             }
@@ -497,7 +577,6 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
      * @describe 上下一个料
      */
     private void checkNextMaterial() {
-//        Log.i(TAG, "checkNextMaterial:" + curCheckId);
         lv_CheckAllMaterial.setSelection(curCheckId);
         if (curCheckId < lCheckAllMaterialItem.size() - 1) {
             curCheckId++;
@@ -515,10 +594,8 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                 feedResult = false;
                 break;
             }
-//            Log.d(TAG,"feedMaterialItem::"+feedMaterialItem.getResult());
         }
         final boolean finalResult = feedResult;
-//        Log.d(TAG,"showType::"+showType+"\nfeedResult::"+feedResult+"\nfinalResult::"+finalResult);
         if ((showType == 0) || (feedResult && (showType == 1))){
             //通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -582,11 +659,19 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         edt_ScanMaterial.requestFocus();
     }
 
-    public boolean isFirst_checkAll_result() {
+    private boolean isFeed_result() {
+        return feed_result;
+    }
+
+    private void setFeed_result(boolean feed_result) {
+        this.feed_result = feed_result;
+    }
+
+    private boolean isFirst_checkAll_result() {
         return first_checkAll_result;
     }
 
-    public void setFirst_checkAll_result(boolean first_checkAll_result) {
+    private void setFirst_checkAll_result(boolean first_checkAll_result) {
         this.first_checkAll_result = first_checkAll_result;
     }
 }
