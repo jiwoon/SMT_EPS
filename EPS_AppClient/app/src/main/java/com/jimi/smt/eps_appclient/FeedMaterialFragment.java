@@ -365,33 +365,42 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         return false;
     }
 
+    //检验该站位是否发料
     private boolean getOperateLastType(final MaterialItem materialItem, final ArrayList<Integer> sameLineIndex){
         final boolean[] storeIssue = {false};
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //检验该站位是否发料(主替料即多个相同站位)
-                List<Byte> storeResult = new DBService().getStoreResult(materialItem);
-                Log.d(TAG,"programId-"+materialItem.getFileId());
-                Log.d(TAG,"lineseat-"+materialItem.getOrgLineSeat());
-                Log.d(TAG,"operateType-size-"+storeResult.size());
-                for (Byte result:storeResult) {
-                    //不为空
-                    if (result == 1){
-                        storeIssue[0] = true;
+        //判断工位检测功能是否打开
+        if (Constants.isCheckWorkType){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //检验该站位是否发料(主替料即多个相同站位)
+                    List<Byte> storeResult = new DBService().getStoreResult(materialItem);
+                    Log.d(TAG,"programId-"+materialItem.getFileId());
+                    Log.d(TAG,"lineseat-"+materialItem.getOrgLineSeat());
+                    Log.d(TAG,"operateType-size-"+storeResult.size());
+                    for (Byte result:storeResult) {
+                        //不为空
+                        if (result == 1){
+                            storeIssue[0] = true;
+                        }
+                        Log.d(TAG,"storeIssue[0]--"+storeIssue[0]);
+                        Log.d(TAG,"result--"+result);
                     }
-                    Log.d(TAG,"storeIssue[0]--"+storeIssue[0]);
-                    Log.d(TAG,"result--"+result);
+                    Message message = Message.obtain();
+                    if (storeIssue[0]){
+                        message.what = STORE_SUCCESS;
+                    }else {
+                        message.what = STORE_FAIL;
+                    }
+                    feedHandler.sendMessage(message);
                 }
-                Message message = Message.obtain();
-                if (storeIssue[0]){
-                    message.what = STORE_SUCCESS;
-                }else {
-                    message.what = STORE_FAIL;
-                }
-                feedHandler.sendMessage(message);
-            }
-        }).start();
+            }).start();
+        }else {
+            //更新显示
+            materialAdapter.notifyDataSetChanged();
+            edt_Material.requestFocus();
+        }
+
         return storeIssue[0];
     }
 

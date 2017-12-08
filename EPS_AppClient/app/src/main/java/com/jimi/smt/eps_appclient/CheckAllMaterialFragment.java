@@ -486,48 +486,63 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
 
     //判断是否全部上料
     private void getFeedResult(final String programId){
-        if (!isFeed_result()){
-            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
-            loadingDialog.setCanceledOnTouchOutside(false);
-            loadingDialog.show();
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG,"getFeedResult-programId-"+programId);
-                boolean feedResult = new DBService().isFeeded(programId);
-                Message message = Message.obtain();
-                if (feedResult){
-                   message.what = FEED_TRUE;
-                }else {
-                    message.what = FEED_FALSE;
-                }
-                checkAllHandler.sendMessage(message);
+        //判断工位检测功能是否打开
+        if (Constants.isCheckWorkType){
+            if (!isFeed_result()){
+                loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+                loadingDialog.setCanceledOnTouchOutside(false);
+                loadingDialog.show();
             }
-        }).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG,"getFeedResult-programId-"+programId);
+                    boolean feedResult = new DBService().isFeeded(programId);
+                    Message message = Message.obtain();
+                    if (feedResult){
+                        message.what = FEED_TRUE;
+                    }else {
+                        message.what = FEED_FALSE;
+                    }
+                    checkAllHandler.sendMessage(message);
+                }
+            }).start();
+        }else {
+            //工位检测功能未打开
+            Message message = Message.obtain();
+            message.what = FEED_TRUE;
+            checkAllHandler.sendMessage(message);
+        }
     }
 
     //判断是否全部进行了首次全检
     private void getFirstCheckAllResult(final String programId){
-        if (!isFirst_checkAll_result()){
-            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
-            loadingDialog.setCanceledOnTouchOutside(false);
-            loadingDialog.show();
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG,"getFirstCheckAllResult-programId-"+programId);
-                boolean firstResult = new DBService().isOrderFirstCheckAll(programId);
-                Message message = Message.obtain();
-                if (firstResult){
-                    message.what = FIRST_CHECKALL_TRUE;
-                }else {
-                    message.what = FIRST_CHECKALL_FALSE;
-                }
-                checkAllHandler.sendMessage(message);
+        //判断工位检测功能是否打开
+        if (Constants.isCheckWorkType || (user_type == 2)){
+            //工位检测功能打开 或者 用户是IPQC
+            if (!isFirst_checkAll_result()){
+                loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+                loadingDialog.setCanceledOnTouchOutside(false);
+                loadingDialog.show();
             }
-        }).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG,"getFirstCheckAllResult-programId-"+programId);
+                    boolean firstResult = new DBService().isOrderFirstCheckAll(programId);
+                    Message message = Message.obtain();
+                    if (firstResult){
+                        message.what = FIRST_CHECKALL_TRUE;
+                    }else {
+                        message.what = FIRST_CHECKALL_FALSE;
+                    }
+                    checkAllHandler.sendMessage(message);
+                }
+            }).start();
+        }else {
+            //工位检测功能未打开
+            setFirst_checkAll_result(true);
+        }
     }
 
     //IPQC未做首次全检

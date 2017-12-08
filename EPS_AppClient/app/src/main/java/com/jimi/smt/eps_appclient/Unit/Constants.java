@@ -20,4 +20,6 @@ public class Constants {
     public static final String[] lines={"301","302","303","304","305","306","307","308"};
     //报警器域名
     public static final String alarmIp = "http://10.10.11.11/15";
+    //开启或关闭工位检测
+    public static final boolean isCheckWorkType = false;
 }

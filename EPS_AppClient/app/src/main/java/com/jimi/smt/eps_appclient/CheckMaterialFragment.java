@@ -357,25 +357,31 @@ public class CheckMaterialFragment extends Fragment implements OnEditorActionLis
 
     //判断是否全部进行了首次全检
     private void getFirstCheckAllResult(final String programId){
-        if (!isFirst_checkAll_result()){
-            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
-            loadingDialog.setCanceledOnTouchOutside(false);
-            loadingDialog.show();
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG,"getFirstCheckAllResult-programId-"+programId);
-                boolean result = new DBService().isOrderFirstCheckAll(programId);
-                Message message = Message.obtain();
-                if (result){
-                    message.what = FIRST_CHECKALL_TRUE;
-                }else {
-                    message.what = FIRST_CHECKALL_FALSE;
-                }
-                checkHandler.sendMessage(message);
+        //判断工位检测功能是否打开
+        if (Constants.isCheckWorkType){
+            if (!isFirst_checkAll_result()){
+                loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+                loadingDialog.setCanceledOnTouchOutside(false);
+                loadingDialog.show();
             }
-        }).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG,"getFirstCheckAllResult-programId-"+programId);
+                    boolean result = new DBService().isOrderFirstCheckAll(programId);
+                    Message message = Message.obtain();
+                    if (result){
+                        message.what = FIRST_CHECKALL_TRUE;
+                    }else {
+                        message.what = FIRST_CHECKALL_FALSE;
+                    }
+                    checkHandler.sendMessage(message);
+                }
+            }).start();
+        }else {
+            //工位检测功能未打开
+            setFirst_checkAll_result(true);
+        }
     }
 
     //IPQC未做首次全检
