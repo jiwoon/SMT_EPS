@@ -40,6 +40,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure refreshTimerTimer(Sender: TObject);
     procedure updateTop();
+    procedure lineCbDropDown(Sender: TObject);
+    procedure workOrderCbDropDown(Sender: TObject);
   private
 
     { Private declarations }
@@ -50,8 +52,7 @@ type
 
 var
   Form1: TForm1;
-
-var
+  executing: Boolean;
   num: Real;
   board_type: Real;
 
@@ -164,6 +165,7 @@ var
   temp: string;
   board_type: string;
 begin
+  executing := True;
   mainQry.SQL.Clear;
   operatorQry.SQL.Clear;
   //解析板面类型
@@ -189,6 +191,7 @@ begin
   mainQry.Active := True;
   mainQry.Open;
   mainQry.First;
+
   //填充顶部界面数据
   scanLineseatLb.Caption := mainQry.fieldbyname('scan_lineseat').AsString;
   lineseatLb.Caption := mainQry.fieldbyname('lineseat').AsString;
@@ -239,13 +242,14 @@ begin
   resultLb.Caption := temp;
   mainQry.Active := True;
   //填写操作员
-  operatorQry.SQL.Add('SELECT operation.operator as operator');
+  operatorQry.SQL.Add('SELECT operation.operator');
   operatorQry.SQL.Add('FROM program_item_visit INNER JOIN operation ON');
   operatorQry.SQL.Add('(operation.material_no=program_item_visit.material_no AND program_item_visit.`program_id`=operation.`program_id` AND program_item_visit.`lineseat`=operation.`lineseat`)');
-  operatorQry.SQL.Add('WHERE line=''' + lineCb.Text + ''' AND work_order=''' + workOrderCb.Text + ''' AND board_type=''' + board_type + '''');
-  operatorQry.SQL.Add('ORDER BY last_operation_time DESC LIMIT 1');
+  operatorQry.SQL.Add('WHERE operation.line=''' + lineCb.Text + ''' AND operation.work_order=''' + workOrderCb.Text + ''' AND operation.board_type=''' + board_type + '''');
+  operatorQry.SQL.Add('ORDER BY operation.time DESC LIMIT 1');
   operatorQry.Open;
   operatorLb.Caption := operatorQry.fieldbyname('operator').AsString;
+  executing := False;
 end;
 
 //选择线号后，查询出相应工单
@@ -253,9 +257,9 @@ procedure TForm1.lineCbChange(Sender: TObject);
 var
   strsql: string;
 begin
-  workOrderCb.items.Clear;
   selectQry.SQL.Clear;
-
+  workOrderCb.items.Clear;
+  boardTypeCb.items.Clear;
   strsql := 'select distinct work_order from program where line=''' + lineCb.Text + '''and work_order<>'''' and state=1';
   selectQry.sql.add(strsql);
   selectQry.Active := True;
@@ -313,6 +317,7 @@ end;
 //程序入口
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  executing := False;
   operatorQry.Active := False;
   dataGrid.Hide;
   Application.OnMessage := OnMouseWheel;
@@ -337,12 +342,23 @@ end;
 //刷新数据定时器事件
 procedure TForm1.refreshTimerTimer(Sender: TObject);
 begin
-  if (boardTypeCb.Text <> '') then
+  if (boardTypeCb.Text <> '') and (workOrderCb.Text <> '') and (executing = FALSE) then
   begin
     dataGrid.DataSource.DataSet.Active := False;
     dataGrid.DataSource.DataSet.Active := True;
     updateTop;
   end;
+end;
+
+procedure TForm1.lineCbDropDown(Sender: TObject);
+begin
+  workOrderCb.items.Clear;
+  boardTypeCb.items.Clear;
+end;
+
+procedure TForm1.workOrderCbDropDown(Sender: TObject);
+begin
+  boardTypeCb.items.Clear;
 end;
 
 end.

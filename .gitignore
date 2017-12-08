@@ -38,3 +38,10 @@
 /eps_display/*.dof
 /eps_display/*.res
 /eps_display/*.cfg
+/eps_display/*.ddp
+/eps_display/*.cfg
+/eps_display/*.dof
+/eps_display/*.res
+/eps_display/*.~pas
+/eps_display/*.~ddp
+/eps_display/*.~dfm
