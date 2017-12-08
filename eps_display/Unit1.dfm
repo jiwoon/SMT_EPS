@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 60
-  Top = 125
+  Left = 477
+  Top = 115
   Width = 1456
-  Height = 827
+  Height = 857
   Align = alClient
   Caption = 'mainForm'
   Color = clBtnFace
@@ -17,8 +17,8 @@ object Form1: TForm1
   TextHeight = 13
   object dataGrid: TDBGrid
     Left = 0
-    Top = 283
-    Width = 1440
+    Top = 321
+    Width = 1448
     Height = 505
     Align = alBottom
     DataSource = ds
@@ -174,8 +174,8 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 1440
-    Height = 283
+    Width = 1448
+    Height = 321
     Align = alClient
     TabOrder = 1
     object Label6: TLabel
@@ -409,6 +409,7 @@ object Form1: TForm1
       ParentFont = False
       TabOrder = 0
       OnChange = lineCbChange
+      OnDropDown = lineCbDropDown
       Items.Strings = (
         '301'
         '302'
@@ -434,6 +435,7 @@ object Form1: TForm1
       ParentFont = False
       TabOrder = 1
       OnChange = workOrderCbChange
+      OnDropDown = workOrderCbDropDown
     end
     object boardTypeCb: TComboBox
       Left = 858
@@ -453,9 +455,11 @@ object Form1: TForm1
     end
   end
   object DBConnection: TADOConnection
-    Connected = True
-    ConnectionString = 'Provider=MSDASQL.1;Persist Security Info=False;Data Source=mysql'
+    ConnectionString = 
+      'Provider=MSDASQL.1;Persist Security Info=False;Data Source=smt_e' +
+      'ps'
     LoginPrompt = False
+    Provider = 'MSDASQL.1'
     Left = 369
     Top = 32
   end
@@ -463,21 +467,21 @@ object Form1: TForm1
     Connection = DBConnection
     Parameters = <>
     Prepared = True
-    Left = 432
-    Top = 32
+    Left = 433
+    Top = 33
   end
   object mainQry: TADOQuery
     Connection = DBConnection
     Parameters = <>
     Prepared = True
-    Left = 480
-    Top = 32
+    Left = 481
+    Top = 34
   end
   object operatorQry: TADOQuery
     Connection = DBConnection
     Parameters = <>
     Prepared = True
-    Left = 536
+    Left = 537
     Top = 32
   end
   object ds: TDataSource
@@ -486,9 +490,9 @@ object Form1: TForm1
     Top = 32
   end
   object refreshTimer: TTimer
-    Interval = 5000
+    Interval = 3000
     OnTimer = refreshTimerTimer
-    Left = 664
-    Top = 32
+    Left = 668
+    Top = 31
   end
 end
