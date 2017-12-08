@@ -78,9 +78,9 @@
       <ChoiceBox fx:id="tableSelectCb" layoutX="407.0" layoutY="52.0" prefHeight="23.0" prefWidth="141.0" />
       <AnchorPane fx:id="previewAp1" layoutX="126.0" layoutY="72.0" prefHeight="413.0" prefWidth="768.0" style="-fx-background-color: white;">
          <children>
-            <Label layoutX="32.0" layoutY="34.0" prefHeight="44.0" prefWidth="101.0" text="编号：">
+            <Label layoutX="32.0" layoutY="34.0" prefHeight="44.0" prefWidth="101.0" style="-fx-font-style: bold;" text="编号：">
                <font>
-                  <Font name="STSong" size="32.0" />
+                  <Font name="Arial" size="32.0" />
                </font>
             </Label>
             <Label fx:id="remarkLb1" layoutX="110.0" layoutY="355.0" prefHeight="34.0" prefWidth="390.0">
