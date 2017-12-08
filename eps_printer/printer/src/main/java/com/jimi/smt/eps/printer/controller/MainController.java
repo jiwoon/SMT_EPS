@@ -273,8 +273,8 @@ public class MainController implements Initializable {
 			seatNoTf.setDisable(false);
 			quantityTf.setDisable(false);
 			remarkTf.setDisable(true);
-			remarkTf.setText("该条码打印时忽略了料号表校验");
-			remarkLb.setText("该条码打印时忽略了料号表校验");
+			remarkTf.setText("该条码忽略了料号表校验");
+			remarkLb.setText("该条码忽略了料号表校验");
 			printBt.setDisable(false);
 			info("已开启忽略校验模式，请确保正确输入料号，并且尽早完善料号表格式并退出该模式");
 		}else {

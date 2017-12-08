@@ -18,7 +18,7 @@ public class Main extends Application{
 
 	private MainController mainController;
 	
-	private static final String VESION = "V1.1.1";
+	private static final String VESION = "V1.1.2";
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
