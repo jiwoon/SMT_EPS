@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 477
-  Top = 115
+  Left = 275
+  Top = 63
   Width = 1456
   Height = 857
   Align = alClient
@@ -395,7 +395,7 @@ object Form1: TForm1
       WordWrap = True
     end
     object lineCb: TComboBox
-      Left = 102
+      Left = 104
       Top = 97
       Width = 190
       Height = 44

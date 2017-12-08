@@ -258,7 +258,8 @@ var
   strsql: string;
 begin
   selectQry.SQL.Clear;
-
+  workOrderCb.items.Clear;
+  boardTypeCb.items.Clear;
   strsql := 'select distinct work_order from program where line=''' + lineCb.Text + '''and work_order<>'''' and state=1';
   selectQry.sql.add(strsql);
   selectQry.Active := True;
@@ -276,7 +277,6 @@ var
   strsql: string;
   board_type: string;
 begin
-
   boardTypeCb.items.Clear;
   selectQry.SQL.Clear;
   strsql := ' select distinct board_type from program where work_order=''' + workOrderCb.Text + '''';
@@ -342,7 +342,7 @@ end;
 //刷新数据定时器事件
 procedure TForm1.refreshTimerTimer(Sender: TObject);
 begin
-  if (boardTypeCb.Text <> '') and (workOrderCb.Text <> '') and (executing = FALSE)then
+  if (boardTypeCb.Text <> '') and (workOrderCb.Text <> '') and (executing = FALSE) then
   begin
     dataGrid.DataSource.DataSet.Active := False;
     dataGrid.DataSource.DataSet.Active := True;
@@ -352,12 +352,13 @@ end;
 
 procedure TForm1.lineCbDropDown(Sender: TObject);
 begin
-   workOrderCb.items.Clear;
-   boardTypeCb.items.Clear;
+  workOrderCb.items.Clear;
+  boardTypeCb.items.Clear;
 end;
+
 procedure TForm1.workOrderCbDropDown(Sender: TObject);
 begin
-   boardTypeCb.items.Clear;
+  boardTypeCb.items.Clear;
 end;
 
 end.
