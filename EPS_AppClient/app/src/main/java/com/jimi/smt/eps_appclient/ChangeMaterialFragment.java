@@ -359,24 +359,30 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
 
     //判断是否全部进行了首次全检
     private void getFirstCheckAllResult(final String programId){
-        if (!isFirst_checkAll_result()){
-            loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
-            loadingDialog.setCanceledOnTouchOutside(false);
-            loadingDialog.show();
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                boolean result = new DBService().isOrderFirstCheckAll(programId);
-                Message message = Message.obtain();
-                if (result){
-                    message.what = FIRST_CHECKALL_TRUE;
-                }else {
-                    message.what = FIRST_CHECKALL_FALSE;
-                }
-                changeHandler.sendMessage(message);
+        //判断工位检测功能是否打开
+        if (Constants.isCheckWorkType){
+            if (!isFirst_checkAll_result()){
+                loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+                loadingDialog.setCanceledOnTouchOutside(false);
+                loadingDialog.show();
             }
-        }).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    boolean result = new DBService().isOrderFirstCheckAll(programId);
+                    Message message = Message.obtain();
+                    if (result){
+                        message.what = FIRST_CHECKALL_TRUE;
+                    }else {
+                        message.what = FIRST_CHECKALL_FALSE;
+                    }
+                    changeHandler.sendMessage(message);
+                }
+            }).start();
+        }else {
+            //工位检测功能未打开
+            setFirst_checkAll_result(true);
+        }
     }
 
     /**
