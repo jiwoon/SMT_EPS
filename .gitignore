@@ -32,3 +32,9 @@
 /eps_printer/printer/Picture.gif
 /eps_printer/printer/printer.cfg
 /doc/~$T防错料系统通讯协议_V1.0 2017-11-28.docx
+/eps_display/*.dcu
+/eps_display/*.ddp
+/eps_display/*.cfg
+/eps_display/*.dof
+/eps_display/*.res
+/eps_display/*.cfg
