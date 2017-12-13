@@ -61,10 +61,11 @@ public class ProgramController {
 		if(id == null) {
 			return ResultUtil.failed("参数不足");
 		}
-		if(programService.start(id)) {
+		String result = null;
+		if((result = programService.start(id)).equals("succeed")) {
 			return ResultUtil.succeed();
 		}else {
-			return ResultUtil.failed();
+			return ResultUtil.failed(result);
 		}
 	}
 	
