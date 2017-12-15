@@ -132,6 +132,18 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         return vCheckAllMaterialFragment;
     }
 
+    @Override
+    public void onDetach() {
+        Log.i(TAG, "onDetach");
+        super.onDetach();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        super.onDestroy();
+    }
+
     /**
      * @author connie
      * @time 2017-9-22
@@ -142,7 +154,7 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
         TextView tv_checkAll_order= (TextView) vCheckAllMaterialFragment.findViewById(R.id.tv_checkAll_order);
         edt_Operation = (TextView) vCheckAllMaterialFragment.findViewById(R.id.tv_checkAll_Operation);
         edt_ScanMaterial = (EditText) vCheckAllMaterialFragment.findViewById(R.id.edt_material);
-        lv_CheckAllMaterial = (ListView) vCheckAllMaterialFragment.findViewById(R.id.list_view);
+        lv_CheckAllMaterial = (ListView) vCheckAllMaterialFragment.findViewById(R.id.checkall_list_view);
         tv_checkAll_order.setText(bundle.getString("orderNum"));
         edt_Operation.setText(bundle.getString("operatorNum"));
         edt_ScanMaterial.requestFocus();

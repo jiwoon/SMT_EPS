@@ -94,27 +94,29 @@ public class GlobalFunc {
                     result = 0;
                 }
                 switch (globalData.getUpdateType()){
-                    case 0:
+                    case 0://上料
                         programItemVisit.setFeed_result(result);
 //                        programItemVisit.setFeed_time(timestamp);
                         break;
-                    case 1:
+                    case 1://换料
                         programItemVisit.setChange_result(result);
+                        //核料置为false
+                        programItemVisit.setCheck_result((byte) 0);
 //                        programItemVisit.setChange_time(timestamp);
                         break;
-                    case 2:
+                    case 2://核料
                         programItemVisit.setCheck_result(result);
 //                        programItemVisit.setCheck_time(timestamp);
                         break;
-                    case 3:
+                    case 3://全检
                         programItemVisit.setCheck_all_result(result);
 //                        programItemVisit.setCheck_all_time(timestamp);
                         break;
-                    case 4:
+                    case 4://发料
                         programItemVisit.setStore_issue_result(result);
 //                        programItemVisit.setStore_issue_time(timestamp);
                         break;
-                    case 5:
+                    case 5://首检
                         programItemVisit.setFirst_check_all_result(result);
 //                        programItemVisit.setFirst_check_all_time(timestamp);
                         break;
@@ -235,7 +237,7 @@ public class GlobalFunc {
         return linSeat;
     }
 
-    //获取料号(新料号格式 03.01.0001@0@2017-11-16 21:32:20 ; 旧料号格式 )
+    //获取料号(新料号格式 03.01.0080@1000@1512736259917 ; 旧料号格式 )
     public String getMaterial(String scanValue){
         scanValue = scanValue.replaceAll(" ","").trim();
         String material = scanValue;
@@ -243,6 +245,16 @@ public class GlobalFunc {
             material = scanValue.substring(0, scanValue.indexOf("@"));
         }
         return material;
+    }
+
+    //获取料号的流水号(即是时间戳,如料号:03.01.0080@1000@1512736259917)
+    public String getSerialNum(String scanValue){
+        scanValue = scanValue.replaceAll(" ","").trim();
+        String serialNum = scanValue;
+        if (scanValue.contains("@")){
+            serialNum = scanValue.substring(scanValue.lastIndexOf("@"),scanValue.length());
+        }
+        return serialNum;
     }
 
 }

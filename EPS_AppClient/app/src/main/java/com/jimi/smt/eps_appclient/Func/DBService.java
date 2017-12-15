@@ -167,16 +167,17 @@ public class DBService {
                         ps.setString(5,programItemVisit.getLineseat());
                         ps.setString(6,programItemVisit.getMaterial_no());
                         break;
-                    case 1://换料
-                        sql="UPDATE program_item_visit SET last_operation_type = 1, last_operation_time = NOW(), change_result = ?,change_time = NOW(),scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ?";
+                    case 1://换料,同时核料置为false
+                        sql="UPDATE program_item_visit SET last_operation_type = 1, last_operation_time = NOW(), change_result = ?,check_result = ?,change_time = NOW(),scan_lineseat = ?,scan_material_no = ? WHERE program_id = ? AND lineseat = ?";
                         ps= (PreparedStatement) conn.prepareStatement(sql);
 //                        ps.setTimestamp(1,programItemVisit.getLast_operation_time());
                         ps.setByte(1,programItemVisit.getChange_result());
+                        ps.setByte(2,programItemVisit.getCheck_result());
 //                        ps.setTimestamp(3,programItemVisit.getChange_time());
-                        ps.setString(2,programItemVisit.getScan_lineseat());
-                        ps.setString(3,programItemVisit.getScan_material_no());
-                        ps.setString(4,programItemVisit.getProgram_id());
-                        ps.setString(5,programItemVisit.getLineseat());
+                        ps.setString(3,programItemVisit.getScan_lineseat());
+                        ps.setString(4,programItemVisit.getScan_material_no());
+                        ps.setString(5,programItemVisit.getProgram_id());
+                        ps.setString(6,programItemVisit.getLineseat());
 //                        ps.setString(8,programItemVisit.getMaterial_no());
                         break;
                     case 2://抽检

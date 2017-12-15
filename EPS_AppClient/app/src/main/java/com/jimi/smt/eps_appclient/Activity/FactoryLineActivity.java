@@ -85,6 +85,7 @@ public class FactoryLineActivity extends FragmentActivity implements View.OnClic
         };
         //设置适配器
         viewpager_factory.setAdapter(fragmentPagerAdapter);
+        viewpager_factory.setOffscreenPageLimit(fragmentList.size()-1);
         viewpager_factory.setScanScroll(false);
         /*
         //设置viewpager切换事件监听

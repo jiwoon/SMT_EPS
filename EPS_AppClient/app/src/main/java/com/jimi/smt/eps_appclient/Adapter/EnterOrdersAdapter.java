@@ -1,6 +1,7 @@
 package com.jimi.smt.eps_appclient.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +85,13 @@ public class EnterOrdersAdapter extends BaseAdapter{
         }
         viewHolder.tv_board_type.setText(board_type);
         viewHolder.order_cb.setChecked(program.isChecked());
+        if (program.isChecked()){
+            viewHolder.tv_order.setTextColor(Color.argb(255,34,164,65));
+            viewHolder.tv_board_type.setTextColor(Color.argb(255,34,164,65));
+        }else {
+            viewHolder.tv_order.setTextColor(Color.BLACK);
+            viewHolder.tv_board_type.setTextColor(Color.BLACK);
+        }
         return convertView;
     }
 

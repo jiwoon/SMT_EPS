@@ -126,9 +126,27 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         initEvents();
         initData();//初始化数据
 
-        edt_LineSeat.requestFocus();
+//        edt_LineSeat.requestFocus();
         return vFeedMaterialFragment;
 
+    }
+
+    @Override
+    public void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
+    }
+
+    @Override
+    public void onDetach() {
+        Log.i(TAG, "onDetach");
+        super.onDetach();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        super.onDestroy();
     }
 
 
@@ -144,9 +162,11 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         edt_LineSeat = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_feed_lineseat);
         edt_Material = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_feed_material);
 
-        lv_FeedMaterial = (ListView) vFeedMaterialFragment.findViewById(R.id.list_view);
+        lv_FeedMaterial = (ListView) vFeedMaterialFragment.findViewById(R.id.feed_list_view);
         tv_feed_order.setText(bundle.getString("orderNum"));
         edt_Operation.setText(bundle.getString("operatorNum"));
+
+        edt_LineSeat.requestFocus();
     }
 
     /**
@@ -172,6 +192,16 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                 }
             }
         });
+
+        edt_LineSeat.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                Log.d(TAG,"edt_LineSeat-onFocusChange-"+hasFocus);
+            }
+        });
+
+        //解决站位失去焦点问题
+        lv_FeedMaterial.setFocusable(false);
     }
 
     /**

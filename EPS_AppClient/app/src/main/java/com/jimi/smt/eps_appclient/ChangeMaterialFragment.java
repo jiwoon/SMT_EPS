@@ -48,6 +48,8 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
 
     //当前的站位，线上料号，更换料号
     private String curLineSeat,curOrgMaterial,curChgMaterial;
+    //线上料号的流水号、更换的料号的流水号
+    private String orgSerialNum,chgSerialNum;
 
     //当前换料时用到的排位料号表x
     private List<MaterialItem> lChangeMaterialItem = new ArrayList<MaterialItem>();
@@ -111,6 +113,18 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         initEvents();
 
         return vChangeMaterialFragment;
+    }
+
+    @Override
+    public void onDetach() {
+        Log.i(TAG, "onDetach");
+        super.onDetach();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        super.onDestroy();
     }
 
     /**
@@ -276,8 +290,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     edt_OrgMaterial.requestFocus();
                                     break;
 
-                                case R.id.edt_change_OrgMaterial:
-                                    //站位正确后才进入这里
+                                case R.id.edt_change_OrgMaterial://站位正确后才进入这里
+                                    //线上料号的流水号
+//                                    orgSerialNum = globalFunc.getSerialNum(strValue);
+                                    //料号
                                     strValue = globalFunc.getMaterial(strValue);
                                     textView.setText(strValue);
                                     curOrgMaterial = strValue;
@@ -304,8 +320,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     edt_ChgMaterial.requestFocus();
                                     break;
 
-                                case R.id.edt_change_ChgMaterial:
-                                    //站位且线上料号正确后才进入这里
+                                case R.id.edt_change_ChgMaterial://站位且线上料号正确后才进入这里
+                                    //更换料号的流水号
+//                                    chgSerialNum = globalFunc.getSerialNum(strValue);
+                                    //更换料号
                                     strValue = globalFunc.getMaterial(strValue);
                                     textView.setText(strValue);
                                     curChgMaterial = strValue;
@@ -314,18 +332,35 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                                     //先获取扫描到的站位
                                     String scanSeatNum = curLineSeat;
                                     Log.d(TAG,"scanSeatNum-"+scanSeatNum);
+                                    /*
+                                    //流水号相同、并且料号也相同(防呆)
+                                    if ((chgSerialNum.equalsIgnoreCase(orgSerialNum)) && (curChgMaterial.equals(curOrgMaterial))){
+                                        curChangeMaterialId = -2;
+                                    }else {
+                                        //不相等,判断扫到的料号是否等于站位的原始料号
+                                        for (int kk = 0;kk < materialList.size();kk++){
+                                            if (materialList.get(kk).equalsIgnoreCase(curChgMaterial)){
+                                                curChangeMaterialId = materialIndex.get(kk);
+                                            }
+                                        }
+                                    }
+                                    */
 
-                                    //判断扫到的料号是否等于站位的原始料号
                                     for (int kk = 0;kk < materialList.size();kk++){
                                         if (materialList.get(kk).equalsIgnoreCase(curChgMaterial)){
                                             curChangeMaterialId = materialIndex.get(kk);
                                         }
                                     }
+
                                     //扫描到的料号不存在表中
                                     if (curChangeMaterialId < 0){
                                         //报警
                                         new AlarmUtil(globalData).turnOnAlarm(Constants.alarmIp,0);
-                                        displayResult(1,scanSeatNum,"料号与站位不对应！",1);
+                                        if (curChangeMaterialId == -1){
+                                            displayResult(1,scanSeatNum,"料号与站位不对应！",1);
+                                        }else if (curChangeMaterialId == -2){
+                                            displayResult(1,scanSeatNum,"不能扫同一个料盘",1);
+                                        }
                                         materialIndex.clear();
                                         materialList.clear();
                                         return true;
@@ -424,9 +459,25 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
                     remark);
         //添加操作日志
         globalFunc.AddDBLog(globalData, materialItem);
+
+        //扫描的站位不在站位表上,不显示
         if (logType == 1){
-            //添加显示日志
+            //添加显示换料日志
             globalFunc.updateVisitLog(globalData,materialItem);
+            /*
+            //将该站位核料置为false
+            globalData.setUpdateType(Constants.CHECKMATERIAL);
+            MaterialItem checkMaterialItem =
+                    new MaterialItem(
+                            FileId,
+                            orgLineSeat,
+                            String.valueOf(edt_OrgMaterial.getText()),
+                            String.valueOf(edt_LineSeat.getText()),
+                            String.valueOf(edt_ChgMaterial.getText()),
+                            "FAIL",
+                            "正在换料");
+            globalFunc.updateVisitLog(globalData,checkMaterialItem);
+            */
         }
         clearAndSetFocus();
     }
@@ -453,6 +504,10 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
         curOrgMaterial="";
         curChgMaterial="";
         curChangeMaterialId=-1;
+
+        //设置流水号为空
+//        orgSerialNum = "";
+//        chgSerialNum = "";
     }
 
     private void clearResultRemark(){

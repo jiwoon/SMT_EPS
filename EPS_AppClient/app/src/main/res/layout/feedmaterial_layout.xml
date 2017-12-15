@@ -7,83 +7,95 @@
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TableRow
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/tv_or"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_width="100dp"
                 android:gravity="center"
-                android:text="工单号:"
-                android:textSize="22dp" />
+                android:text="工 单 号:"
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/tv_feed_order"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
-                android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_or"
+                android:layout_toRightOf="@id/tv_or"
                 android:text=""
-                android:textSize="22dp" />
-        </TableRow>
-        <TableRow
+                android:textSize="22sp"/>
+        </RelativeLayout>
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/tv_ope"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_width="100dp"
                 android:gravity="center"
-                android:text="操作员:"
-                android:textSize="22dp" />
+                android:layout_centerVertical="true"
+                android:text="操 作 员:"
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/tv_feed_Operation"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_ope"
+                android:layout_toRightOf="@id/tv_ope"
                 android:singleLine="true"
                 android:text=""
-                android:textSize="22dp" />
-        </TableRow>
-        <TableRow
+                android:textSize="22sp" />
+        </RelativeLayout>
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/tv_ls"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_width="100dp"
                 android:gravity="center"
-                android:text="站    位:"
-                android:textSize="22dp" />
+                android:layout_centerVertical="true"
+                android:text="站      位:"
+                android:textSize="22sp" />
 
             <EditText
                 android:id="@+id/edt_feed_lineseat"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_ls"
+                android:layout_toRightOf="@id/tv_ls"
                 android:singleLine="true"
-                android:text=""
-                android:textSize="22dp" />
-        </TableRow>
+                android:textSize="22sp" />
+        </RelativeLayout>
 
-        <TableRow
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/tv_orgM"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_width="100dp"
                 android:gravity="center"
-                android:text="料    号:"
-                android:textSize="22dp" />
+                android:layout_centerVertical="true"
+                android:text="料      号:"
+                android:textSize="22sp" />
 
             <EditText
                 android:id="@+id/edt_feed_material"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/tv_orgM"
+                android:layout_toEndOf="@id/tv_orgM"
                 android:singleLine="true"
-                android:text=""
-                android:textSize="22dp" />
-        </TableRow>
+                android:textSize="22sp" />
+        </RelativeLayout>
 
     </TableLayout>
 
@@ -131,9 +143,12 @@
     </TableLayout>
 
     <ListView
-        android:id="@+id/list_view"
+        android:id="@+id/feed_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        />
 
 
 </LinearLayout>

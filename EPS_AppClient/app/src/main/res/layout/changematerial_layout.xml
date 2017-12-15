@@ -24,7 +24,6 @@
                 android:layout_height="wrap_content"
                 android:layout_width="100dp"
                 android:gravity="center"
-                android:layout_centerVertical="true"
                 android:text="工 单 号:"
                 android:textSize="22sp" />
 
@@ -34,7 +33,6 @@
                 android:layout_width="match_parent"
                 android:layout_toEndOf="@id/tv_or"
                 android:layout_toRightOf="@id/tv_or"
-                android:singleLine="true"
                 android:text=""
                 android:textSize="22sp" />
         </RelativeLayout>
