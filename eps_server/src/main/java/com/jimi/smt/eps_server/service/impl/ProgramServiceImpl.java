@@ -269,18 +269,31 @@ public class ProgramServiceImpl implements ProgramService {
 
 
 	@Override
-	public boolean start(String id) {
+	public String start(String id) {
 		ProgramExample example = new ProgramExample();
 		example.createCriteria().andIdEqualTo(id);
 		//状态判断
 		List<Program> programs = programMapper.selectByExample(example);
 		if(programs.isEmpty()) {
-			return false;
+			ResultUtil.failed("id不存在");
+			return "failed_id_not_exist";
 		}
 		Program program = programs.get(0);
 		if(program.getState() >= 1) {
 			ResultUtil.failed("状态不可逆");
-			return false;
+			return "failed_state_error";
+		}
+		//判断是否存在已开始的相同工单（相同的定义：工单号、板面类型、线号均一致）
+		ProgramExample example2 = new ProgramExample();
+		example2.createCriteria()
+			.andLineEqualTo(program.getLine())
+			.andWorkOrderEqualTo(program.getWorkOrder())
+			.andBoardTypeEqualTo(program.getBoardType())
+			.andStateEqualTo(1);
+		List<Program> programs2 = programMapper.selectByExample(example2);
+		if(!programs2.isEmpty()) {
+			ResultUtil.failed("已存在相同的正在进行的工单");
+			return "failed_already_started";
 		}
 		Program program2 = new Program();
 		program2.setState(1);
@@ -294,9 +307,9 @@ public class ProgramServiceImpl implements ProgramService {
 			programItemVisitMapper.insertSelective(programItemVisit);
 		}
 		if(result != 0) {
-			return true;
+			return "succeed";
 		}else {
-			return false;
+			return "failed_unknown";
 		}
 	}
 

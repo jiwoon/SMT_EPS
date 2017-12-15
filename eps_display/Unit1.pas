@@ -34,7 +34,6 @@ type
     Label2: TLabel;
     Panel2: TPanel;
     dataGrid: TDBGrid;
-    DBGrid1: TDBGrid;
     procedure dataGridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure lineCbChange(Sender: TObject);
     procedure workOrderCbChange(Sender: TObject);

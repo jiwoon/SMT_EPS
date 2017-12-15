@@ -53,7 +53,7 @@ public interface ProgramService {
 	 * @param workOrder
 	 * @return
 	 */
-	boolean start(String id);
+	String start(String id);
 
 
 	/**
