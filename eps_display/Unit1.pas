@@ -36,6 +36,7 @@ type
     lineLb: TLabel;
     alertLb: TLabel;
     updateQry: TADOQuery;
+    secondaryQry: TADOQuery;
     procedure dataGridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure lineCbChange(Sender: TObject);
     procedure workOrderCbChange(Sender: TObject);
@@ -263,7 +264,7 @@ begin
   selectQry.SQL.Clear;
   workOrderCb.items.Clear;
   boardTypeCb.items.Clear;
-  strsql := 'select distinct work_order from program where line=''' + lineCb.Text + '''and work_order<>'''' and state=1';
+  strsql := 'select distinct work_order from program where line=''' + lineCb.Text + ''' and state=1';
   selectQry.sql.add(strsql);
   selectQry.Active := True;
   while not selectQry.eof do
@@ -282,7 +283,7 @@ var
 begin
   boardTypeCb.items.Clear;
   selectQry.SQL.Clear;
-  strsql := ' select distinct board_type from program where work_order=''' + workOrderCb.Text + '''';
+  strsql := ' select board_type from program where work_order=''' + workOrderCb.Text + ''' and line = ''' + lineCb.Text +''' and state=1';
   selectQry.sql.add(strsql);
   selectQry.Active := True;
   while not selectQry.eof do
@@ -474,72 +475,72 @@ begin
     updateTop;
     dataGrid.DataSource.DataSet.Active := FALSE;
     dataGrid.DataSource.DataSet.Active := TRUE;
-
+    secondaryQry.Clone(mainQry);
     //全检周期
     if (k = 7200) then
     begin
-      mainQry.First;
-      min := mainQry.FieldByName('first_check_all_time').AsDateTime;
-      while not mainQry.eof do
+      secondaryQry.First;
+      min := secondaryQry.FieldByName('first_check_all_time').AsDateTime;
+      while not secondaryQry.eof do
       begin
 
-        if (mainQry.fieldByName('first_check_all_result').AsString <> 'PASS') then
+        if (secondaryQry.fieldByName('first_check_all_result').AsString <> 'PASS') then
         begin
-          alertLb.Caption := '请开始首检！';
+          alertLb.Caption := '请首检';
           problem := True;
           break;
         end;
 
-        if (mainQry.fieldByName('first_check_all_time').AsDateTime < min) then
+        if (secondaryQry.fieldByName('first_check_all_time').AsDateTime < min) then
         begin
-          min := mainQry.fieldByName('first_check_all_time').AsDateTime;
+          min := secondaryQry.fieldByName('first_check_all_time').AsDateTime;
         end;
 
         min := DateUtils.IncHour(min, 2);
 
         if (DateUtils.CompareDateTime(Now, min) > 0) then
         begin
-          updateQry.SQL.Clear;
-          //更新program_item_visit表，令全检记录结果全为FAIL
-          strsql := 'update program_item_visit set check_all_result = 0 where program_id in(SELECT id FROM program WHERE line=''' + lineCb.Text + ''' AND work_order=''' + workOrderCb.Text + ''' AND board_type=''' + board_type + '''';
-          updateQry.SQL.Add(strsql);
-          updateQry.Active := True;
-          updateQry.ExecSQL;
-          alertLb.Caption := '请开始全检';
-          problem := True;
-          Break;
+//          updateQry.SQL.Clear;
+//          //更新program_item_visit表，令全检记录结果全为FAIL
+//          strsql := 'update program_item_visit set check_all_result = 0 where program_id in(SELECT id FROM program WHERE line=''' + lineCb.Text + ''' AND work_order=''' + workOrderCb.Text + ''' AND board_type=''' + board_type + '''';
+//          updateQry.SQL.Add(strsql);
+//          updateQry.Active := True;
+//          updateQry.ExecSQL;
+//          alertLb.Caption := '请全检';
+//          problem := True;
+//          Break;
         end;
-        mainQry.Next;
+        secondaryQry.Next;
       end;
       k := 0;
     end;
 
-    mainQry.First;
-    while not mainQry.eof do
+    secondaryQry.First;
+    while not secondaryQry.eof do
     begin
 
       //全检计时器重置
-      if (mainQry.fieldByName('feed_result').AsString <> 'PASS') then
+      if (secondaryQry.fieldByName('feed_result').AsString <> 'PASS') then
       begin
         k := 0;
       end;
 
       //核料周期
-      change := mainQry.fieldByName('change_time').AsDateTime;
-      check := mainQry.fieldByName('check_time').AsDateTime;
-      materialNo := mainQry.fieldByName('material_no').AsString;
-      lineseat := mainQry.fieldbyName('lineseat').AsString;
+      change := secondaryQry.fieldByName('change_time').AsDateTime;
+      check := secondaryQry.fieldByName('check_time').AsDateTime;
+      materialNo := secondaryQry.fieldByName('material_no').AsString;
+      lineseat := secondaryQry.fieldbyName('lineseat').AsString;
       if (DateUtils.CompareDateTime(Now, DateUtils.IncMinute(change, 5)) > 0) and (DateUtils.CompareDateTime(check, change) < 0) then
       begin
-        updateQry.SQL.Clear;
-      //更新program_item_visit表，令指定核料记录结果为FAIL
-        strsql := 'update program_item_visit set check_result = 0 where program_id in(SELECT id FROM program WHERE line=''' + lineCb.Text + ''' AND work_order=''' + workOrderCb.Text + ''' AND board_type=''' + board_type + ''') AND material_no = ''' + materialNo + ''' AND lineseat= ''' + lineseat + '''';
-        updateQry.SQL.Add(strsql);
-        updateQry.ExecSQL;
-        alertLb.Caption := '请核料！';
-        problem := True;
+//        updateQry.SQL.Clear;
+//      //更新program_item_visit表，令指定核料记录结果为FAIL
+//        strsql := 'update program_item_visit set check_result = 0 where program_id in(SELECT id FROM program WHERE line=''' + lineCb.Text + ''' AND work_order=''' + workOrderCb.Text + ''' AND board_type=''' + board_type + ''') AND material_no = ''' + materialNo + ''' AND lineseat= ''' + lineseat + '''';
+//        updateQry.SQL.Add(strsql);
+//        updateQry.ExecSQL;
+//        alertLb.Caption := '请核料';
+//        problem := True;
       end;
-      mainQry.Next;
+      secondaryQry.Next;
     end;
 
     if (problem = FALSE) then
@@ -554,7 +555,7 @@ begin
     end;
 
     k := k + 5;
-    mainQry.First;
+    secondaryQry.First;
   end;
 end;
 

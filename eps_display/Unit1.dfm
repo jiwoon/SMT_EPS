@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = -4
-  Top = -4
-  Width = 1608
-  Height = 868
+  Left = -16
+  Top = 44
+  Width = 1456
+  Height = 876
   Align = alClient
-  Caption = #20135#32447#23454#26102#30417#25511'V(1.1) '
+  Caption = #20135#32447#23454#26102#30417#25511'V(1.3) '
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 1600
+    Width = 1578
     Height = 445
     Align = alTop
     TabOrder = 0
@@ -204,9 +204,9 @@ object Form1: TForm1
       ParentFont = False
     end
     object typeLb: TLabel
-      Left = 748
+      Left = 744
       Top = 9
-      Width = 838
+      Width = 682
       Height = 208
       Alignment = taCenter
       AutoSize = False
@@ -222,9 +222,9 @@ object Form1: TForm1
       WordWrap = True
     end
     object resultLb: TLabel
-      Left = 748
+      Left = 744
       Top = 210
-      Width = 838
+      Width = 682
       Height = 223
       Alignment = taCenter
       AutoSize = False
@@ -240,17 +240,23 @@ object Form1: TForm1
       WordWrap = True
     end
     object alertLb: TLabel
-      Left = 183
-      Top = 424
-      Width = 67
-      Height = 25
-      Caption = 'alertLb'
-      Font.Charset = DEFAULT_CHARSET
+      Left = 744
+      Top = 8
+      Width = 681
+      Height = 425
+      Align = alCustom
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #35831#20840#26816
+      Color = clYellow
+      Font.Charset = ANSI_CHARSET
       Font.Color = clRed
-      Font.Height = -21
-      Font.Name = 'MS Sans Serif'
+      Font.Height = -227
+      Font.Name = #24494#36719#38597#40657
       Font.Style = [fsBold]
+      ParentColor = False
       ParentFont = False
+      Layout = tlCenter
     end
     object lineCb: TComboBox
       Left = 104
@@ -313,17 +319,17 @@ object Form1: TForm1
     end
   end
   object Panel2: TPanel
-    Left = -6
-    Top = 447
+    Left = -14
+    Top = 448
     Width = 1592
-    Height = 343
+    Height = 406
     Caption = 'Panel2'
     TabOrder = 1
     object dataGrid: TDBGrid
       Left = 1
-      Top = 4
+      Top = 0
       Width = 1590
-      Height = 338
+      Height = 405
       Align = alBottom
       DataSource = ds
       Font.Charset = ANSI_CHARSET
@@ -471,17 +477,17 @@ object Form1: TForm1
           Title.Font.Height = -33
           Title.Font.Name = #24494#36719#38597#40657
           Title.Font.Style = []
-          Width = 240
+          Width = 171
           Visible = True
         end>
     end
   end
   object DBConnection: TADOConnection
+    Connected = True
     ConnectionString = 
       'Provider=MSDASQL.1;Persist Security Info=False;Data Source=smt_e' +
       'ps'
     LoginPrompt = False
-    Provider = 'MSDASQL.1'
     Left = 574
     Top = 24
   end
@@ -522,5 +528,12 @@ object Form1: TForm1
     Parameters = <>
     Left = 649
     Top = 62
+  end
+  object secondaryQry: TADOQuery
+    Connection = DBConnection
+    DataSource = ds
+    Parameters = <>
+    Left = 688
+    Top = 64
   end
 end
