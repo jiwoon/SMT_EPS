@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 221
-  Top = 119
-  Width = 1456
-  Height = 826
+  Left = -4
+  Top = -4
+  Width = 1608
+  Height = 868
   Align = alClient
-  Caption = 'mainForm'
+  Caption = #20135#32447#23454#26102#30417#25511'V(1.1) '
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,18 +12,19 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 1586
+    Width = 1600
     Height = 445
     Align = alTop
     TabOrder = 0
-    object Label1: TLabel
-      Left = 300
+    object operatorNameLb: TLabel
+      Left = 303
       Top = 92
       Width = 105
       Height = 46
@@ -37,9 +38,9 @@ object Form1: TForm1
       ParentFont = False
     end
     object operatorLb: TLabel
-      Left = 414
-      Top = 98
-      Width = 303
+      Left = 424
+      Top = 93
+      Width = 304
       Height = 44
       AutoSize = False
       Color = clScrollBar
@@ -51,8 +52,8 @@ object Form1: TForm1
       ParentColor = False
       ParentFont = False
     end
-    object Label6: TLabel
-      Left = 15
+    object lineLb: TLabel
+      Left = 19
       Top = 27
       Width = 70
       Height = 46
@@ -64,9 +65,9 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label7: TLabel
-      Left = 302
-      Top = 29
+    object workOrderLb: TLabel
+      Left = 306
+      Top = 27
       Width = 70
       Height = 46
       Caption = #24037#21333
@@ -77,9 +78,9 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label8: TLabel
-      Left = 18
-      Top = 92
+    object board_tybeLb: TLabel
+      Left = 19
+      Top = 93
       Width = 140
       Height = 46
       Caption = #26495#38754#31867#22411
@@ -90,46 +91,10 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object typeLb: TLabel
-      Left = 744
-      Top = 11
-      Width = 840
-      Height = 208
-      Alignment = taCenter
-      AutoSize = False
-      Caption = #25805#20316
-      Color = clGreen
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindow
-      Font.Height = -117
-      Font.Name = #24494#36719#38597#40657
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-      WordWrap = True
-    end
-    object resultLb: TLabel
-      Left = 744
-      Top = 219
-      Width = 839
-      Height = 223
-      Alignment = taCenter
-      AutoSize = False
-      Caption = #32467#26524
-      Color = clGreen
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindow
-      Font.Height = -117
-      Font.Name = #24494#36719#38597#40657
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-      WordWrap = True
-    end
     object materialNoLb: TLabel
-      Left = 173
-      Top = 304
-      Width = 369
+      Left = 174
+      Top = 300
+      Width = 485
       Height = 52
       AutoSize = False
       Color = clSilver
@@ -142,9 +107,9 @@ object Form1: TForm1
       ParentFont = False
     end
     object scanMaterialNoLb: TLabel
-      Left = 173
-      Top = 363
-      Width = 367
+      Left = 174
+      Top = 357
+      Width = 486
       Height = 52
       AutoSize = False
       Color = clSilver
@@ -156,9 +121,9 @@ object Form1: TForm1
       ParentColor = False
       ParentFont = False
     end
-    object Label5: TLabel
-      Left = 23
-      Top = 362
+    object scanMaterialNoNameLb: TLabel
+      Left = 19
+      Top = 360
       Width = 140
       Height = 46
       Caption = #25195#25551#26009#21495
@@ -169,8 +134,8 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label4: TLabel
-      Left = 22
+    object materialNoNameLb: TLabel
+      Left = 19
       Top = 305
       Width = 140
       Height = 46
@@ -183,9 +148,9 @@ object Form1: TForm1
       ParentFont = False
     end
     object lineseatLb: TLabel
-      Left = 172
+      Left = 174
       Top = 186
-      Width = 370
+      Width = 485
       Height = 52
       AutoSize = False
       Color = clSilver
@@ -198,9 +163,9 @@ object Form1: TForm1
       ParentFont = False
     end
     object scanLineseatLb: TLabel
-      Left = 173
-      Top = 246
-      Width = 369
+      Left = 174
+      Top = 243
+      Width = 487
       Height = 52
       AutoSize = False
       Color = clSilver
@@ -212,9 +177,9 @@ object Form1: TForm1
       ParentColor = False
       ParentFont = False
     end
-    object Label3: TLabel
-      Left = 23
-      Top = 243
+    object scanLineSeatNameLb: TLabel
+      Left = 19
+      Top = 246
       Width = 140
       Height = 46
       Caption = #25195#25551#31449#20301
@@ -225,9 +190,9 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label2: TLabel
-      Left = 22
-      Top = 186
+    object lineSeatNameLb: TLabel
+      Left = 19
+      Top = 189
       Width = 140
       Height = 46
       Caption = #21407#22987#31449#20301
@@ -238,9 +203,58 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
     end
+    object typeLb: TLabel
+      Left = 748
+      Top = 9
+      Width = 838
+      Height = 208
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #25805#20316
+      Color = clGreen
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindow
+      Font.Height = -160
+      Font.Name = #24494#36719#38597#40657
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      WordWrap = True
+    end
+    object resultLb: TLabel
+      Left = 748
+      Top = 210
+      Width = 838
+      Height = 223
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #32467#26524
+      Color = clGreen
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindow
+      Font.Height = -160
+      Font.Name = #24494#36719#38597#40657
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      WordWrap = True
+    end
+    object alertLb: TLabel
+      Left = 183
+      Top = 424
+      Width = 67
+      Height = 25
+      Caption = 'alertLb'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -21
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
     object lineCb: TComboBox
-      Left = 100
-      Top = 31
+      Left = 104
+      Top = 28
       Width = 190
       Height = 44
       Style = csDropDownList
@@ -265,8 +279,8 @@ object Form1: TForm1
         '308')
     end
     object workOrderCb: TComboBox
-      Left = 379
-      Top = 31
+      Left = 387
+      Top = 28
       Width = 341
       Height = 44
       Style = csDropDownList
@@ -282,8 +296,8 @@ object Form1: TForm1
       OnDropDown = workOrderCbDropDown
     end
     object boardTypeCb: TComboBox
-      Left = 173
-      Top = 96
+      Left = 171
+      Top = 93
       Width = 116
       Height = 44
       Style = csDropDownList
@@ -468,39 +482,45 @@ object Form1: TForm1
       'ps'
     LoginPrompt = False
     Provider = 'MSDASQL.1'
-    Left = 626
-    Top = 206
+    Left = 574
+    Top = 24
   end
   object selectQry: TADOQuery
     Connection = DBConnection
     Parameters = <>
     Prepared = True
-    Left = 574
-    Top = 200
+    Left = 546
+    Top = 26
   end
   object mainQry: TADOQuery
     Connection = DBConnection
     Parameters = <>
     Prepared = True
-    Left = 669
-    Top = 252
+    Left = 614
+    Top = 63
   end
   object operatorQry: TADOQuery
     Connection = DBConnection
     Parameters = <>
     Prepared = True
-    Left = 620
-    Top = 267
+    Left = 578
+    Top = 63
   end
   object ds: TDataSource
     DataSet = mainQry
-    Left = 570
-    Top = 257
+    Left = 544
+    Top = 61
   end
   object refreshTimer: TTimer
-    Interval = 3000
+    Interval = 5000
     OnTimer = refreshTimerTimer
-    Left = 682
-    Top = 210
+    Left = 606
+    Top = 24
+  end
+  object updateQry: TADOQuery
+    Connection = DBConnection
+    Parameters = <>
+    Left = 649
+    Top = 62
   end
 end
