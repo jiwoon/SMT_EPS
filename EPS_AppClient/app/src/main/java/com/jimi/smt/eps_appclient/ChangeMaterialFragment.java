@@ -116,6 +116,18 @@ public class ChangeMaterialFragment extends Fragment implements TextView.OnEdito
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Log.i(TAG, "setUserVisibleHint-isVisibleToUser-"+isVisibleToUser);
+    }
+
+    @Override
     public void onDetach() {
         Log.i(TAG, "onDetach");
         super.onDetach();

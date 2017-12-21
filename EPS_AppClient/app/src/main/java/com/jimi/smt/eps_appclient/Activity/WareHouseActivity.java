@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jimi.smt.eps_appclient.Adapter.WareHouseAdapter;
 import com.jimi.smt.eps_appclient.Func.GlobalFunc;
@@ -52,6 +53,17 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
     private GlobalFunc globalFunc;
     private DissMissThread mDissMissThread;//
     private final int DISSMIASS_DIALOG = 120;//取消站位弹出窗
+
+    // 定义一个变量，来标识是否退出
+    private static boolean isExit = false;
+    private Handler mWareHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            isExit = false;
+        }
+    };
+    
     private Handler dissmissDialogHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -129,11 +141,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.iv_ware_back:
-                Intent intent=getIntent();
-                Bundle bundle=intent.getExtras();
-                intent.putExtras(bundle);
-                setResult(RESULT_OK,intent);
-                this.finish();
+                exit();
                 break;
         }
     }
@@ -141,11 +149,7 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
     //物理返回键
     @Override
     public void onBackPressed() {
-        Intent intent=getIntent();
-        Bundle bundle=intent.getExtras();
-        intent.putExtras(bundle);
-        setResult(RESULT_OK,intent);
-        this.finish();
+        exit();
     }
 
     //扫料号的输入事件
@@ -385,6 +389,22 @@ public class WareHouseActivity extends Activity implements View.OnClickListener,
                     }
                 }
             }
+        }
+    }
+
+    //返回主页
+    private void exit() {
+        if (!isExit) {
+            isExit = true;
+            Toast.makeText(getApplicationContext(), "再按一次退出", Toast.LENGTH_SHORT).show();
+            // 利用handler延迟发送更改状态信息
+            mWareHandler.sendEmptyMessageDelayed(0, 2000);
+        } else {
+            Intent intent=getIntent();
+            Bundle bundle=intent.getExtras();
+            intent.putExtras(bundle);
+            setResult(RESULT_OK,intent);
+            this.finish();
         }
     }
 

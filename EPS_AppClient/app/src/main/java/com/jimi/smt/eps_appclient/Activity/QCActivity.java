@@ -2,6 +2,8 @@ package com.jimi.smt.eps_appclient.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jimi.smt.eps_appclient.CheckAllMaterialFragment;
 import com.jimi.smt.eps_appclient.CheckMaterialFragment;
@@ -33,6 +36,15 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
     private TextView tv_check_all;
     private GlobalData globalData;
     private CustomViewPager viewpager_qc;
+    // 定义一个变量，来标识是否退出
+    private static boolean isExit = false;
+    private Handler mQCHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            isExit = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,11 +114,7 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.iv_QC_back:
-                Intent intent=getIntent();
-                Bundle bundle=intent.getExtras();
-                intent.putExtras(bundle);
-                setResult(RESULT_OK,intent);
-                this.finish();
+                exit();
                 break;
 
             case R.id.tv_check_some://抽检
@@ -126,11 +134,7 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
     //物理返回键
     @Override
     public void onBackPressed() {
-        Intent intent=getIntent();
-        Bundle bundle=intent.getExtras();
-        intent.putExtras(bundle);
-        setResult(RESULT_OK,intent);
-        this.finish();
+        exit();
     }
 
 
@@ -154,4 +158,21 @@ public class QCActivity extends FragmentActivity implements View.OnClickListener
         tv_check_some.setBackgroundResource(R.drawable.factory_feed_unclick_shape);
         tv_check_all.setBackgroundResource(R.drawable.factory_checkall_unclick_shape);
     }
+
+    //返回主页
+    private void exit() {
+        if (!isExit) {
+            isExit = true;
+            Toast.makeText(getApplicationContext(), "再按一次退出", Toast.LENGTH_SHORT).show();
+            // 利用handler延迟发送更改状态信息
+            mQCHandler.sendEmptyMessageDelayed(0, 2000);
+        } else {
+            Intent intent=getIntent();
+            Bundle bundle=intent.getExtras();
+            intent.putExtras(bundle);
+            setResult(RESULT_OK,intent);
+            this.finish();
+        }
+    }
+    
 }

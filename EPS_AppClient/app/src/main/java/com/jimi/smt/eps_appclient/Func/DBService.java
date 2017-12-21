@@ -86,6 +86,50 @@ public class DBService {
     }
 
     /**
+     * 获取站位表全部操作结果
+     * @param programID
+     * @return
+     */
+    public List<ProgramItemVisit> getProgramItemVisits(String programID){
+        List<ProgramItemVisit> list =new ArrayList<ProgramItemVisit>();
+        String sql="SELECT program_id,lineseat,material_no,scan_lineseat,scan_material_no,store_issue_result,feed_result,change_result,check_result,check_all_result,first_check_all_result FROM program_item_visit WHERE program_id = ?";
+        //获取链接数据库对象
+        conn= DBOpenHelper.getConn();
+        try {
+            if(conn!=null && (!conn.isClosed())){
+                ps= (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1,programID);
+                if(ps!=null){
+                    rs= (ResultSet) ps.executeQuery();
+                    if(rs!=null){
+                        while(rs.next()){
+                            ProgramItemVisit itemVisit = new ProgramItemVisit();
+                            itemVisit.setProgram_id(rs.getString("program_id"));
+                            itemVisit.setLineseat(rs.getString("lineseat"));
+                            itemVisit.setMaterial_no(rs.getString("material_no"));
+                            itemVisit.setScan_lineseat(rs.getString("scan_lineseat"));
+                            itemVisit.setScan_material_no(rs.getString("scan_material_no"));
+                            itemVisit.setStore_issue_result(rs.getByte("store_issue_result"));
+                            itemVisit.setFeed_result(rs.getByte("feed_result"));
+                            itemVisit.setChange_result(rs.getByte("change_result"));
+                            itemVisit.setCheck_result(rs.getByte("check_result"));
+                            itemVisit.setCheck_all_result(rs.getByte("check_all_result"));
+                            itemVisit.setFirst_check_all_result(rs.getByte("first_check_all_result"));
+                            list.add(itemVisit);
+                        }
+                    }
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            DBOpenHelper.closeAll(conn,ps,rs);//关闭相关操作
+        }
+        return list;
+    }
+
+    /**
      *插入日志到数据库
      * @param list
      * @return　int
@@ -271,6 +315,33 @@ public class DBService {
              Log.d(TAG,"SQLException-"+e.toString());
          }
          return storeResult;
+    }
+
+    /**
+     *再次上料，初始化全部上料结果
+     * @param programID
+     */
+    public int initFeedResult(String programID){
+        Log.d(TAG,"initFeedResult-"+programID);
+        int result = -1;
+        String sql = "UPDATE program_item_visit SET feed_result = 0 WHERE program_id = ?";
+        //获取链接数据库对象
+        conn= DBOpenHelper.getConn();
+        try {
+            if(conn!=null && (!conn.isClosed())){
+                ps= (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1,programID);
+                if (ps != null){
+                    result = ps.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d(TAG,"SQLException-"+e.toString());
+        }finally {
+            DBOpenHelper.closeAll(conn,ps,rs);//关闭相关操作
+        }
+        return result;
     }
 
     /**

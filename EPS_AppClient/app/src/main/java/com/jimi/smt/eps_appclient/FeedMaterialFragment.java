@@ -14,10 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.jimi.smt.eps_appclient.Activity.FactoryLineActivity;
 import com.jimi.smt.eps_appclient.Adapter.MaterialAdapter;
 import com.jimi.smt.eps_appclient.Func.AlarmUtil;
 import com.jimi.smt.eps_appclient.Func.DBService;
@@ -25,7 +28,9 @@ import com.jimi.smt.eps_appclient.Func.GlobalFunc;
 import com.jimi.smt.eps_appclient.Func.Log;
 import com.jimi.smt.eps_appclient.Unit.Constants;
 import com.jimi.smt.eps_appclient.Unit.MaterialItem;
+import com.jimi.smt.eps_appclient.Unit.ProgramItemVisit;
 import com.jimi.smt.eps_appclient.Views.InfoDialog;
+import com.jimi.smt.eps_appclient.Views.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +54,9 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
     private TextView edt_Operation;
     private EditText edt_LineSeat;
     private EditText edt_Material;
+    private LinearLayout feed_parent;
+    private TableLayout feed_tbl;
+    private FactoryLineActivity mActivity;
 
     //上料列表
     private ListView lv_FeedMaterial;
@@ -58,6 +66,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
     private List<MaterialItem> lFeedMaterialItem = new ArrayList<MaterialItem>();
     //扫描的站位在列表中的位置
     private ArrayList<Integer> scanLineIndex = new ArrayList<Integer>();
+    //program_item_visit表
+    private List<ProgramItemVisit> programItemVisits = new ArrayList<ProgramItemVisit>();
 
     //当前上料项
     private int curFeedMaterialId = 0;
@@ -70,9 +80,11 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
     //上料结果
     private boolean feedResult = true;
     private GlobalFunc globalFunc;
+    private LoadingDialog loadingDialog;
 
     private static final int STORE_SUCCESS = 108;
     private static final int STORE_FAIL = 109;
+    private static final int REFRESH_ITEMS = 110;
     private Handler feedHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -82,6 +94,7 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                     materialAdapter.notifyDataSetChanged();
                     edt_Material.requestFocus();
                     break;
+
                 case STORE_FAIL:
                     ArrayList<Integer> sameLineIndex = (ArrayList<Integer>) msg.obj;
                     //未发料
@@ -93,9 +106,36 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                     materialAdapter.notifyDataSetChanged();
                     feedNextMaterial();
                     break;
+
+                case REFRESH_ITEMS:
+                    //取消弹出窗
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.cancel();
+                        loadingDialog.dismiss();
+                    }
+                    if (getFeedResult(programItemVisits)){
+                        mActivity.setSelectTabTitle(0);
+                    }
+                    break;
             }
         }
     };
+
+
+    //判断所有上料结果
+    private boolean getFeedResult(List<ProgramItemVisit> programItemVisits) {
+        boolean feedResult = true;
+        if (programItemVisits != null && programItemVisits.size() > 0){
+            for (ProgramItemVisit itemVisit:programItemVisits) {
+                if (itemVisit.getFeed_result() == 0){
+                    feedResult = false;
+                    break;
+                }
+            }
+        }
+        return feedResult;
+    }
+
     /**
      * @param inflater
      * @param container
@@ -115,12 +155,14 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         savedInstanceState=intent.getExtras();
         Log.i(TAG,"curOderNum::"+savedInstanceState.getString("orderNum")+" -- curOperatorNUm::"+savedInstanceState.getString("operatorNum"));
 
-        globalData = (GlobalData) getActivity().getApplication();
+//        globalData = (GlobalData) getActivity().getApplication();
         globalData.setOperator(savedInstanceState.getString("operatorNum"));
         //设置报警状态为未报警
         globalData.setAlarmState(1);
 //        globalData.setOperType(Constants.FEEDMATERIAL);
-        globalFunc = new GlobalFunc(getActivity());
+//        globalFunc = new GlobalFunc(getActivity());
+
+        Log.i(TAG, "onCreateView-Program_id-"+globalData.getProgram_id());
 
         initViews(savedInstanceState);
         initEvents();
@@ -129,6 +171,25 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 //        edt_LineSeat.requestFocus();
         return vFeedMaterialFragment;
 
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
+        mActivity = (FactoryLineActivity) getActivity();
+        globalData = (GlobalData) getActivity().getApplication();
+        globalFunc = new GlobalFunc(getActivity());
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Log.i(TAG, "setUserVisibleHint-isVisibleToUser-"+isVisibleToUser);
+        if (isVisibleToUser){
+            Log.i(TAG, "setUserVisibleHint-Program_id-"+globalData.getProgram_id());
+            getProgramItemVisits(globalData.getProgram_id());
+        }
     }
 
     @Override
@@ -157,6 +218,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
      */
     private void initViews(Bundle bundle) {
         Log.i(TAG, "initViews");
+        feed_parent = (LinearLayout) vFeedMaterialFragment.findViewById(R.id.feed_parent);
+        feed_tbl = (TableLayout) vFeedMaterialFragment.findViewById(R.id.feed_tbl);
         TextView tv_feed_order= (TextView) vFeedMaterialFragment.findViewById(R.id.tv_feed_order);
         edt_Operation = (TextView) vFeedMaterialFragment.findViewById(R.id.tv_feed_Operation);
         edt_LineSeat = (EditText) vFeedMaterialFragment.findViewById(R.id.edt_feed_lineseat);
@@ -395,6 +458,22 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
         return false;
     }
 
+    //获取ProgramItemVisits
+    private void getProgramItemVisits(final String programId){
+        loadingDialog = new LoadingDialog(getActivity(),"正在加载...");
+        loadingDialog.setCanceledOnTouchOutside(false);
+        loadingDialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                programItemVisits = new DBService().getProgramItemVisits(programId);
+                Message message = Message.obtain();
+                message.what = REFRESH_ITEMS;
+                feedHandler.sendMessage(message);
+            }
+        }).start();
+    }
+
     //检验该站位是否发料
     private boolean getOperateLastType(final MaterialItem materialItem, final ArrayList<Integer> sameLineIndex){
         final boolean[] storeIssue = {false};
@@ -550,6 +629,8 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
                             dialog.dismiss();
                             clearLineSeatMaterialScan();
                             initData();
+                            //获取ProgramItemVisits
+                            getProgramItemVisits(globalData.getProgram_id());
                         }else{
                             dialog.dismiss();
                             clearLineSeatMaterialScan();

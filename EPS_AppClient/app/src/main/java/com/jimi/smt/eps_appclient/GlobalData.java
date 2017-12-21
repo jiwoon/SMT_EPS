@@ -117,6 +117,17 @@ public class GlobalData extends Application {
         this.board_type = board_type;
     }
 
+    //选中的program_id
+    private String program_id;
+
+    public String getProgram_id() {
+        return program_id;
+    }
+
+    public void setProgram_id(String program_id) {
+        this.program_id = program_id;
+    }
+
     //报警状态 0 正在报警 , 1 未报警 初始值为 1
     private int alarmState;
 

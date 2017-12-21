@@ -22,4 +22,6 @@ public class Constants {
     public static final String alarmIp = "http://10.10.11.11/15";
     //开启或关闭工位检测
     public static final boolean isCheckWorkType = false;
+    //上料解锁密码
+    public static final String feedPwd = "12348765";
 }

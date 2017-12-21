@@ -1,9 +1,11 @@
 package com.jimi.smt.eps_appclient.Activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
@@ -530,6 +532,7 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
                                         globalData.setLine(mProgramList.get(curCheckIndex).getLine());
                                         globalData.setWork_order(mProgramList.get(curCheckIndex).getWork_order());
                                         globalData.setBoard_type(mProgramList.get(curCheckIndex).getBoard_type());
+                                        globalData.setProgram_id(mProgramList.get(curCheckIndex).getProgramID());
                                         //成功获取料号表,操作员在职
                                         message.what = scanOperator.getType();
                                         curOrderNum = mProgramList.get(curCheckIndex).getWork_order();
@@ -607,4 +610,32 @@ public class EnterActivity extends Activity implements TextView.OnEditorActionLi
         }
         updateProgress.show();
     }
+
+    @Override
+    public void onBackPressed() {
+        backToHome();
+    }
+
+    //退出
+    private void backToHome(){
+        AlertDialog.Builder exit  = new AlertDialog.Builder(this);
+        exit.setTitle("系统提示");
+        exit.setMessage("确定要退出吗?");
+        exit.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+        exit.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        exit.show();
+    }
+
+
 }

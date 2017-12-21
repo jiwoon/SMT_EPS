@@ -1,0 +1,77 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#dbbdbdbd"
+    tools:context="com.jimi.smt.eps_appclient.FeedLoginFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        android:background="@drawable/feed_login_background"
+        android:layout_centerInParent="true"
+        >
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="再  次  上  料"
+            android:textColor="@android:color/black"
+            android:textSize="22sp"
+            android:layout_gravity="center_horizontal" />
+
+        <EditText
+            android:id="@+id/edt_pwd"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:hint="请输入密码"
+            android:singleLine="true"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            >
+            <Button
+                android:id="@+id/btn_unlock"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="解锁"
+                android:textSize="20sp"
+                android:background="@drawable/unlock_unlocked_selector"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"/>
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="取消"
+                android:textSize="20sp"
+                android:background="@drawable/unlock_cancel_selector"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
