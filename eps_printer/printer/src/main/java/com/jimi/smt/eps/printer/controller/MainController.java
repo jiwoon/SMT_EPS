@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -126,6 +127,10 @@ public class MainController implements Initializable {
 	private TextField seatNoTf;
 	@FXML
 	private TextField remarkTf;
+	
+	//生产日期
+	@FXML
+	private TextField dateTf;
 	@FXML
 	private Button fileSelectBt;
 	@FXML
@@ -164,6 +169,7 @@ public class MainController implements Initializable {
 	private Label timeLb1;
 	@FXML
 	private Label remarkLb1;
+	
 	@FXML
 	private ImageView codeIv1;
 	@FXML
@@ -314,10 +320,17 @@ public class MainController implements Initializable {
 		//信息完整性校验
 		String quantity = quantityTf.getText();
 		String seat = seatNoTf.getText();
-		if(quantity == null || quantity.equals("") || seat == null || seat.equals("")) {
-			error("请填写数量和位置信息");
+		String date = dateTf.getText();
+		if(quantity == null || quantity.equals("") || seat == null || seat.equals("")||date == null || date.equals("")) {
+			error("请填写数量、位置和生产日期信息");
 			return;
 		}
+		//日期类型校验
+		if(!isDate(date)) {
+			error("请正确填写生产日期YY-MM-DD");
+			return;
+		}
+		
 		//数字类型校验
 		String copy = copyTf.getText();
 		try{
@@ -327,7 +340,7 @@ public class MainController implements Initializable {
 				throw new NumberFormatException();
 			}
 			copies = copyInt;
-			showIdWindow();
+			showIdWindow();		
 		}catch (NumberFormatException e) {
 			error("请输入正整数");
 		}
@@ -346,6 +359,7 @@ public class MainController implements Initializable {
 			seatNoTf.setDisable(false);
 			quantityTf.setDisable(false);
 			remarkTf.setDisable(true);
+			dateTf.setDisable(false);
 			remarkTf.setText("未校验");
 			remarkLb.setText("未校验");
 			printBt.setDisable(false);
@@ -465,6 +479,8 @@ public class MainController implements Initializable {
 		stringBuffer.append("@");
 		stringBuffer.append(serialNo++);
 		stringBuffer.append("@");
+		stringBuffer.append(dateTf.getText().trim());
+		stringBuffer.append("@");
 		data = stringBuffer.toString();
 	}
 
@@ -483,10 +499,10 @@ public class MainController implements Initializable {
 		log.setOperator(datas[3] == null ? "" : datas[3]);
 		log.setCustom(datas[4] == null ? "" : datas[4]);
 		log.setPosition(datas[5] == null ? "" : datas[5]);
+		log.setProductionDate(new SimpleDateFormat("yyyy-MM-dd").parse(datas[7]));
 		log.setOperationTime(new Date());
 		session.getMapper().insert(log);
 	}
-
 
 	/**
 	 * 尝试提交入库记录，若失败将会记录到文件，将在下次调用时一并提交
@@ -505,6 +521,7 @@ public class MainController implements Initializable {
 				}
 				//插入库
 				session = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, StockLogMapper.class);
+				System.out.println(stockLogList);
 				for (String data : stockLogList) {
 					insertStockLog(data);
 				}
@@ -707,7 +724,8 @@ public class MainController implements Initializable {
 						quantityTf.requestFocus();
 					}else if(quantityTf.isFocused()){
 						if(!printBt.isDisable()) {
-							onPrintBtClick();
+								onPrintBtClick();
+							
 						}
 					}
 				}
@@ -743,6 +761,7 @@ public class MainController implements Initializable {
 			//初始化打印机
 			try {
 				if(!new File("printer.exe").exists()) {
+					System.out.println("1111111111");
 					throw new IOException();
 				}
 				Runtime.getRuntime().exec("printer.exe");
@@ -924,12 +943,15 @@ public class MainController implements Initializable {
 						seatNoTf.setDisable(false);
 						quantityTf.setDisable(false);
 						remarkTf.setDisable(false);
+						dateTf.setDisable(false);
 						
 						nameTf.setText(material.getName());
 						descriptionTf.setText(material.getDescription());
 						seatNoTf.setText(material.getSeat());
 						quantityTf.setText(material.getQuantity());
 						remarkTf.setText(material.getRemark());
+						dateTf.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+
 						
 						materialNoLb.setText(material.getNo());
 						nameLb.setText(material.getName());
@@ -1092,12 +1114,14 @@ public class MainController implements Initializable {
 		seatNoTf.setDisable(true);
 		quantityTf.setDisable(true);
 		remarkTf.setDisable(true);
+		dateTf.setDisable(true);
 		
 		nameTf.setText("");
 		descriptionTf.setText("");
 		seatNoTf.setText("");
 		quantityTf.setText("");
 		remarkTf.setText("");
+		dateTf.setText("");
 		
 		materialNoLb.setText("");
 		nameLb.setText("");
@@ -1107,6 +1131,25 @@ public class MainController implements Initializable {
 		remarkLb.setText("");
 		
 		printBt.setDisable(true);
+	}
+	
+	/**
+	 * 日期类型校验
+	 * @param date
+	 * @return
+	 */
+	private static Boolean isDate(String date) {
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		dateFormat.setLenient(false);
+		try {
+			dateFormat.parse(date);
+			return true;
+		} 
+		catch (Exception e) {
+			return false;
+		}
+		
 	}
 	
 
