@@ -45,5 +45,6 @@
 		<table tableName="display" domainObjectName="Display"/>
 		<table tableName="stock_log" domainObjectName="StockLog"/>
 		<table tableName="action_log" domainObjectName="ActionLog"/>
+		<table tableName="material_info" domainObjectName="MaterialInfo"/>
 	</context>
 </generatorConfiguration>
