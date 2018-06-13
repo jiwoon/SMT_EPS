@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_serial_no"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="3dip"
+            android:textSize="24sp" />
+        <View
+            android:layout_toEndOf="@id/tv_serial_no"
+            android:layout_height="match_parent"
+            android:layout_width="1dp"
+            android:background="#000" />
+        <View
+            android:layout_alignParentBottom="true"
+            android:layout_width="30dp"
+            android:layout_height="2dip"
+            android:background="#afafaf" />
+    </RelativeLayout>-->
+
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow>
+
+            <TextView
+                android:padding="3dip"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_width="30dp"
+                android:textSize="15sp"
+                android:id="@+id/tv_ware_serial_no"
+                android:textColor="@android:color/black"/>
+
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <TextView
+                android:padding="3dip"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_width="70dp"
+                android:textSize="14sp"
+                android:id="@+id/tv_wareLineSeat"
+                android:textColor="@android:color/black"/>
+
+            <View
+                android:id="@+id/view_wareBlank"
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <TextView
+                android:gravity="center"
+                android:padding="3dip"
+                android:layout_width="140dp"
+                android:layout_height="match_parent"
+                android:textSize="14sp"
+                android:id="@+id/tv_wareMaterial"
+                android:textColor="@android:color/black"
+                />
+            <View
+                android:id="@+id/view_wareBlank1"
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                >
+                <TextView
+                    android:gravity="center"
+                    android:padding="3dip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:id="@+id/tv_wareRemark"
+                    android:textColor="@android:color/black"/>
+                <View
+                    android:id="@+id/view_wareBlank2"
+                    android:layout_height="0.1dp"
+                    android:layout_width="match_parent"
+                    android:background="#000" />
+                <TextView
+                    android:gravity="center"
+                    android:padding="3dip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:id="@+id/tv_wareScanMaterial"
+                    android:textColor="@android:color/black"/>
+            </LinearLayout>
+
+        </TableRow>
+        <View
+            android:layout_height="1dp"
+            android:background="#E0E0E0" />
+
+
+    </TableLayout>
+
+</LinearLayout>

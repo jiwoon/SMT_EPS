@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao' // GreenDao 配置
+android {
+    signingConfigs {
+        config {
+            keyAlias 'smt'
+            keyPassword 'jimismt'
+            storeFile file('D:/AndroidProj/SMT_EPS/doc/smt_eps_key.jks')
+            storePassword 'jimismt'
+        }
+    }
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+    defaultConfig {
+        applicationId "com.jimi.smt.eps_appclient"
+        minSdkVersion 18
+        targetSdkVersion 26
+        versionCode 12
+        versionName "SMT防错料系统-v1.10.3"
+        multiDexEnabled true
+
+        //添加部分
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+    }
+    // GreenDao 配置
+    // schemaVersion： 数据库schema版本，也可以理解为数据库版本号
+    // daoPackage：设置DaoMaster、DaoSession、Dao包名
+    // targetGenDir：设置DaoMaster、DaoSession、Dao目录
+    // targetGenDirTest：设置生成单元测试目录
+    // generateTests：设置自动生成单元测试用例
+    greendao {
+        schemaVersion 1
+        daoPackage 'com.jimi.smt.eps_appclient.gen'
+        targetGenDir 'src/main/java'
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+
+dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile files('libs/mysql-connector-java-5.1.46-bin.jar')
+    //    compile files('libs/Jiminal-1.0-SNAPHOT.jar')
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
+    //    compile 'com.android.support:appcompat-v7:22.2.1'
+    //    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.zhy:okhttputils:2.6.2'
+    compile 'com.android.support:multidex:1.0.2'
+    compile 'cc.fussen:cachelibrary:1.5.1'
+    // GreenDao 配置
+    compile 'org.greenrobot:greendao:3.2.2'
+    //消息传输
+}

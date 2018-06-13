@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#d2d2d2"
+        android:orientation="horizontal"
+        >
+        <ImageView
+            android:id="@+id/iv_ware_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/arrow_back_48px"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="仓 库 发 料"
+            android:textSize="24sp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:layout_centerInParent="true"
+            />
+<!--
+
+        <RelativeLayout
+            android:id="@+id/rl_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            >
+
+            <ImageView
+                android:id="@+id/iv_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="32.8dp"
+                android:src="@mipmap/refresh"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="点击刷新"
+                android:textSize="10sp"
+                android:textColor="@android:color/background_dark"
+                android:layout_below="@id/iv_refresh"
+                android:layout_centerHorizontal="true"
+                />
+
+        </RelativeLayout>
+-->
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="工单号:"
+                android:textSize="20sp"
+                />
+            <TextView
+                android:id="@+id/tv_ware_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginLeft="3dp"
+                android:textSize="20sp"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="操作员:"
+                android:textSize="20sp"
+                />
+            <TextView
+                android:id="@+id/tv_ware_operator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginLeft="3dp"
+                android:textSize="20sp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="扫料号:"
+                android:textSize="20sp"
+                android:layout_gravity="center_vertical"
+                />
+            <!--<EditText
+                android:id="@+id/et_ware_scan_material"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginLeft="3dp"
+                android:textSize="20sp"
+                android:singleLine="true"
+                android:layout_gravity="center_vertical"
+                />-->
+
+            <com.jimi.smt.eps_appclient.Views.MyEditTextDel
+                android:id="@+id/et_ware_scan_material"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:background="@null"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:textSize="20sp"
+                android:singleLine="true"
+                android:hint="请扫料号"
+                android:padding="5dp"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:background="#CFCFCF"
+        android:orientation="horizontal"
+        >
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="30dp"
+                android:gravity="center_horizontal"
+                android:text="序号"
+                android:textSize="20sp" />
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="70dp"
+                android:gravity="center"
+                android:padding="3dip"
+                android:text="站位"
+                android:textSize="20sp"
+
+                />
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <TextView
+                android:layout_width="140dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="料号"
+                android:textSize="20sp" />
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="结果"
+                android:textSize="20sp" />
+
+        </TableRow>
+    </TableLayout>
+
+    <ListView
+        android:id="@+id/lv_ware_materials"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="3dp"
+        />
+
+</LinearLayout>

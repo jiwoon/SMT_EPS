@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="parentAp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="225.0" prefWidth="441.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jimi.smt.eps.printer.controller.RfidController">
+   <children>
+      <Label layoutX="135.0" layoutY="98.0" text="工号：" />
+      <Label layoutX="135.0" layoutY="27.0" text="料号：" />
+      <Label layoutX="135.0" layoutY="75.0" text="时间：" />
+      <Label layoutX="135.0" layoutY="52.0" text="数量：" />
+      <Button fx:id="writeBt" layoutX="143.0" layoutY="129.0" mnemonicParsing="false" onAction="#onWriteBtClick" prefHeight="54.0" prefWidth="155.0" text="按空格键 写入数据">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Label fx:id="materialNoLb" layoutX="171.0" layoutY="27.0" prefHeight="15.0" prefWidth="136.0" text="Label" />
+      <Label fx:id="quantityLb" layoutX="171.0" layoutY="52.0" prefHeight="15.0" prefWidth="136.0" text="Label" />
+      <Label fx:id="timeLb" layoutX="171.0" layoutY="75.0" prefHeight="15.0" prefWidth="136.0" text="Label" />
+      <Label fx:id="idLb" layoutX="171.0" layoutY="98.0" prefHeight="15.0" prefWidth="136.0" text="Label" />
+      <Label fx:id="tipLb" layoutX="143.0" layoutY="190.0" prefHeight="15.0" prefWidth="155.0" />
+   </children>
+</AnchorPane>

@@ -1,0 +1,2 @@
+2018-06-08 17:01:09.589 ERROR com.jimi.smt.eps.printer.controller.MainController - error() line: 991 - 启动RFID程序失败，请检查RFID读写器是否在工作并重启程序
+2018-06-11 16:12:21.123 ERROR com.jimi.smt.eps.printer.controller.MainController - error() line: 991 - 启动RFID程序失败，请检查RFID读写器是否在工作并重启程序

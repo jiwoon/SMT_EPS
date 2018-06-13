@@ -1,0 +1,161 @@
+.showWaiting{
+    display: none;
+    width:100%;
+    height:100%;
+    background-color: rgba(204,204,204,.5);
+    position: absolute;
+    top:0;
+    left:0;
+    z-index: 999;
+}
+.showWaiting span{
+    display: block;
+    width:364px;
+    height:200px;
+    font-size: 30px;
+    background-color: #ffffff;
+    color: #000;
+    margin: 100px auto;
+    text-align: center;
+    line-height: 200px;
+}
+.operation-search{
+    width:950px;
+    height:80px;
+    margin:0 auto;
+    background-color: #ffffff;
+    font-size: 18px;
+    padding:5px;
+    line-height: 14px;
+    position: relative;
+}
+.operation-search span{
+    display: inline-block;
+    height:37px;
+    width:235px;
+    position: absolute;
+    top:11px;
+    left:0;
+}
+
+.autoCom p{
+    width:80px ;
+    height:20px;
+}
+.userline{
+    width:400px;
+    height:30px;
+    position: absolute;
+    top:10px;
+    left:282px;
+}
+.userline input ,.autoCom input {
+    border: 1px solid black;
+    width:169px;
+    font-size: 16px;
+    padding-left: 5px;
+    margin-left: -8px;
+    margin-right: 14px;
+    margin-bottom: 5px;
+}
+
+.position-table .location{
+    position: relative;
+    margin-right: 22px;
+}
+.operation-search em{
+    width:12px;
+    position: absolute;
+    top:4px;
+    left:250px;
+}
+.operation-search select{
+    font-size: 18px;
+}
+.span select{
+    font-size: 26px;
+}
+.commonBtn{
+    font-size: 23px;
+    padding:5px;
+    position: absolute;
+    top:25px;
+}
+.btnSearch{
+    left:748px;
+}
+.btnLoad{
+    left:820px;
+}
+
+.autoCom{
+    width:265px ;
+    z-index: 900;
+    position: absolute;
+    top:53px;
+    left:0;
+}
+.seTime{
+    position: absolute;
+    top:48px;
+    left:278px;
+}
+.seTime input{ border: 1px solid black;
+    font-size: 16px;
+    padding-left: 5px;
+    margin-left: -8px;
+    margin-bottom: 5px;
+    width:152px;
+}
+.autoInput{
+    float: left;
+}
+.operationTable{
+    color: #000;
+    width:100%;
+    background-color: #ffffff;
+    position: relative;
+}
+.operationTable table{
+    width:100%;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+.operationTable td{
+    padding:3px 5px;
+    height:30px;
+    border: 1px solid black;
+    font-size: 18px;
+    line-height: normal;
+}
+.operationTable thead td{
+    font-size: 24px;
+    font-weight: bold;
+}
+.details-table-header p{
+    background: #73b9ff;
+    display: block;
+    float: left;
+    border-right: 1px solid #b1b1b1;
+    border-left: 1px solid #b1b1b1;
+    width: 24%;
+    font-size: 24px;
+    line-height: 48px;
+    text-align: center;
+}
+
+#returnBtn a{
+    margin: 5px 0;
+    display: block;
+    background: url("../images/ui-bg_glass_45_0078ae_1x400.png") 50% 50% repeat-x;
+    background-size: cover;
+    width: 100%;
+    height: 40px;
+    border: 1px solid #d7d7d7;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    color: #ffffff;
+    line-height: 40px;
+    font-size: 24px;
+}

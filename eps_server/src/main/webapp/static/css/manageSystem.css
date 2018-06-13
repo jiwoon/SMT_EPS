@@ -1,0 +1,454 @@
+@charset "UTF-8";
+/*css 初始化 */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+    margin: 0;
+    padding: 0;
+}
+
+fieldset, img, input, button {
+    border: none;
+    padding: 0;
+    margin: 0;
+    outline-style: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+input {
+    padding-top: 0;
+    padding-bottom: 0;
+    font-family: "SimSun", "宋体";
+}
+
+select, input {
+    vertical-align: middle;
+}
+
+select, input, textarea {
+    font-size: 12px;
+    margin: 0;
+}
+textarea {
+    resize: none;
+}
+
+/*防止拖动*/
+img {
+    border: 0;
+    vertical-align: middle;
+}
+
+/*  去掉图片低测默认的3像素空白缝隙*/
+table {
+    border-collapse: collapse;
+}
+
+body {
+    font: 12px/150% Arial, Verdana, "\5b8b\4f53";
+    color: #666;
+    background: #fff
+}
+
+.clearfix:before, .clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1; /*IE/7/6*/
+}
+
+a {
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #C81623;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 100%;
+}
+
+s, i, em {
+    font-style: normal;
+    text-decoration: none;
+}
+/*版头样式*/
+.banner{
+    height:80px;
+    background : url("../images/bg.gif") repeat-x;
+    overflow: hidden;
+    position: relative;
+}
+.banner .name{
+    display: block;
+    height:80px;
+    line-height: 80px;
+    font-size: 40px;
+    color : #ffffff;
+    position: absolute;
+    top:0;
+    left:15%;
+    letter-spacing: 25px;
+}
+.banner .logout {
+    display: block;
+    width: 35px;
+    height: 32px;
+    background: url("../images/logout.png") no-repeat;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 1%;
+}
+.banner .showUser{
+    display: block;
+    width:130px;
+    height:60px;
+    font-size: 20px;
+    color: #ffffff;
+    position: absolute;
+    top:10px;
+    right:10%;
+}
+/*内容部分*/
+.main{
+    background-color: antiquewhite;
+    padding-top: 1px;    /* 为防止整个div向下移动*/
+
+}
+/*左侧导航栏*/
+.main .nav{
+    width:16%;
+    height:70%;
+    margin-top:10px;
+    margin-left:20px;
+    float: left;
+    overflow-x: hidden;
+}
+/*样式*/
+.ui-accordion-header {
+    cursor: pointer;
+    position: relative;
+    margin: 2px 0 0 0;
+    padding: .5em .5em .5em .7em;
+    font-size: 20px;
+    font-weight: bold;
+}
+.ui-state-default{
+    border: 1px solid #77d5f7;
+    background: #0078ae url("../images/ui-bg_glass_45_0078ae_1x400.png") 50% 50% repeat-x;
+    font-weight: normal;
+    color: #ffffff;
+}
+/*小图标*/
+.ui-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top:10px;
+    left:0;
+}
+/*折叠式的样式*/
+.ui-icon-triangle-1-e {
+    background-image: url("../images/ui-icons_0078ae_256x240.png");
+    background-position: -32px -16px;
+}
+/*展开时的样式*/
+.ui-icon-triangle-1-s{
+    background-image: url("../images/ui-icons_f5e175_256x240.png");
+    background-position: -65px -16px;
+}
+/*管理导航内容*/
+.manage-text{
+    width:100%;
+    overflow: hidden;
+}
+.manage-text li{
+    width:100%;
+    height:30px;
+    font-size: 15px;
+    padding-left: 28px;
+    margin-bottom: 3px;
+    line-height: 30px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/*设置当前显示的样式*/
+.current{
+    background-color: #000;
+    color: #ffffff;
+}
+/*隐藏*/
+.yinCan{
+    display: none;
+}
+.manage-text li:hover{
+    background-color: #cccccc;
+    opacity:0.7;
+    color: #ffffff;
+}
+/*鼠标放置时的样式*/
+.ui-state-hover{
+    border: 1px solid #448dae;
+    background: #79c9ec url("../images/ui-bg_glass_75_79c9ec_1x400.png") 50% 50% repeat-x;
+    font-weight: normal;
+    color: #026890;
+}
+
+/*圆角样式*/
+.ui-corner-all,.ui-corner-top{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.ui-corner-all{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/*当前显示的样式*/
+.ui-state-active{
+    border: 1px solid #acdd4a;
+    background: #6eac2c url("../images/ui-bg_gloss-wave_50_6eac2c_500x100.png") 50% 50% repeat-x;
+    font-weight: normal;
+    color: #ffffff;
+}
+
+/*右侧显示栏*/
+.main-text{
+    background-color: #ffffff;
+    width:80%;
+    height:99%;
+    float: left;
+    margin-left: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+/*一开始的导航界面*/
+.guard{
+    width:100%;
+    height:100%;
+}
+
+.guard p{
+    font-size: 30px;
+    width:50%;
+    margin:160px auto;
+    line-height: normal;
+    text-indent: 2em;
+}
+/*员工页面*/
+.staff{
+    width:100%;
+    height:100%;
+    background-color: #77d5f7;
+    overflow-y: scroll;
+    position: relative;
+}
+.manage-staff{
+    display: block;
+    height:60px;
+    width:300px;
+    margin:0 auto;
+    background-color: #6eac2c;
+    color: #ffffff;
+    font-size: 30px;
+    line-height: 60px;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 20px;
+}
+/*搜索框*/
+.search{
+    height:60px;
+    width:100%;
+    background-color: #ffffff;
+    font-size: 18px;
+    padding-top: 10px;
+    padding-left: 14px;
+    float: left;
+    position: relative;
+}
+.search input{
+    border:2px solid black;
+    width:100px;
+    height:20px;
+    padding-left: 3px;
+    margin-right: 18px;
+    margin-left: -8px;
+}
+.search select{
+    height:25px;
+    margin-right: 14px;
+    margin-left: -8px;
+}
+.search span{
+    display: block;
+    width:100%;
+    height:30px;
+    margin-left: -11px;
+}
+.ui-button {
+    display: inline-block;
+    margin-right: .1em;
+    cursor: pointer;
+    vertical-align: middle;
+    text-align: center;
+    margin-left: 40px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    /* Support: IE <= 11 */
+    overflow: visible;
+}
+
+#lengthDiv{
+    float: left;
+}
+.locative{
+    line-height: 53px;
+    width:60px;
+    height:53px;
+    position: absolute;
+    top:10px;
+   left:717px;
+    font-size: 20px;
+}
+/*新增部分*/
+.addNew{
+    height:60px;
+    width:200px;
+    position: absolute;
+    top:0;
+    left:834px;
+    background-color: #ffffff;
+    font-size: 18px;
+    padding-top:10px;
+    padding-left: 16px;
+    line-height: 53px;
+    border-left: 4px solid #77d5f7;
+}
+.addNewBtn{
+    margin-left: 5px;
+}
+/*表格显示内容*/
+.mainTable{
+    color: #000;
+    width:100%;
+    background-color: #ffffff;
+    margin-top: 75px;
+    position: relative;
+    z-index: 100;
+}
+.mainTable table{
+    margin-left: 8px;
+}
+.mainTable td{
+    width :auto;
+    padding:12px 16px;
+    height:30px;
+    border: 1px solid black;
+    font-size: 20px;
+}
+.mainTable thead td{
+    font-size: 24px;
+    font-weight: bold;
+}
+.operateBtn{
+    font-size: 18px;
+    padding:5px;
+    cursor: pointer;
+}
+.delete{
+    margin-left: 5px;
+}
+/*员工具体操作界面*/
+.staff-operation{
+    width:100%;
+    height:100%;
+    padding-top: 1px;
+    overflow-y: auto;
+    position: relative;
+}
+.new-position{
+    width:300px;
+    height:234px;
+    background-color: #ffffff;
+    margin:100px auto;
+    font-size: 25px;
+    line-height: normal;
+    padding-top: 15px;
+    padding-left:20px;
+    border: 2px solid black;
+    position: relative;
+}
+.new-position input{
+    border:1px solid black;
+    padding-left: 5px;
+    font-size: 20px;
+    width:125px;
+    margin-bottom: 6px;
+}
+.autoComplete{
+    float: left;
+    width:177px;
+    height:130px;
+    position: relative;
+}
+.autoComplete input{
+    border: 1px solid black;
+    height:25px;
+    font-size: 20px;
+    margin-bottom: 10px;
+    margin-left: -11px;
+    padding-left: 4px;
+}
+.new-position select{
+    height:25px;
+    font-size: 18px;
+    margin-bottom: 14px;
+}
+.staff-operation button{
+    width:60px;
+    height:35px;
+    font-size: 20px;
+}
+
+.new-position-save{
+    position: absolute;
+    bottom:10px;
+    left:90px;
+}
+.new-position-back{
+    position: absolute;
+    top:10px;
+    left:-10px;
+}
+/*站位表*/
+.positionManage{
+    width:100%;
+    height:100%;
+    overflow-y: scroll;
+}
+.connectGoManage{
+    width:100%;
+    height:100%
+}
+.warmManage{
+    width:100%;
+    height:100%;
+}

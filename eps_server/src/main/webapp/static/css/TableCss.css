@@ -1,0 +1,200 @@
+﻿@charset "UTF-8";
+/*css 初始化 */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+    margin: 0;
+    padding: 0;
+}
+
+fieldset, img, input, button {
+    border: none;
+    padding: 0;
+    margin: 0;
+    outline-style: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+input {
+    padding-top: 0;
+    padding-bottom: 0;
+    font-family: "SimSun", "宋体";
+}
+
+select, input {
+    vertical-align: middle;
+}
+
+select, input, textarea {
+    font-size: 12px;
+    margin: 0;
+}
+textarea {
+    resize: none;
+}
+
+/*防止拖动*/
+img {
+    border: 0;
+    vertical-align: middle;
+}
+
+/*  去掉图片低测默认的3像素空白缝隙*/
+table {
+    border-collapse: collapse;
+}
+
+body {
+    font: 12px/150% Arial, Verdana, "\5b8b\4f53";
+    color: #666;
+    background: #fff
+}
+
+.clearfix:before, .clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1; /*IE/7/6*/
+}
+
+a {
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #C81623;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 100%;
+}
+
+s, i, em {
+    font-style: normal;
+    text-decoration: none;
+}
+/*版头*/
+.banner{
+    width:100%;
+    height:80px;
+    background-color: #77d5f7;
+}
+.banner-main{
+    width:800px;
+    height:80px;
+    margin:0 auto;
+    background-color: #6eac2c;
+    line-height: 80px;
+    color: #fff;
+    position: relative;
+}
+.banner-main p{
+    font-size: 40px;
+    font-weight: bold;
+}
+.banner-main span{
+    display: block;
+    font-size: 25px;
+    width:370px;
+    height:80px;
+    position: absolute;
+    top:0;
+    left:302px;
+}
+.banner-main select{
+    font-size: 24px;
+}
+/*页头*/
+.box{
+    height:100%;
+}
+table{
+    width:100%;
+}
+td{
+    height:100px;
+    border: 1px solid black;
+    font-size: 50px;
+    text-align: center;
+    line-height: 100px;
+    position: relative;
+}
+.current{
+    font-size: 80px;
+    font-weight: 700;
+    position: relative;
+}
+.current span{
+   display: block;
+    font-size: 32px;
+    position: absolute;
+    bottom:9%;
+    left:50%;
+}
+/*制作斜线*/
+.out{
+    border-top:100px #ffffff solid;/*上边框宽度等于表格第一行行高*/
+    border-left:224px #BDBABD solid;/*左边框宽度等于表格第一行第一格宽度*/
+    position:relative;/*让里面的两个子容器绝对定位*/
+}
+.out i,.out em{
+    display:block;
+    font-size:36px;
+    width:80px;
+    height:20px;
+    position:absolute;}
+.out i{
+    top:-122px;
+    right:0;
+}
+.out em{
+    bottom:55px;
+    right:104px;
+}
+
+.common{
+    position: absolute;
+    top:0;
+    left:0;
+    border-top:102px #ffffff solid;
+    border-left:224px #BDBABD solid;
+}
+.common i,.common em{
+    display:block;
+    font-size:36px;
+    width:80px;
+    height:20px;
+    position:absolute;
+}
+.common i{
+    top:-116px;
+    right:0;
+}
+.common em{
+    bottom:52px;
+    right:167px;
+}
+
+.suc{
+    color: #006600;
+    font-weight: 800;
+}
+.fail{
+    color:#D90000;
+    font-weight: 800;
+}
+.total{
+    font-weight: 800;
+    color: #000;
+}
+

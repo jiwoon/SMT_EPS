@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="parentAp" prefHeight="701.0" prefWidth="989.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jimi.smt.eps.printer.controller.MainController">
+   <children>
+      <Label layoutX="39.0" layoutY="28.0" text="供应商料号表文件：" AnchorPane.leftAnchor="39.0" AnchorPane.topAnchor="28.0" />
+      <TextField fx:id="fileSelectTf" layoutX="39.0" layoutY="52.0" prefHeight="23.0" prefWidth="247.0" AnchorPane.leftAnchor="39.0" AnchorPane.rightAnchor="703.0" AnchorPane.topAnchor="52.0" />
+      <Button fx:id="fileSelectBt" layoutX="292.0" layoutY="52.0" mnemonicParsing="false" onAction="#onFileSelectBtClick" prefHeight="23.0" prefWidth="95.0" text="浏览" AnchorPane.rightAnchor="602.0" AnchorPane.topAnchor="52.0" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="351.0" layoutY="680.0" prefHeight="15.0" prefWidth="288.0" text="© 2017 几米物联技术有限公司  All rights reserved." AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="351.0" AnchorPane.rightAnchor="350.0" />
+      <Label fx:id="stateLb" layoutX="41.0" layoutY="643.0" prefHeight="15.0" prefWidth="506.0" text="无状态" AnchorPane.bottomAnchor="43.0" AnchorPane.leftAnchor="41.0" AnchorPane.rightAnchor="442.0" />
+      <TableView fx:id="materialTb" layoutX="41.0" layoutY="96.0" prefHeight="541.0" prefWidth="506.0" AnchorPane.bottomAnchor="64.0" AnchorPane.leftAnchor="41.0" AnchorPane.rightAnchor="442.0" AnchorPane.topAnchor="96.0">
+        <columns>
+          <TableColumn fx:id="materialNoCol" prefWidth="134.0" text="物料编号" />
+          <TableColumn fx:id="nameCol" minWidth="0.0" prefWidth="66.0" text="名称" />
+            <TableColumn fx:id="descriptionCol" minWidth="3.0" prefWidth="137.0" text="描述" />
+            <TableColumn fx:id="seatNoCol" minWidth="0.0" prefWidth="46.0" text="位号" />
+            <TableColumn fx:id="quantityCol" prefWidth="40.0" text="数量" />
+            <TableColumn fx:id="remarkCol" prefWidth="81.0" text="备注" />
+        </columns>
+      </TableView>
+      <Label layoutX="407.0" layoutY="28.0" text="选择表：" AnchorPane.rightAnchor="534.0" AnchorPane.topAnchor="28.0" />
+      <Label layoutX="589.0" layoutY="28.0" text="查找料号：" AnchorPane.rightAnchor="340.0" AnchorPane.topAnchor="28.0" />
+      <TextField fx:id="materialNoTf" layoutX="589.0" layoutY="50.0" prefHeight="65.0" prefWidth="357.0" promptText="在这里输入料号" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="50.0">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+      </TextField>
+      <Separator layoutX="562.0" layoutY="29.0" orientation="VERTICAL" prefHeight="627.0" prefWidth="7.0" AnchorPane.bottomAnchor="45.0" AnchorPane.rightAnchor="420.0" AnchorPane.topAnchor="29.0" />
+      <TextField fx:id="descriptionTf" disable="true" layoutX="589.0" layoutY="201.0" prefHeight="7.0" prefWidth="357.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="201.0" />
+      <Label layoutX="589.0" layoutY="180.0" text="型号：" AnchorPane.rightAnchor="364.0" AnchorPane.topAnchor="180.0" />
+      <Label layoutX="589.0" layoutY="233.0" text="名称：" AnchorPane.rightAnchor="364.0" AnchorPane.topAnchor="233.0" />
+      <TextField fx:id="nameTf" disable="true" layoutX="589.0" layoutY="256.0" prefHeight="7.0" prefWidth="357.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="256.0" />
+      <TextField fx:id="quantityTf" disable="true" layoutX="589.0" layoutY="149.0" prefHeight="23.0" prefWidth="163.0" AnchorPane.rightAnchor="237.0" AnchorPane.topAnchor="149.0" />
+      <Label layoutX="589.0" layoutY="125.0" text="数量：" AnchorPane.rightAnchor="364.0" AnchorPane.topAnchor="125.0" />
+      <Label layoutX="783.0" layoutY="125.0" text="位置：" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="125.0" />
+      <TextField fx:id="seatNoTf" disable="true" layoutX="783.0" layoutY="149.0" prefHeight="23.0" prefWidth="163.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="149.0" />
+      <Label layoutX="589.0" layoutY="290.0" text="备注：" AnchorPane.rightAnchor="364.0" AnchorPane.topAnchor="290.0" />
+      <TextField fx:id="remarkTf" disable="true" layoutX="589.0" layoutY="313.0" prefHeight="23.0" prefWidth="357.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="313.0" />
+      <Button fx:id="printBt" disable="true" layoutX="589.0" layoutY="346.0" mnemonicParsing="false" onAction="#onPrintBtClick" prefHeight="65.0" prefWidth="357.0" text="打印" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="346.0">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+      </Button>
+      <AnchorPane fx:id="previewAp" layoutX="589.0" layoutY="488.0" prefHeight="170.0" prefWidth="357.0" style="-fx-background-color: white;" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="488.0">
+         <children>
+            <Label layoutX="13.0" layoutY="12.0" prefHeight="15.0" prefWidth="36.0" text="编号：" />
+            <Label layoutX="13.0" layoutY="35.0" prefHeight="15.0" prefWidth="36.0" text="型号：" />
+            <Label layoutX="13.0" layoutY="58.0" prefHeight="15.0" prefWidth="36.0" text="名称：" />
+            <Label layoutX="13.0" layoutY="79.0" prefHeight="15.0" prefWidth="36.0" text="数量：" />
+            <Label layoutX="13.0" layoutY="101.0" prefHeight="15.0" prefWidth="36.0" text="位置：" />
+            <Label layoutX="13.0" layoutY="122.0" prefHeight="15.0" prefWidth="36.0" text="时间：" />
+            <Label layoutX="13.0" layoutY="144.0" prefHeight="15.0" prefWidth="36.0" text="备注：" />
+            <ImageView fx:id="codeIv" fitHeight="95.0" fitWidth="95.0" layoutX="249.0" layoutY="69.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../img/code.png" />
+               </image></ImageView>
+            <ImageView fitHeight="30.0" fitWidth="66.0" layoutX="263.0" layoutY="12.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../img/jimi.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="materialNoLb" layoutX="49.0" layoutY="12.0" prefHeight="15.0" prefWidth="208.0" />
+            <Label fx:id="descriptionLb" layoutX="49.0" layoutY="35.0" prefHeight="15.0" prefWidth="208.0" />
+            <Label fx:id="nameLb" layoutX="49.0" layoutY="58.0" prefHeight="15.0" prefWidth="187.0" />
+            <Label fx:id="quantityLb" layoutX="49.0" layoutY="79.0" prefHeight="15.0" prefWidth="187.0" />
+            <Label fx:id="seatLb" layoutX="49.0" layoutY="101.0" prefHeight="15.0" prefWidth="187.0" />
+            <Label fx:id="timeLb" layoutX="49.0" layoutY="122.0" prefHeight="15.0" prefWidth="187.0" />
+            <Label fx:id="remarkLb" layoutX="49.0" layoutY="144.0" prefHeight="15.0" prefWidth="187.0" />
+         </children>
+      </AnchorPane>
+      <ChoiceBox fx:id="tableSelectCb" layoutX="407.0" layoutY="52.0" prefHeight="23.0" prefWidth="141.0" AnchorPane.rightAnchor="441.0" AnchorPane.topAnchor="52.0" />
+      <AnchorPane fx:id="previewAp1" layoutX="126.0" layoutY="61.0" prefHeight="413.0" prefWidth="768.0" style="-fx-background-color: white;" visible="false">
+         <children>
+            <Label layoutX="32.0" layoutY="34.0" prefHeight="44.0" prefWidth="101.0" text="编号：">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="remarkLb1" layoutX="122.0" layoutY="355.0" prefHeight="34.0" prefWidth="390.0">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="timeLb1" layoutX="122.0" layoutY="305.0" prefHeight="34.0" prefWidth="390.0">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="seatLb1" layoutX="122.0" layoutY="252.0" prefHeight="34.0" prefWidth="390.0">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="quantityLb1" layoutX="122.0" layoutY="194.0" prefHeight="33.0" prefWidth="390.0">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="nameLb1" layoutX="122.0" layoutY="138.0" prefHeight="33.0" prefWidth="390.0">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="descriptionLb1" layoutX="122.0" layoutY="87.0" prefHeight="33.0" prefWidth="431.0">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="materialNoLb1" layoutX="122.0" layoutY="34.0" prefHeight="33.0" prefWidth="431.0">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="73.0" fitWidth="163.0" layoutX="553.0" layoutY="32.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../img/jimi.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="codeIv1" fitHeight="228.0" fitWidth="228.0" layoutX="520.0" layoutY="152.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../img/code.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="32.0" layoutY="355.0" prefHeight="44.0" prefWidth="101.0" text="备注：">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label layoutX="32.0" layoutY="305.0" prefHeight="44.0" prefWidth="101.0" text="时间：">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label layoutX="32.0" layoutY="252.0" prefHeight="44.0" prefWidth="101.0" text="位置：">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label layoutX="32.0" layoutY="194.0" prefHeight="44.0" prefWidth="101.0" text="数量：">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label layoutX="32.0" layoutY="138.0" prefHeight="44.0" prefWidth="101.0" text="名称：">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label layoutX="32.0" layoutY="87.0" prefHeight="44.0" prefWidth="101.0" text="型号：">
+               <font>
+                  <Font name="Microsoft YaHei Bold" size="32.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Label layoutX="589.0" layoutY="454.0" prefHeight="15.0" prefWidth="60.0" text="打印份数：" AnchorPane.rightAnchor="340.0" AnchorPane.topAnchor="454.0" />
+      <TextField fx:id="copyTf" layoutX="649.0" layoutY="450.0" prefHeight="23.0" prefWidth="60.0" text="1" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="450.0" />
+      <Button fx:id="configBt" layoutX="882.0" layoutY="450.0" mnemonicParsing="false" onAction="#onCallConfig" text="其他设置" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="450.0" />
+      <CheckBox fx:id="ignoreCb" layoutX="801.0" layoutY="454.0" mnemonicParsing="false" onAction="#onIgnoreClick" text="忽略校验" AnchorPane.rightAnchor="119.0" AnchorPane.topAnchor="454.0" />
+      <Label layoutX="589.0" layoutY="425.0" text="打印目标：" AnchorPane.rightAnchor="340.0" AnchorPane.topAnchor="425.0" />
+      <RadioButton fx:id="bothRb" disable="true" layoutX="836.0" layoutY="425.0" mnemonicParsing="false" text="两者均打印" AnchorPane.rightAnchor="72.0" AnchorPane.topAnchor="425.0">
+         <toggleGroup>
+            <ToggleGroup fx:id="printTarget" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="codeRb" layoutX="649.0" layoutY="425.0" mnemonicParsing="false" selected="true" text="二维码标签" toggleGroup="$printTarget" AnchorPane.rightAnchor="259.0" AnchorPane.topAnchor="425.0" />
+      <RadioButton fx:id="rfidRb" disable="true" layoutX="747.0" layoutY="425.0" mnemonicParsing="false" text="RFID标签" toggleGroup="$printTarget" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="425.0" />
+      <Separator layoutX="589.0" layoutY="479.0" prefHeight="3.0" prefWidth="357.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="479.0" />
+   </children>
+</AnchorPane>

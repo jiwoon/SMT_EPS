@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#C1FFC1"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/tv_or"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:text="工 单 号:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_change_order"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_or"
+                android:layout_toRightOf="@id/tv_or"
+                android:text=""
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/tv_ope"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:text="操 作 员:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_change_Operation"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_ope"
+                android:layout_toRightOf="@id/tv_ope"
+                android:singleLine="true"
+                android:text=""
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            >
+
+            <TextView
+                android:id="@+id/tv_ls"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:text="站      位:"
+                android:textSize="20sp" />
+
+
+            <com.jimi.smt.eps_appclient.Views.MyEditTextDel
+                android:id="@+id/edt_change_lineseat"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_ls"
+                android:layout_toRightOf="@id/tv_ls"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@null"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:textSize="20sp"
+                android:singleLine="true"
+                android:hint="请扫站位"
+                android:padding="5dp"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginBottom="1dp"
+            >
+
+            <TextView
+                android:id="@+id/tv_orgM"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:text="线上料号:"
+                android:textSize="20sp" />
+
+            <!--<EditText
+                android:id="@+id/edt_change_OrgMaterial"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/tv_orgM"
+                android:layout_toEndOf="@id/tv_orgM"
+                android:singleLine="true"
+                android:textSize="22sp" />-->
+
+            <com.jimi.smt.eps_appclient.Views.MyEditTextDel
+                android:id="@+id/edt_change_OrgMaterial"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/tv_orgM"
+                android:layout_toEndOf="@id/tv_orgM"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@null"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:textSize="20sp"
+                android:singleLine="true"
+                android:padding="5dp"
+                android:hint="请扫线上料号"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginBottom="2dp"
+            >
+
+            <TextView
+                android:id="@+id/tv_chgM"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:text="更换料号:"
+                android:textSize="20sp"
+                android:layout_centerVertical="true"
+                />
+
+            <!--<EditText
+                android:id="@+id/edt_change_ChgMaterial"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/tv_chgM"
+                android:layout_toEndOf="@id/tv_chgM"
+                android:singleLine="true"
+                android:textSize="22sp"
+                />-->
+
+            <com.jimi.smt.eps_appclient.Views.MyEditTextDel
+                android:id="@+id/edt_change_ChgMaterial"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/tv_chgM"
+                android:layout_toEndOf="@id/tv_chgM"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@null"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:textSize="20sp"
+                android:singleLine="true"
+                android:padding="5dp"
+                android:hint="请扫更换料号"
+                />
+
+        </RelativeLayout>
+    </TableLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/black"
+        />
+
+    <TextView
+        android:id="@+id/tv_Result"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:text=""
+        android:textSize="50sp"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/tv_Remark"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="24sp"
+        android:gravity="center"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/black"
+        />
+
+    <TextView
+        android:id="@+id/tv_LastInfo"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="20sp"
+        android:gravity="left"
+        android:layout_marginTop="2dp"
+        />
+</LinearLayout>

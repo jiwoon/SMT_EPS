@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/factory_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.jimi.smt.eps_appclient.Activity.FactoryLineActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@android:color/darker_gray"
+        android:orientation="horizontal"
+        >
+        <ImageView
+            android:id="@+id/iv_factory_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@mipmap/arrow_back_48px"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/iv_factory_back"
+            android:layout_toEndOf="@id/iv_factory_back"
+            android:orientation="horizontal"
+            tools:ignore="RtlHardcoded">
+            <TextView
+                android:id="@+id/tv_factory_feed"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="上料"
+                android:textColor="@android:color/white"
+                android:clickable="true"
+                android:background="@drawable/factory_feed_unclick_shape"
+                />
+
+            <TextView
+                android:id="@+id/tv_factory_change"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="换料"
+                android:textColor="@android:color/white"
+                android:clickable="true"
+                android:background="@drawable/factory_change_unclick_shape"
+                />
+            <TextView
+                android:id="@+id/tv_factory_checkAll"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="全检"
+                android:textColor="@android:color/white"
+                android:clickable="true"
+                android:background="@drawable/factory_checkall_unclick_shape"
+                />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+<!--
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager_factory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v4.view.ViewPager>
+    -->
+    <!--<com.jimi.smt.eps_appclient.Views.CustomViewPager
+        android:id="@+id/viewpager_factory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.jimi.smt.eps_appclient.Views.CustomViewPager>-->
+
+    <FrameLayout
+        android:id="@+id/factory_layouts_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0affffff"
+        >
+    </FrameLayout>
+
+</LinearLayout>

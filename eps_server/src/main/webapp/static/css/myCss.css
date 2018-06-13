@@ -1,0 +1,245 @@
+@charset "UTF-8";
+/*css 初始化 */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+    margin: 0;
+    padding: 0;
+}
+
+fieldset, img, input, button {
+    border: none;
+    padding: 0;
+    margin: 0;
+    outline-style: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+input {
+    padding-top: 0;
+    padding-bottom: 0;
+    font-family: "SimSun", "宋体";
+}
+
+select, input {
+    vertical-align: middle;
+}
+
+select, input, textarea {
+    font-size: 12px;
+    margin: 0;
+}
+textarea {
+    resize: none;
+}
+
+/*防止拖动*/
+img {
+    border: 0;
+    vertical-align: middle;
+}
+
+/*  去掉图片低测默认的3像素空白缝隙*/
+table {
+    border-collapse: collapse;
+}
+
+body {
+    font: 12px/150% Arial, Verdana, "\5b8b\4f53";
+    color: #666;
+    background: #fff
+}
+
+.clearfix:before, .clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1; /*IE/7/6*/
+}
+
+a {
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #C81623;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 100%;
+}
+
+s, i, em {
+    font-style: normal;
+    text-decoration: none;
+}
+.nav{
+    height:100px;
+}
+#nav-left{
+    height:100%;
+    width:12%;
+    float: left;
+}
+#nav-left em{
+    display: block;
+    width:100%;
+    font-size: 16px;
+    text-align: center;
+    padding-top: 15px;
+}
+#nav-left span{
+    display: block;
+    font-size: 40px;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 800;
+    color: #C81623;
+}
+#nav-left select{
+    font-size:30px;
+}
+/*制作点击按钮*/
+#click-left,#click-right{
+    float: left;
+    width:6%;
+    height:100px;
+    position: relative;
+
+}
+#click-left em,#click-right em{
+    display: block;
+    width:0;
+    height:0;
+    border-width:30px;
+    border-style:dashed solid  dashed dashed;
+    border-color:transparent #B9B9C8  transparent transparent;
+    position: absolute;
+    top:20px;
+    left:6%;
+    cursor: pointer;
+}
+#click-right em{
+    left:21%;
+    border-style:dashed   dashed dashed solid;
+    border-color:transparent   transparent transparent #B9B9C8;
+}
+#click-left .out::before ,#click-right .out::before{
+    content: "";
+    height:50px;
+    width:6px;
+    background-color:#B9B9C8 ;
+    position: absolute;
+    top:-25px;
+    left:-4px;
+}
+#click-right .out::before{
+    left:0;
+}
+
+#click-left .in::before ,#click-right .in::before{
+    content: "";
+    height:50px;
+    width:6px;
+    background-color:#000 ;
+    position: absolute;
+    top:-25px;
+    left:-4px;
+}
+#click-right .in::before{
+    left:0;
+}
+/*滑动栏*/
+#main{
+    width:72%;
+    margin:0 auto;
+    height:100px;
+    background-color: antiquewhite;
+    float: left;
+    position: relative;
+    overflow: hidden;
+}
+#main div{
+    width:100%;
+    height:100px;
+    background-color: #4DD2FF;
+    color: #ffffff;
+    font-size: 80px;
+    text-align: center;
+    line-height: 100px;
+    letter-spacing: 100px;
+    text-indent: 100px;
+    position: absolute;
+    top:0;
+    left:0;
+}
+
+/*暂停开始按键*/
+#nav-right{
+    width:8%;
+    height:100px;
+    background-color: #008C69;
+    float: right;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+.stop{
+    width:0;
+    height:0;
+    border-width:38px;
+    border-style:dashed dashed dashed solid;
+    border-color:transparent transparent transparent #ffffff;
+    position: absolute;
+    top:8px;
+    left:40%;
+}
+.start{
+    border-left:8px solid #ffffff;
+    border-right:8px solid #ffffff;
+    width:14px;
+    height:60px;
+    position: absolute;
+    top:16px;
+    left:38%;
+}
+
+/*显示框内容*/
+.mainText{
+    position: relative;
+    overflow: hidden;
+}
+.mainText div{
+    width:100%;
+    height:100%;
+    /*position: relative;*/
+}
+.mainText section{
+    width:100%;
+    height:100%;
+    position: absolute;
+    top:0;
+    left:0;
+}
+.clock {
+    display: block;
+    width: 116px;
+    height: 38px;
+    border:3px solid black;
+    position: absolute;
+    top: 16px;
+    left: 32px;
+    line-height: 38px;
+    text-align: center;
+    font-size: 26px;
+}

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffec96"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <TextView
+                android:id="@+id/tv_or"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:text="工 单 号:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_checkAll_order"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_or"
+                android:layout_toRightOf="@id/tv_or"
+                android:text=""
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_ope"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:text="操 作 员:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_checkAll_Operation"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_ope"
+                android:layout_toRightOf="@id/tv_ope"
+                android:singleLine="true"
+                android:text=""
+                android:textSize="20sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            >
+
+            <TextView
+                android:id="@+id/tv_material"
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:text="料      号:"
+                android:textSize="20sp"
+                />
+
+            <!--<EditText
+                android:id="@+id/edt_material"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_material"
+                android:layout_toRightOf="@id/tv_material"
+                android:singleLine="true"
+                android:textSize="22sp" />-->
+
+            <com.jimi.smt.eps_appclient.Views.MyEditTextDel
+                android:id="@+id/edt_material"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_toEndOf="@id/tv_material"
+                android:layout_toRightOf="@id/tv_material"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@null"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:textSize="20sp"
+                android:singleLine="true"
+                android:hint="请扫料号"
+                android:padding="5dp"
+                />
+
+        </RelativeLayout>
+    </TableLayout>
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#CFCFCF">
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="30dp"
+                android:gravity="center_horizontal"
+                android:text="序号"
+                android:textSize="20sp" />
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="站位"
+                android:textSize="20sp"/>
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <TextView
+                android:layout_width="150dp"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:text="料号"
+                android:textSize="20sp" />
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+
+            <TextView
+                android:id="@+id/tv_Result"
+                android:layout_weight="18"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="结果"
+                android:textSize="20sp" />
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#000" />
+        </TableRow>
+    </TableLayout>
+    <ListView
+        android:id="@+id/checkall_list_view"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

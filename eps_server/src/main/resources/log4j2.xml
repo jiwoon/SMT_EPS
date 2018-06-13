@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<appenders>
+
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} %-5level %class{36} - %M() line: %L - %msg%xEx%n" />
+		</Console>
+
+		<File name="File" fileName="${web:rootDir}/WEB-INF/error.log">
+			<PatternLayout
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %class{36} - %M() line: %L - %msg%xEx%n" />
+		</File>
+
+	</appenders>
+
+	<loggers>
+	
+		<logger name="com.jimi.smt.eps_server" level="ERROR">
+			<appender-ref ref="File" />
+		</logger>
+		<logger name="org.springframework" level="ERROR">
+			<appender-ref ref="File" />
+		</logger>
+		<logger name="org.mybatis" level="ERROR">
+			<appender-ref ref="File" />
+		</logger>
+		<root level="DEBUG">
+			<appender-ref ref="Console" />
+		</root>
+		
+	</loggers>
+
+</configuration>

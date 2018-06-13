@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.jimi.smt.eps_appclient.Activity.AdminActivity">
+
+    <RelativeLayout
+        android:id="@+id/rl_admin_top"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        >
+        <ImageView
+            android:id="@+id/iv_admin_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@mipmap/arrow_back_48px"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="管理员"
+            android:gravity="center"
+            android:textSize="26sp"
+            />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_below="@id/rl_admin_top"
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@android:color/black"
+        />
+
+
+    <RelativeLayout
+        android:id="@+id/rl_ware"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/admin_selector"
+        android:layout_above="@id/rl_factory"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="仓库操作"
+            android:textSize="24sp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/right_arrow"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="3dp"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_factory"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/admin_selector"
+        android:layout_centerInParent="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="厂线操作"
+            android:textSize="24sp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/right_arrow"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="3dp"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_ipqc"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/admin_selector"
+        android:layout_below="@id/rl_factory"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="IPQC操作"
+            android:textSize="24sp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/right_arrow"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="3dp"
+            />
+    </RelativeLayout>
+
+
+</RelativeLayout>
