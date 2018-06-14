@@ -13,7 +13,6 @@ import com.jimi.smt.eps.alarmsocket.constant.ClientDevice;
 import com.jimi.smt.eps.alarmsocket.constant.ControlledDevice;
 import com.jimi.smt.eps.alarmsocket.entity.Config;
 import com.jimi.smt.eps.alarmsocket.entity.Program;
-import com.jimi.smt.eps.alarmsocket.entity.ProgramExample;
 import com.jimi.smt.eps.alarmsocket.entity.ProgramItemVisit;
 import com.jimi.smt.eps.alarmsocket.mapper.ConfigMapper;
 import com.jimi.smt.eps.alarmsocket.mapper.ProgramItemVisitMapper;
