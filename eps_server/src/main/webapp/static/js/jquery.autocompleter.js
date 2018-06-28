@@ -58,7 +58,7 @@
         cache: true,
         focusOpen: true,
         hint: false,
-        selectFirst: false,
+        selectFirst:false,
         changeWhenSelect: true,
         highlightMatches: false,
         ignoredKeyCode: [],

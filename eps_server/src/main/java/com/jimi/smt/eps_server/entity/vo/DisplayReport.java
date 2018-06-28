@@ -19,6 +19,7 @@ public class DisplayReport {
 	private List<DisplayReportItem> somes;
 	
 	
+	@SuppressWarnings("deprecation")
 	public DisplayReport() {
 		changes = new ArrayList<DisplayReportItem>(24);
 		feed = new ArrayList<DisplayReportItem>(24);

@@ -78,6 +78,7 @@ public class QRCodeUtil {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static BufferedImage createImage(String content, BufferedImage logoImage, String bottomDes,
 			boolean needCompress) throws Exception {
 		Hashtable hints = new Hashtable();
@@ -333,6 +334,7 @@ public class QRCodeUtil {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static String decode(File file) throws Exception {
 		BufferedImage image;
 		image = ImageIO.read(file);

@@ -14,10 +14,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.jimi.smt.eps_server.annotation.Open;
 import com.jimi.smt.eps_server.annotation.Role;
 import com.jimi.smt.eps_server.annotation.Role.RoleType;
+import com.jimi.smt.eps_server.entity.Page;
 import com.jimi.smt.eps_server.entity.vo.ClientReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReport;
 import com.jimi.smt.eps_server.entity.vo.OperationReport;
 import com.jimi.smt.eps_server.entity.vo.OperationReportSummary;
+import com.jimi.smt.eps_server.entity.vo.PageVO;
 import com.jimi.smt.eps_server.entity.vo.StockLogVO;
 import com.jimi.smt.eps_server.service.OperationService;
 import com.jimi.smt.eps_server.util.ResultUtil;
@@ -65,12 +67,19 @@ public class OperationController {
 		return new ModelAndView("operation/goDisplayReport2");
 	}
 	
+	
+	//分页查询客户报表
 	@Role(RoleType.IPQC)
 	@ResponseBody
 	@RequestMapping("/listClientReport")
-	public List<ClientReport> listClientReport(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime) {
+	public PageVO<ClientReport> listClientReportByPage(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime, Integer currentPage) {	
 		try {
-			return operationService.listClientReport(client, programNo, line, orderNo, workOrderNo, startTime, endTime);
+			Page page = new Page();
+			page.setCurrentPage(currentPage);
+			PageVO<ClientReport> pageVO= new PageVO<ClientReport>();
+			pageVO.setList(operationService.listClientReportByPage(client, programNo, line, orderNo, workOrderNo, startTime, endTime, page));
+			pageVO.setPage(page);
+			return pageVO;
 		} catch (ParseException e) {
 			ResultUtil.failed("日期格式不正确", e);
 		}
@@ -107,7 +116,6 @@ public class OperationController {
 		}
 		return null;
 	}
-	
 	
 	@Role(RoleType.IPQC)
 	@ResponseBody

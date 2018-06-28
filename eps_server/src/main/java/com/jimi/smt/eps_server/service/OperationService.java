@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
+import com.jimi.smt.eps_server.entity.Page;
 import com.jimi.smt.eps_server.entity.vo.ClientReport;
 import com.jimi.smt.eps_server.entity.vo.DisplayReport;
 import com.jimi.smt.eps_server.entity.vo.OperationReport;
@@ -25,6 +26,20 @@ public interface OperationService {
 	 */
 	List<ClientReport> listClientReport(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime) throws ParseException;
 	
+	/**
+	 * 根据条件分页列出列表
+	 * @param client
+	 * @param programNo
+	 * @param line
+	 * @param orderNo
+	 * @param workOrderNo
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * @throws ParseException
+	 */
+	List<ClientReport> listClientReportByPage(String client, String programNo, String line, String orderNo, String workOrderNo, String startTime, String endTime, Page page) throws ParseException;
+
 	/**
 	 * 根据条件生成并下载excel
 	 * @return
