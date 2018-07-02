@@ -19,7 +19,7 @@
     text-align: center;
     line-height: 200px;
 }
-/*搜索框*/
+/*鎼滅储妗�*/
 .search{
     padding-top: 10px;
     width:98%;
@@ -90,7 +90,7 @@
     left:887px;
 }
 
-/*表格显示*/
+/*琛ㄦ牸鏄剧ず*/
 .clientTable{
     color: #000;
     width:100%;
@@ -111,3 +111,35 @@
     font-size: 24px;
     font-weight: bold;
 }
+/*分页*/
+#pagination{
+	padding-top:10px;
+	background:#fff;
+}
+#pagination ul{
+	width:100%;
+}
+#pagination ul li{
+	display:inline-block;
+	font-size:18px;
+}
+#pagination ul li:not(:first-child){
+	margin-left:20px;
+}
+#pagination ul li button{
+	display:inline-block;
+	padding:5px 8px;
+	margin-right:5px;
+	cursor:pointer;
+}
+#pagination ul li button:hover{
+	background:#ccc;
+}
+#pagination ul li input{
+	border:1px solid #ccc;
+	text-align:center;
+	font-size:16px;
+	width:50px;
+	padding:5px 0;
+}
+

@@ -6,9 +6,9 @@
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit">
     <title>客户报表展示页面</title>
-    <link rel="stylesheet" href="static/css/ClientCss.css">
     <link rel="stylesheet" href="static/css/positionCss.css">
     <link rel="stylesheet" href="static/css/jquery.autocompleter.css" />
+        <link rel="stylesheet" href="static/css/ClientCss.css">
     <script src="static/js/jquery-1.11.3.min.js"></script>
     <script src = "static/js/jquery.autocompleter.js"></script>
     <script src="static/js/ClientJs.js"></script>
@@ -66,7 +66,21 @@
                     </tr>
                 </thead>
                 <tbody id="clientMainTable"></tbody>
-        </table>
+        	</table>
+        </div>
+        <!-- 分页 -->
+        <div id="pagination" style="display:none">
+        	<ul>
+        		<li>第<span class="pageNow"></span>页，共<span class="pageAll"></span>页</li>
+        		<li class="buttonLi">
+        			<button type=""button" class="up">上一页</button>
+        			<button type=""button" class="down">下一页</button>
+        		</li>
+        		<li>
+        			<button type=""button" class="jump">跳转</button>
+        			 第<input type="text" class="jumpPage">页
+        		</li>
+        	</ul>
         </div>
     </section>
 </body>
