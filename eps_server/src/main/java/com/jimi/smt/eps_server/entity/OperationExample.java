@@ -9,6 +9,10 @@ public class OperationExample {
 
     protected boolean distinct;
 
+    protected Integer limitStart;
+    
+    protected Integer limitSize;
+
     protected List<Criteria> oredCriteria;
 
     public OperationExample() {
@@ -27,7 +31,23 @@ public class OperationExample {
         this.distinct = distinct;
     }
 
-    public boolean isDistinct() {
+    public Integer getLimitStart() {
+		return limitStart;
+	}
+
+	public void setLimitStart(Integer limitStart) {
+		this.limitStart = limitStart;
+	}
+
+	public Integer getLimitSize() {
+		return limitSize;
+	}
+
+	public void setLimitSize(Integer limitSize) {
+		this.limitSize = limitSize;
+	}
+
+	public boolean isDistinct() {
         return distinct;
     }
 

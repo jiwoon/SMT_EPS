@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.jimi.smt.eps_server.entity.Operation;
 import com.jimi.smt.eps_server.entity.OperationExample;
+import com.jimi.smt.eps_server.entity.Page;
 import com.jimi.smt.eps_server.entity.Program;
 import com.jimi.smt.eps_server.entity.ProgramExample;
 import com.jimi.smt.eps_server.entity.StockLogExample;
@@ -90,6 +91,8 @@ public class OperationServiceImpl implements OperationService {
         
         List<Operation> operations = operationMapper.selectByExample(operationExample);
         
+        
+        
         ProgramExample programExample = new ProgramExample();
         ProgramExample.Criteria programCriteria = programExample.createCriteria();
         //筛选客户
@@ -120,6 +123,78 @@ public class OperationServiceImpl implements OperationService {
 		return clientReports;
 	}
 
+	//测试分页查询客户报表
+	@Override
+	public List<ClientReport> listClientReportByPage(String client, String programNo, String line, String orderNo,
+			String workOrderNo, String startTime, String endTime, Page page) throws ParseException {
+		operationToClientReportFiller.init();
+		
+		List<ClientReport> clientReports = new ArrayList<ClientReport>();
+		
+		OperationExample operationExample = new OperationExample();
+        OperationExample.Criteria operationCriteria = operationExample.createCriteria();
+        
+        //筛选PASS
+        operationCriteria.andResultEqualTo("PASS");
+        
+        //筛选时间
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if(startTime != null && !startTime.equals("")) {
+        	operationCriteria.andTimeGreaterThanOrEqualTo(simpleDateFormat.parse(startTime));
+        }
+        if(endTime != null && !endTime.equals("")) {
+        	operationCriteria.andTimeLessThanOrEqualTo(simpleDateFormat.parse(endTime));
+        }
+
+        //筛选工单号
+		if(workOrderNo != null && !workOrderNo.equals("")) {
+			operationCriteria.andWorkOrderEqualTo(workOrderNo);
+		}
+		//筛选线别
+		if(line != null && !line.equals("")) {
+			operationCriteria.andLineEqualTo(line);
+		}
+        
+        //时间降序
+        operationExample.setOrderByClause("time desc");
+        
+        //获取总条数
+        page.setTotallyData(operationMapper.countByExample(operationExample));
+        //设置取值位置和条数
+        operationExample.setLimitStart(page.getFirstIndex());
+        operationExample.setLimitSize(page.getPageSize());
+        
+        List<Operation> operations = operationMapper.selectByExample(operationExample);
+        
+        ProgramExample programExample = new ProgramExample();
+        ProgramExample.Criteria programCriteria = programExample.createCriteria();
+        //筛选客户
+		if(client != null && !client.equals("")) {
+			programCriteria.andClientEqualTo(client);
+		}
+		//筛选程序表编号
+		if(programNo != null && !programNo.equals("")) {
+			programCriteria.andProgramNoEqualTo(programNo);
+		}
+		//筛选订单号
+		if(orderNo != null && !orderNo.equals("")) {
+			programCriteria.andWorkOrderEqualTo(orderNo);
+		}
+		
+		List<Program> programs = programMapper.selectByExample(programExample);
+		//匹配
+		for (Operation operation : operations) {
+			for (Program program : programs) {
+				if(program.getId().equals(operation.getProgramId())) {
+					//把操作日志转化为客户报告
+					clientReports.add(operationToClientReportFiller.fill(operation));
+					break;
+				}
+			}
+		}
+		
+		return clientReports;
+	}
 	
 	@Override
 	public ResponseEntity<byte[]> downloadClientReport(String client, String programNo, String line, String orderNo,
@@ -132,6 +207,7 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public DisplayReport listDisplayReport(String line) {
 		DisplayReport displayReport = new DisplayReport();
@@ -236,7 +312,7 @@ public class OperationServiceImpl implements OperationService {
 		for (Operation operation : operations) {
 			for (Program program : programs) {
 				if(program.getId().equals(operation.getProgramId())) {
-					//把操作日志转化为客户报告
+					//把操作日志转化为操作报告
 					operationReports.add(operationToOperationReportFiller.fill(operation));
 					break;
 				}
@@ -245,7 +321,7 @@ public class OperationServiceImpl implements OperationService {
 		
 		return operationReports;
 	}
-
+	
 	
 	@Override
 	public ResponseEntity<byte[]> downloadOperationReport(String operator, String client, String line, String workOrderNo,

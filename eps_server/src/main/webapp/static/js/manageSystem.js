@@ -69,6 +69,10 @@ $(function(){
         $("#main-text section").css("display","none");
         $("#warmManage").css("display","block");
     });
+    $("#manage li:eq(3)").on("click",function(){
+        $("#main-text section").css("display","none");
+        $("#materialManage").css("display","block");
+    });
     $("#report li:eq(0)").on("click",function(){
         $("#main-text section").css("display","none");
         $("#clientReport").css("display","block");
@@ -310,13 +314,13 @@ $(function(){
     }
     //   删除按键事件
     function deleteBtn(k){
-        $("#ShowTable td").eq(4+6*k).text("否");
+        $("#ShowTable td").eq(4+7*k).text("否");
         $("#0"+k).attr("disabled","disabled")
             .removeClass("ui-state-default");
 
         var staffType = 0;
         //对岗位类型进行判断
-        switch ($("#ShowTable td").eq(2+6*k).text()){
+        switch ($("#ShowTable td").eq(2+7*k).text()){
             case "仓库操作员" :
                 staffType = 0;
                 break;
@@ -330,9 +334,9 @@ $(function(){
                 staffType = 3;
                 break;
         }
-        var staffId = $("#ShowTable td").eq(6*k).text();
-        var staffName = $("#ShowTable td").eq(6*k+1).text();
-        var staffClassType = $("#ShowTable td").eq(6*k+3).text() == "白班" ? 0 : 1 ;
+        var staffId = $("#ShowTable td").eq(7*k).text();
+        var staffName = $("#ShowTable td").eq(7*k+1).text();
+        var staffClassType = $("#ShowTable td").eq(7*k+3).text() == "白班" ? 0 : 1 ;
         var staffEnable = false;
         $.ajax({
             url: "user/update",
@@ -343,7 +347,7 @@ $(function(){
                 name:staffName,
                 type:staffType,
                 classType:staffClassType,
-               enabled :staffEnable
+                enabled :staffEnable
             },
             success: function (data){
                 if(data.result == "succeed"){
@@ -401,7 +405,7 @@ $(function(){
         });
     }
 
-//    工号查询回调函数
+    // 工号查询回调函数
     function IDSearch(a){
         $.ajax({
             url: "user/list",

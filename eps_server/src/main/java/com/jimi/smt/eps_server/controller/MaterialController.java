@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.jimi.smt.eps_server.annotation.Log;
 import com.jimi.smt.eps_server.entity.MaterialInfo;
@@ -18,6 +19,11 @@ public class MaterialController {
 
 	@Autowired
 	private MaterialService materialService;
+	
+	@RequestMapping("/goManage")
+	public ModelAndView goConfig() {
+		return new ModelAndView("material/goManage");
+	}
 	
 	@Log
 	@ResponseBody

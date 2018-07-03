@@ -35,12 +35,13 @@
                     <li>人员管理</li>
                     <li>站位表管理</li>
                     <li>报警配置页面</li>
+                   	<li>物料保质期管理</li>
                 </ul>
             </div>
 
             <!--//报表导航栏-->
             <section id="nav-report" class="ui-accordion-header ui-state-default ui-corner-all ui-corner-top">
-                报表
+               	 报表
                 <span id="triangle2" class="ui-icon ui-icon-triangle-1-e"></span>
             </section>
             <div id="report" class="manage-text yinCan">
@@ -56,46 +57,46 @@
         </div>
         <!--右侧主要显示框-->
         <div class="main-text" id="main-text">
-                <!--刚进入时显示的界面-->
+            <!--刚进入时显示的界面-->
             <section class="guard" id="guard" >
                 <p>欢迎来到SMT防错料管理系统，请通过左侧导航栏进入相关界面进行操作</p>
             </section>
-                <!--员工表-->
+            <!--员工表-->
             <section class="staff" id="staff" style="display: none">
                 <span class="manage-staff">人员管理</span>
                 <!--搜索框-->
                 <div class="search" id="search">
-	                    <span>输入或者选择相关信息进行查询：</span>
-	                    <div id="lengthDiv" style="width: 765px;">
-	                    	<div class="autoComplete">
-	                    		<p style="float: left;">工号：</p><input type="text" id="workId">
-	                    	</div>
-		                    <div class="autoComplete">
-		                    	姓名：<input type="text" id="name">
-		                    </div>                   
-		                    	 岗位：<select id="type">
-		                            <option value =>--</option>
-		                            <option value =0>仓库操作员</option>
-		                            <option value =1>厂线操作员</option>
-		                            <option value=2>IPQC</option>
-		                            <option value=3>超级管理员</option>
-		                            <option value=4>生产管理员</option>
-		                            <option value=5>品质管理员</option>
-		                            <option value=6>工程管理员</option>
-		                        </select>                                
-		                                        班别：<select id="classType">
+					<span>输入或者选择相关信息进行查询：</span>
+	              	<div id="lengthDiv" style="width: 765px;">
+						<div class="autoComplete">
+							<p style="float: left;">工号：</p><input type="text" id="workId">
+						</div>
+						<div class="autoComplete">
+							姓名：<input type="text" id="name">
+						</div>                   
+						 岗位：<select id="type">
+							<option value =>--</option>
+							<option value =0>仓库操作员</option>
+							<option value =1>厂线操作员</option>
+							<option value=2>IPQC</option>
+							<option value=3>超级管理员</option>
+							<option value=4>生产管理员</option>
+							<option value=5>品质管理员</option>
+							<option value=6>工程管理员</option>
+		                 </select>                                
+		                                               班别：<select id="classType">
 		                                <option value =>--</option>
 		                                <option value =0>白班</option>
 		                                <option value =1>夜班</option>
-		                           </select>
-		                                        在职：<select id="enabled">
+		                 </select>
+		                                               在职：<select id="enabled">
 		                                <option value =>--</option>
 		                                <option value =true>是</option>
 		                                <option value =false>否</option>
-		                           </select>
-	                    </div>
+		                 </select>
+	                   </div>
 	                    <button id="find" class="ui-button ui-corner-all ui-state-default locative">查询</button>
-                                    <!--新增按钮-->
+                        <!--新增按钮-->
 		                <div class="addNew" id="addNew">
 		                    	点击新增<button id="addBtn" class="ui-accordion-header ui-state-default ui-corner-all ui-corner-top addNewBtn">增加</button>
 		                </div>
@@ -187,6 +188,13 @@
 			<section class="positionManage" id="positionManage" style="display: none"> 
 				<iframe class="connectGoManage" src="program/goManage" frameborder="0"></iframe>
 			</section>
+			
+			<!--物料保质期管理  -->
+			<section class="materialManage" id="materialManage" style="display: none"> 
+				<iframe class="connectGoManage" src="material/goManage" frameborder="0"></iframe>
+			</section>
+			
+			
 			<!--客户报表-->
 			<section class="positionManage" id="clientReport" style="display: none"> 
 				<iframe class="connectGoManage" src="operation/goClientReport" frameborder="0"></iframe>
