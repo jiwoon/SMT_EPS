@@ -15,8 +15,8 @@ android {
         applicationId "com.jimi.smt.eps_appclient"
         minSdkVersion 18
         targetSdkVersion 26
-        versionCode 12
-        versionName "SMT防错料系统-v1.10.3"
+        versionCode 14
+        versionName "SMT防错料系统-v1.10.5"
         multiDexEnabled true
 
         //添加部分

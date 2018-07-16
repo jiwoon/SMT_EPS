@@ -470,6 +470,37 @@ public class DBService {
     }
 
     /**
+     * 在首检完成后重置全检的时间
+     * @param line
+     * @param order
+     * @param boardType
+     * @return
+     */
+    public int resetCheckAllTime(String line, String order, int boardType){
+        int result = -1;
+        String sql = "update program_item_visit set check_all_time = now(),check_all_result = 1 where program_id = (select id from program where line = ? and work_order = ? and board_type = ? AND state = 1)";
+        //获取链接数据库对象
+        conn = DBOpenHelper.getConn();
+        try {
+            if (conn != null && (!conn.isClosed())) {
+                ps = (PreparedStatement) conn.prepareStatement(sql);
+                ps.setString(1, line);
+                ps.setString(2, order);
+                ps.setInt(3, boardType);
+                if (ps != null) {
+                    result = ps.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d(TAG, "SQLException-" + e.toString());
+        } finally {
+            DBOpenHelper.closeAll(conn, ps, rs);//关闭相关操作
+        }
+        return result;
+    }
+
+    /**
      * 再次上料,初始化全部操作结果
      *
      * @param line order boardType

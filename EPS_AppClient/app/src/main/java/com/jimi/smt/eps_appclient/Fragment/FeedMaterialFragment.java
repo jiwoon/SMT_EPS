@@ -643,6 +643,7 @@ public class FeedMaterialFragment extends Fragment implements OnEditorActionList
 
     private boolean beginOperat(String scanValue) {
         Log.i(TAG, "lineseat:" + scanValue);
+        scanLineIndex.clear();
         //相同站位在列表中的位置
         for (int j = 0; j < lFeedMaterialItem.size(); j++) {
             MaterialItem materialItem = lFeedMaterialItem.get(j);

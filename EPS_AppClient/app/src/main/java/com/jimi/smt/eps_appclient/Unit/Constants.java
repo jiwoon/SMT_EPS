@@ -47,8 +47,9 @@ public class Constants {
     //ip地址（生产）
     public static final String urlBase = "http://192.168.2.9:8080/eps_server";
     //数据库
-    //    public static String url = "jdbc:mysql://10.10.11.111:3306/smt_eps";//MYSQL测试数据库连接Url
+//    public static String dataBaseUrl = "jdbc:mysql://10.10.11.111:3306/smt_eps";//MYSQL测试数据库连接Url
     public static final String dataBaseUrl = "jdbc:mysql://192.168.2.9:3306/smt_eps";//工厂用内网
     public static final String user = "root";//用户名
+    //    public static final String password = "9777";//密码
     public static final String password = "newttl!@#$1234";//密码
 }

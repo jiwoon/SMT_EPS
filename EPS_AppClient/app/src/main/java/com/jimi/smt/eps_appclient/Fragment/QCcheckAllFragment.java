@@ -364,7 +364,6 @@ public class QCcheckAllFragment extends Fragment implements TextView.OnEditorAct
                     boolean feedResult = new DBService().isFeeded(globalData.getLine(), globalData.getWork_order(), globalData.getBoard_type());
                     Message message = Message.obtain();
                     feed_result = feedResult;
-
                     message.arg1 = condition;
                     if (condition == 0) {
                         if (feedResult) {
@@ -412,11 +411,13 @@ public class QCcheckAllFragment extends Fragment implements TextView.OnEditorAct
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    /*
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    */
                     boolean firstResult = new DBService().isOrderFirstCheckAll(globalData.getLine(), globalData.getWork_order(), globalData.getBoard_type());
                     Message message = Message.obtain();
                     first_checkAll_result = firstResult;
@@ -1078,10 +1079,18 @@ public class QCcheckAllFragment extends Fragment implements TextView.OnEditorAct
                         //获取全检结果
                         checkType = 1;
                         getFirstCheckAllResult(0);
-
                         dialog.dismiss();
                         if (result) {
                             clearMaterialInfo();
+                            //将全检的时间设为当前时间
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int resetCheckAllTime = DBService.getDbService().resetCheckAllTime(globalData.getLine(), globalData.getWork_order(),
+                                            globalData.getBoard_type());
+                                    Log.d(TAG, "resetCheckAllTime - " + resetCheckAllTime);
+                                }
+                            }).start();
                         } else {
                             edt_ScanMaterial.setText("");
                             edt_ScanMaterial.requestFocus();

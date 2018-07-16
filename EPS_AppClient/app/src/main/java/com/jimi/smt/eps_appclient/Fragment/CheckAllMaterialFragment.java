@@ -1005,6 +1005,15 @@ public class CheckAllMaterialFragment extends Fragment implements TextView.OnEdi
                                 Log.d(TAG,"updateAllQcCheck - "+result);
                             }*/
                             clearMaterialInfo();
+                            //将全检的时间设为当前时间
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int resetCheckAllTime = DBService.getDbService().resetCheckAllTime(globalData.getLine(), globalData.getWork_order(),
+                                            globalData.getBoard_type());
+                                    Log.d(TAG, "resetCheckAllTime - " + resetCheckAllTime);
+                                }
+                            }).start();
                         } else {
                             edt_ScanMaterial.setText("");
                             edt_ScanMaterial.requestFocus();
