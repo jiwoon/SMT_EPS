@@ -40,6 +40,8 @@
 		<bean class="com.jimi.smt.eps_server.interceptor.LoginInterceptor"/>
 		<!-- 缓存拦截器 -->
 		<bean class="com.jimi.smt.eps_server.interceptor.NoCacheInterceptor"/>
+		<!-- 跨源拦截器 -->
+		<bean class="com.jimi.smt.eps_server.interceptor.CORSInterceptor"/>
 	</mvc:interceptors>
 
 	
