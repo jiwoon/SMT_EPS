@@ -555,7 +555,7 @@ public class DisplayController implements Initializable {
 				public void run() {
 					logger.error("重置工单生产数目失败，IP地址：" + asyncCommunicator.getRemoteIp()
 							+ "connect失败，网络连接出错");
-					new Alert(AlertType.ERROR, "重置工单失败，请检查你的网络连接", ButtonType.OK).show();
+					new Alert(AlertType.ERROR, "重置工单生产数目失败，请检查你的网络连接", ButtonType.OK).show();
 					setDisableCb(false);
 					resetBt.setDisable(false);
 					resetWorkOrderCb(line);
