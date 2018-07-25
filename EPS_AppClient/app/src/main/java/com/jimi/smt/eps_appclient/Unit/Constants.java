@@ -43,13 +43,14 @@ public class Constants {
     //实时更新功能
     public static final boolean liveUpdate = true;
     //ip地址（测试）
-//    public static final String urlBase = "http://10.10.11.111:8080/eps_server";
+    public static final String urlBase = "http://10.10.11.153:8080/eps_server";
     //ip地址（生产）
-    public static final String urlBase = "http://192.168.2.9:8080/eps_server";
+//    public static final String urlBase = "http://192.168.2.9:8080/eps_server";
     //数据库
-//    public static String dataBaseUrl = "jdbc:mysql://10.10.11.111:3306/smt_eps";//MYSQL测试数据库连接Url
-    public static final String dataBaseUrl = "jdbc:mysql://192.168.2.9:3306/smt_eps";//工厂用内网
+//    public static String dataBaseUrl = "jdbc:mysql://10.10.11.120:3306/smt_eps";//本地测试
+        public static final String dataBaseUrl = "jdbc:mysql://10.10.11.153:3306/smt_eps";//测试
+    //    public static final String dataBaseUrl = "jdbc:mysql://192.168.2.9:3306/smt_eps";//工厂用内网
     public static final String user = "root";//用户名
-    //    public static final String password = "9777";//密码
-    public static final String password = "newttl!@#$1234";//密码
+        public static final String password = "123456";//测试密码
+//    public static final String password = "newttl!@#$1234";//密码
 }
