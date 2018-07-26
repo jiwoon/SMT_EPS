@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jimi.smt.eps.display.mapper.OperationMapper">
+  <resultMap id="BaseResultMap" type="com.jimi.smt.eps.display.entity.Operation">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+    <result column="lineseat" jdbcType="VARCHAR" property="lineseat" />
+    <result column="material_no" jdbcType="VARCHAR" property="materialNo" />
+    <result column="old_material_no" jdbcType="VARCHAR" property="oldMaterialNo" />
+    <result column="scanlineseat" jdbcType="VARCHAR" property="scanlineseat" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="program_id" jdbcType="VARCHAR" property="programId" />
+    <result column="line" jdbcType="VARCHAR" property="line" />
+    <result column="work_order" jdbcType="VARCHAR" property="workOrder" />
+    <result column="board_type" jdbcType="INTEGER" property="boardType" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, operator, time, type, result, lineseat, material_no, old_material_no, scanlineseat, 
+    remark, program_id, line, work_order, board_type
+  </sql>
+  <select id="selectByExample" parameterType="com.jimi.smt.eps.display.entity.OperationExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from operation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from operation
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from operation
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jimi.smt.eps.display.entity.OperationExample">
+    delete from operation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jimi.smt.eps.display.entity.Operation">
+    insert into operation (id, operator, time, 
+      type, result, lineseat, 
+      material_no, old_material_no, scanlineseat, 
+      remark, program_id, line, 
+      work_order, board_type)
+    values (#{id,jdbcType=BIGINT}, #{operator,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP}, 
+      #{type,jdbcType=INTEGER}, #{result,jdbcType=VARCHAR}, #{lineseat,jdbcType=VARCHAR}, 
+      #{materialNo,jdbcType=VARCHAR}, #{oldMaterialNo,jdbcType=VARCHAR}, #{scanlineseat,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{programId,jdbcType=VARCHAR}, #{line,jdbcType=VARCHAR}, 
+      #{workOrder,jdbcType=VARCHAR}, #{boardType,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jimi.smt.eps.display.entity.Operation">
+    insert into operation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="operator != null">
+        operator,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="result != null">
+        result,
+      </if>
+      <if test="lineseat != null">
+        lineseat,
+      </if>
+      <if test="materialNo != null">
+        material_no,
+      </if>
+      <if test="oldMaterialNo != null">
+        old_material_no,
+      </if>
+      <if test="scanlineseat != null">
+        scanlineseat,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="programId != null">
+        program_id,
+      </if>
+      <if test="line != null">
+        line,
+      </if>
+      <if test="workOrder != null">
+        work_order,
+      </if>
+      <if test="boardType != null">
+        board_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="result != null">
+        #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="lineseat != null">
+        #{lineseat,jdbcType=VARCHAR},
+      </if>
+      <if test="materialNo != null">
+        #{materialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="oldMaterialNo != null">
+        #{oldMaterialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="scanlineseat != null">
+        #{scanlineseat,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="programId != null">
+        #{programId,jdbcType=VARCHAR},
+      </if>
+      <if test="line != null">
+        #{line,jdbcType=VARCHAR},
+      </if>
+      <if test="workOrder != null">
+        #{workOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="boardType != null">
+        #{boardType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jimi.smt.eps.display.entity.OperationExample" resultType="java.lang.Long">
+    select count(*) from operation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update operation
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.operator != null">
+        operator = #{record.operator,jdbcType=VARCHAR},
+      </if>
+      <if test="record.time != null">
+        time = #{record.time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.result != null">
+        result = #{record.result,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lineseat != null">
+        lineseat = #{record.lineseat,jdbcType=VARCHAR},
+      </if>
+      <if test="record.materialNo != null">
+        material_no = #{record.materialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.oldMaterialNo != null">
+        old_material_no = #{record.oldMaterialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.scanlineseat != null">
+        scanlineseat = #{record.scanlineseat,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.programId != null">
+        program_id = #{record.programId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.line != null">
+        line = #{record.line,jdbcType=VARCHAR},
+      </if>
+      <if test="record.workOrder != null">
+        work_order = #{record.workOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="record.boardType != null">
+        board_type = #{record.boardType,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update operation
+    set id = #{record.id,jdbcType=BIGINT},
+      operator = #{record.operator,jdbcType=VARCHAR},
+      time = #{record.time,jdbcType=TIMESTAMP},
+      type = #{record.type,jdbcType=INTEGER},
+      result = #{record.result,jdbcType=VARCHAR},
+      lineseat = #{record.lineseat,jdbcType=VARCHAR},
+      material_no = #{record.materialNo,jdbcType=VARCHAR},
+      old_material_no = #{record.oldMaterialNo,jdbcType=VARCHAR},
+      scanlineseat = #{record.scanlineseat,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      program_id = #{record.programId,jdbcType=VARCHAR},
+      line = #{record.line,jdbcType=VARCHAR},
+      work_order = #{record.workOrder,jdbcType=VARCHAR},
+      board_type = #{record.boardType,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jimi.smt.eps.display.entity.Operation">
+    update operation
+    <set>
+      <if test="operator != null">
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="result != null">
+        result = #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="lineseat != null">
+        lineseat = #{lineseat,jdbcType=VARCHAR},
+      </if>
+      <if test="materialNo != null">
+        material_no = #{materialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="oldMaterialNo != null">
+        old_material_no = #{oldMaterialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="scanlineseat != null">
+        scanlineseat = #{scanlineseat,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="programId != null">
+        program_id = #{programId,jdbcType=VARCHAR},
+      </if>
+      <if test="line != null">
+        line = #{line,jdbcType=VARCHAR},
+      </if>
+      <if test="workOrder != null">
+        work_order = #{workOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="boardType != null">
+        board_type = #{boardType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jimi.smt.eps.display.entity.Operation">
+    update operation
+    set operator = #{operator,jdbcType=VARCHAR},
+      time = #{time,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
+      result = #{result,jdbcType=VARCHAR},
+      lineseat = #{lineseat,jdbcType=VARCHAR},
+      material_no = #{materialNo,jdbcType=VARCHAR},
+      old_material_no = #{oldMaterialNo,jdbcType=VARCHAR},
+      scanlineseat = #{scanlineseat,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      program_id = #{programId,jdbcType=VARCHAR},
+      line = #{line,jdbcType=VARCHAR},
+      work_order = #{workOrder,jdbcType=VARCHAR},
+      board_type = #{boardType,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectOperator" parameterType="com.jimi.smt.eps.display.entity.Program" resultType="java.lang.String">
+  	select operation.operator
+  	from program_item_visit inner join operation on
+  	(operation.material_no = program_item_visit.material_no and program_item_visit.`program_id` = operation.`program_id` and program_item_visit.`lineseat` = operation.`lineseat`)
+  	where operation.line = #{line,jdbcType=VARCHAR} and operation.work_order = #{workOrder,jdbcType=VARCHAR} and operation.board_type = #{boardType,jdbcType=INTEGER}
+  	ORDER BY operation.time DESC LIMIT 1
+  </select>
+ </mapper>

@@ -28,7 +28,7 @@
       </TableView>
       <Label layoutX="407.0" layoutY="28.0" text="选择表：" AnchorPane.rightAnchor="534.0" AnchorPane.topAnchor="28.0" />
       <Label layoutX="589.0" layoutY="28.0" text="查找料号：" AnchorPane.rightAnchor="340.0" AnchorPane.topAnchor="28.0" />
-      <TextField fx:id="materialNoTf" layoutX="589.0" layoutY="50.0" prefHeight="65.0" prefWidth="357.0" promptText="在这里输入料号" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="50.0">
+      <TextField fx:id="materialNoTf" layoutX="589.0" layoutY="50.0" prefHeight="65.0" prefWidth="357.0" promptText="在这里输入料号" text="290 783 313 43  163 23" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="50.0">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
@@ -43,7 +43,9 @@
       <Label layoutX="783.0" layoutY="125.0" text="位置：" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="125.0" />
       <TextField fx:id="seatNoTf" disable="true" layoutX="783.0" layoutY="149.0" prefHeight="23.0" prefWidth="163.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="149.0" />
       <Label layoutX="589.0" layoutY="290.0" text="备注：" AnchorPane.rightAnchor="364.0" AnchorPane.topAnchor="290.0" />
+      <Label layoutX="783.0" layoutY="290.0" text="生产日期：" AnchorPane.rightAnchor="146.0" AnchorPane.topAnchor="290.0" />
       <TextField fx:id="remarkTf" disable="true" layoutX="589.0" layoutY="313.0" prefHeight="23.0" prefWidth="163.0" AnchorPane.rightAnchor="237.0" AnchorPane.topAnchor="313.0" />
+      <TextField fx:id="dateTf" disable="true" layoutX="783.0" layoutY="313.0" prefHeight="23.0" prefWidth="163.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="313.0" />
       <Button fx:id="printBt" disable="true" layoutX="589.0" layoutY="346.0" mnemonicParsing="false" onAction="#onPrintBtClick" prefHeight="65.0" prefWidth="357.0" text="打印" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="346.0">
          <font>
             <Font name="System Bold" size="30.0" />
@@ -174,7 +176,5 @@
       <RadioButton fx:id="codeRb" layoutX="649.0" layoutY="425.0" mnemonicParsing="false" selected="true" text="二维码标签" toggleGroup="$printTarget" AnchorPane.rightAnchor="259.0" AnchorPane.topAnchor="425.0" />
       <RadioButton fx:id="rfidRb" disable="true" layoutX="747.0" layoutY="425.0" mnemonicParsing="false" text="RFID标签" toggleGroup="$printTarget" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="425.0" />
       <Separator layoutX="589.0" layoutY="479.0" prefHeight="3.0" prefWidth="357.0" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="479.0" />
-      <Label layoutX="783.0" layoutY="290.0" text="生产日期：" />
-      <TextField fx:id="dateTf" disable="true" layoutX="783.0" layoutY="313.0" prefHeight="23.0" prefWidth="163.0" />
    </children>
 </AnchorPane>
