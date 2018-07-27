@@ -189,38 +189,19 @@ public class DisplayController implements Initializable {
 		workOrderChange();
 		boardTypeChange();
 		// 定时任务：刷新表单
-		updateTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				String line = lineCb.getSelectionModel().getSelectedItem() == null ? ""
-						: lineCb.getSelectionModel().getSelectedItem().toString();
-				String workOrder = workOrderCb.getSelectionModel().getSelectedItem() == null ? ""
-						: workOrderCb.getSelectionModel().getSelectedItem().toString();
-				String boardType = boardTybeCb.getSelectionModel().getSelectedItem() == null ? ""
-						: boardTybeCb.getSelectionModel().getSelectedItem().toString();
-				if (!line.equals("") && !workOrder.equals("") && !boardType.equals("")) {
-					Platform.runLater(new Runnable() {
-
-						@Override
-						public void run() {
-							if (isUpdate) {
-								updateText();
-							}
-						}
-					});
-				}
-			}
-		}, TIME_DELAY, TIME_PERIOD);
+		timeTask();
+		
 	}
 
+	
 	/**
 	 * 初始化session，该类session可以使用缓存，表中数据不常变化
 	 */
 	private void initSession() {
 		try {
-			programSession = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, ProgramMapper.class, "smt_001");
-			operationSession = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, OperationMapper.class, "smt_001");
-			loginSession = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, LoginMapper.class, "smt_002");
+			programSession = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, ProgramMapper.class, "smt");
+			operationSession = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, OperationMapper.class, "smt");
+			loginSession = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, LoginMapper.class, "socket");
 		} catch (IOException e) {
 			logger.error("数据库session创建失败");
 			e.printStackTrace();
@@ -291,8 +272,7 @@ public class DisplayController implements Initializable {
 							} else if (item.toString().equals("3")) {
 								this.setText("×");
 								this.setTextFill(Color.ORANGE);
-							}
-							if (item.toString().equals("4")) {
+							}else if (item.toString().equals("4")) {
 								this.setText("◎");
 								this.setTextFill(Color.PURPLE);
 							}
@@ -303,6 +283,33 @@ public class DisplayController implements Initializable {
 		});
 	}
 
+	/**
+	 * 初始化定时器任务
+	 */
+	public void timeTask() {
+		updateTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				String line = lineCb.getSelectionModel().getSelectedItem() == null ? ""
+						: lineCb.getSelectionModel().getSelectedItem().toString();
+				String workOrder = workOrderCb.getSelectionModel().getSelectedItem() == null ? ""
+						: workOrderCb.getSelectionModel().getSelectedItem().toString();
+				String boardType = boardTybeCb.getSelectionModel().getSelectedItem() == null ? ""
+						: boardTybeCb.getSelectionModel().getSelectedItem().toString();
+				if (!line.equals("") && !workOrder.equals("") && !boardType.equals("")) {
+					Platform.runLater(new Runnable() {
+
+						@Override
+						public void run() {
+							if (isUpdate) {
+								updateText();
+							}
+						}
+					});
+				}
+			}
+		}, TIME_DELAY, TIME_PERIOD);
+	}
 	/*
 	 * 线号选择框文本内容变更监听器
 	 */
@@ -322,10 +329,12 @@ public class DisplayController implements Initializable {
 						e.printStackTrace();
 					}
 					String remoteIp = login.getIp();
-					int port = login.getPort();
 					// String remoteIp = "10.10.11.119";
 					int port = 23334;
 					System.out.println("IP:" + remoteIp + "  PORT:" + port);
+					if (asyncCommunicator != null) {
+						asyncCommunicator.close();
+					}
 					asyncCommunicator = new AsyncCommunicator(remoteIp, port, PACKAGE_PATH);
 					boardResetPackage.setLine(Line.values()[newValue.intValue()+1]);
 					boardResetPackage.setClientDevice(ClientDevice.PC);
@@ -380,96 +389,103 @@ public class DisplayController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (newValue != null && newValue.intValue() >= 0) {
-					String line = lineCb.getSelectionModel().getSelectedItem() == null ? "" : lineCb.getSelectionModel().getSelectedItem().toString();
-					String workOrder = workOrderCb.getSelectionModel().getSelectedItem() == null ? "" : workOrderCb.getSelectionModel().getSelectedItem().toString();
+					String line = lineCb.getSelectionModel().getSelectedItem() == null ? ""
+							: lineCb.getSelectionModel().getSelectedItem().toString();
+					String workOrder = workOrderCb.getSelectionModel().getSelectedItem() == null ? ""
+							: workOrderCb.getSelectionModel().getSelectedItem().toString();
 					String boardType = boardTybeCb.getItems().get(newValue.intValue());
-					if (!line.equals("") && !workOrder.equals("") && boardType != null && !boardType.equals("")) {
+					if (!line.equals("") && !workOrder.equals("") && boardType != null && !boardType.equals("")
+							&& asyncCommunicator != null) {
 						Integer boardTypeNo = getBoardTypeNo(boardType);
-						Map<String, String> map = new HashMap<>();
-						map.put("line", line);
-						map.put("workOrder", workOrder);
-						map.put("boardType", boardTypeNo.toString());
 						setDisableCb(true);
 						resetBt.setDisable(true);
 						isUpdate = false;
-						if (asyncCommunicator != null) {
-							asyncCommunicator.connect(new OnConnectedListener() {
-								//发送工单生产数量重置包
-								@Override
-								public void onSucceed() {
-									asyncCommunicator.send(boardResetPackage, new OnReplyPackageArrivedListener() {
+						asyncCommunicator.connect(new OnConnectedListener() {
+							// 发送工单生产数量重置包
+							@Override
+							public void onSucceed() {
+								asyncCommunicator.send(boardResetPackage, new OnReplyPackageArrivedListener() {
 
-										@Override
-										public void onReplyPackageArrived(BasePackage r) {
-											Log sLog = createLogByPackage(boardResetPackage);
-											logger.info("发送重置包：" + sLog.getData());
-											if (r != null && r instanceof BoardResetReplyPackage) {
-												BoardResetReplyPackage reply = (BoardResetReplyPackage) r;
-												Log rLog = createLogByPackage(reply);
-												logger.info("接收重置包：" + rLog.getData());
-												if (reply.getControlResult().equals(ControlResult.SUCCEED)) {
-													try {
-														//发送选择工单请求
-														httpHelper.requestHttp(SWITCH_ACTION, map, new okhttp3.Callback() {
+									@Override
+									public void onReplyPackageArrived(BasePackage r) {
+										Log sLog = createLogByPackage(boardResetPackage);
+										logger.info("发送重置包：" + sLog.getData());
+										if (r != null && r instanceof BoardResetReplyPackage) {
+											BoardResetReplyPackage reply = (BoardResetReplyPackage) r;
+											Log rLog = createLogByPackage(reply);
+											logger.info("接收重置包：" + rLog.getData());
+											if (reply.getControlResult().equals(ControlResult.SUCCEED)) {
+												try {
+													// 发送选择工单请求
+													Map<String, String> map = new HashMap<>();
+													map.put("line", line);
+													map.put("workOrder", workOrder);
+													map.put("boardType", boardTypeNo.toString());
+													httpHelper.requestHttp(SWITCH_ACTION, map, new okhttp3.Callback() {
 
-															@Override
-															public void onResponse(Call call, Response response)
-																	throws IOException {
-																if (response.body().string()
-																		.equals("{\"result\":\"succeed\"}")) {
-																	Platform.runLater(new Runnable() {
-																		@Override
-																		public void run() {
-																			isUpdate = true;
-																			setDisableCb(false);
-																			resetBt.setDisable(false);
-																			updateText();
-																		}
-																	});
-																} else {
-																	httpFail(SWITCH_ACTION, !IS_NETWORK, line);
-																}
+														@Override
+														public void onResponse(Call call, Response response)
+																throws IOException {
+															if (response.body().string()
+																	.equals("{\"result\":\"succeed\"}")) {
+																Platform.runLater(new Runnable() {
+																	@Override
+																	public void run() {
+																		isUpdate = true;
+																		setDisableCb(false);
+																		resetBt.setDisable(false);
+																		updateText();
+																	}
+																});
+															} else {
+																httpFail(SWITCH_ACTION, !IS_NETWORK, line);
 															}
+														}
 
-															@Override
-															public void onFailure(Call call, IOException e) {
-																httpFail(SWITCH_ACTION, IS_NETWORK, line);
-																e.printStackTrace();
-															}
-														});
+														@Override
+														public void onFailure(Call call, IOException e) {
+															httpFail(SWITCH_ACTION, IS_NETWORK, line);
+															e.printStackTrace();
+														}
+													});
 
-													} catch (IOException e) {
-														httpFail(SWITCH_ACTION, IS_NETWORK, line);
-														e.printStackTrace();
-													}
-												}else {
-													resetProductNbFail(!IS_NETWORK,line);
+												} catch (IOException e) {
+													httpFail(SWITCH_ACTION, IS_NETWORK, line);
+													e.printStackTrace();
 												}
-											}else {
-												resetProductNbFail(!IS_NETWORK,line);
+											} else {
+												resetProductNbFail(!IS_NETWORK, line);
 											}
+										} else {
+											resetProductNbFail(!IS_NETWORK, line);
 										}
-
-										@Override
-										public void onCatchIOException(IOException e) {
-											resetProductNbFail(IS_NETWORK,line);
-											e.printStackTrace();
+										if (asyncCommunicator != null) {
+											asyncCommunicator.close();
 										}
-									});
-								}
-								
-								@Override
-								public void onFailed(IOException e) {
-									resetProductNbFail(IS_NETWORK,line);
-									if (asyncCommunicator != null) {
-										asyncCommunicator.close();
 									}
-									e.printStackTrace();
-								
+
+									@Override
+									public void onCatchIOException(IOException e) {
+										resetProductNbFail(IS_NETWORK, line);
+										e.printStackTrace();
+										if (asyncCommunicator != null) {
+											asyncCommunicator.close();
+										}
+									}
+								});
+							}
+
+							@Override
+							public void onFailed(IOException e) {
+								resetProductNbFail(IS_NETWORK, line);
+								if (asyncCommunicator != null) {
+									asyncCommunicator.close();
 								}
-							});
-							
-						}
+								e.printStackTrace();
+
+							}
+						});
+
 					}
 				}
 			}
@@ -507,15 +523,13 @@ public class DisplayController implements Initializable {
 
 								@Override
 								public void onResponse(Call call, Response response) throws IOException {
-									if (response != null
-											&& response.body().string().equals("{\"result\":\"succeed\"}")) {
+									if (response != null && response.body().string().equals("{\"result\":\"succeed\"}")) {
 										Platform.runLater(new Runnable() {
 											@Override
 											public void run() {
 												setDisableCb(false);
 												resetBt.setDisable(false);
 												updateText();
-
 											}
 										});
 									} else {
@@ -525,7 +539,6 @@ public class DisplayController implements Initializable {
 
 								@Override
 								public void onFailure(Call call, IOException e) {
-
 									httpFail(RESET_ACTION, IS_NETWORK, null);
 									e.printStackTrace();
 								}
@@ -548,31 +561,23 @@ public class DisplayController implements Initializable {
 	 * @param network 是否是网络原因
 	 * @param line 重置失败的线号
 	 */
-	private void resetProductNbFail(boolean network,String line) {
-		if (network) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					logger.error("重置工单生产数目失败，IP地址：" + asyncCommunicator.getRemoteIp()
-							+ "connect失败，网络连接出错");
+	private void resetProductNbFail(boolean network, String line) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (network) {
+					logger.error("重置工单生产数目失败，IP地址：" + asyncCommunicator.getRemoteIp() + "connect失败，网络连接出错");
 					new Alert(AlertType.ERROR, "重置工单生产数目失败，请检查你的网络连接", ButtonType.OK).show();
-					setDisableCb(false);
-					resetBt.setDisable(false);
-					resetWorkOrderCb(line);
-				}
-			});
-		}else {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
+				} else {
 					logger.error("重置工单生产数目失败，服务器原因");
 					new Alert(AlertType.ERROR, "重置工单生产数目失败，服务器原因", ButtonType.OK).show();
-					setDisableCb(false);
-					resetBt.setDisable(false);
-					resetWorkOrderCb(line);
 				}
-			});
-		}
+				setDisableCb(false);
+				resetBt.setDisable(false);
+				resetWorkOrderCb(line);
+			}
+		});
+
 	}
 	
 	/**
@@ -581,53 +586,40 @@ public class DisplayController implements Initializable {
 	 * @param isNetwork 是否是网络问题
 	 * @param line 线号
 	 */
-	private void httpFail(String action,boolean isNetwork, String line) {
+	private void httpFail(String action, boolean isNetwork, String line) {
 		if (action.equals(SWITCH_ACTION)) {
-			if (isNetwork) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					if (isNetwork) {
 						logger.error("选定工单失败，switch请求失败，网络连接出错");
 						new Alert(AlertType.ERROR, "选定工单失败，请检查你的网络连接", ButtonType.OK).show();
-						setDisableCb(false);
-						resetBt.setDisable(false);
-						resetWorkOrderCb(line);
-					}
-				});
-			}else {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
+					} else {
 						logger.error("选定工单失败，服务器内部错误");
 						new Alert(AlertType.ERROR, "选定工单失败，服务器内部错误", ButtonType.OK).show();
-						setDisableCb(false);
-						resetBt.setDisable(false);
-						resetWorkOrderCb(line);
 					}
-				});
-			}
-		}else if (action.equals(RESET_ACTION)) {
-			if (isNetwork) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
+					setDisableCb(false);
+					resetBt.setDisable(false);
+					resetWorkOrderCb(line);
+				}
+			});
+			return;
+		}
+		if (action.equals(RESET_ACTION)) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					if (isNetwork) {
 						logger.error("重置工单失败，reset请求失败，网络连接出错");
 						new Alert(AlertType.ERROR, "重置工单失败，请检查你的网络连接", ButtonType.OK).show();
-						setDisableCb(false);
-						resetBt.setDisable(false);
-					}
-				});
-			}else {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
+					} else {
 						logger.error("重置工单失败，服务器内部原因");
 						new Alert(AlertType.ERROR, "重置工单失败，服务器内部错误", ButtonType.OK).show();
-						setDisableCb(false);
-						resetBt.setDisable(false);
 					}
-				});
-			}
+					setDisableCb(false);
+					resetBt.setDisable(false);
+				}
+			});
 		}
 	}
 	
@@ -660,7 +652,7 @@ public class DisplayController implements Initializable {
 				program.setWorkOrder(workOrder);
 				program.setBoardType(boardTypeNo);
 				programItemVisitSession = MybatisHelper.getMS(MYBATIS_CONFIG_PATH, ProgramItemVisitMapper.class,
-						"smt_001");
+						"smt");
 				List<ProgramItemVisit> programItemVisits = programItemVisitSession.getMapper().selectByProgram(program);
 				String operator = operationSession.getMapper().selectOperator(program);
 				operator = operator == null ? "unkonwn" : operator;
@@ -679,7 +671,9 @@ public class DisplayController implements Initializable {
 				logger.error("updateText中ProgramItemVisit表Session创建失败");
 				e.printStackTrace();
 			} finally {
-				programItemVisitSession.colseSession();
+				if (programItemVisitSession!=null) {
+					programItemVisitSession.colseSession();
+				}	
 			}
 		}
 	}
@@ -815,8 +809,6 @@ public class DisplayController implements Initializable {
 		List<String> workorders = programSession.getMapper().selectByLine(line);
 		ObservableList<String> workOrderList = FXCollections.observableArrayList(workorders);
 		workOrderCb.setItems(workOrderList);
-		
-
 	}
 	
 	/**
@@ -866,66 +858,58 @@ public class DisplayController implements Initializable {
 			public void handle(WindowEvent event) {
 				String line = lineCb.getSelectionModel().getSelectedItem() == null ? ""
 						: lineCb.getSelectionModel().getSelectedItem().toString();
-				if (!line.equals("")) {
-					if (asyncCommunicator != null) {
-						asyncCommunicator.connect(new OnConnectedListener() {
-							
-							@Override
-							public void onSucceed() {
-								asyncCommunicator.send(boardResetPackage, new OnReplyPackageArrivedListener() {
+				if (!line.equals("") && asyncCommunicator != null) {
+					asyncCommunicator.connect(new OnConnectedListener() {
 
-									@Override
-									public void onReplyPackageArrived(BasePackage r) {
-										Log sLog = createLogByPackage(boardResetPackage);
-										logger.info("发送重置包：" + sLog.getData());
-										if (r != null && r instanceof BoardResetReplyPackage) {
-											BoardResetReplyPackage reply = (BoardResetReplyPackage) r;
-											Log rLog = createLogByPackage(reply);
-											logger.info("接收重置包：" + rLog.getData());
-											if (!reply.getControlResult().equals(ControlResult.SUCCEED)) {
-												logger.error(
-														"关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp() + "服务器内部错误");
-												
-											}else {
-												logger.info("关闭时重置生产数目成功");
-												
-											}
-											if (asyncCommunicator != null) {
-												asyncCommunicator.close();
-											}
-										}else {
-											logger.error(
-													"关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp() + "服务器内部错误");
-											if (asyncCommunicator != null) {
-												asyncCommunicator.close();
-											}
-										}
-										sendHttpClose(line);
-									}
+						@Override
+						public void onSucceed() {
+							asyncCommunicator.send(boardResetPackage, new OnReplyPackageArrivedListener() {
 
-									@Override
-									public void onCatchIOException(IOException exception) {
-										logger.error("关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp() + "网络连接错误");
-										if (asyncCommunicator != null) {
-											asyncCommunicator.close();
+								@Override
+								public void onReplyPackageArrived(BasePackage r) {
+									Log sLog = createLogByPackage(boardResetPackage);
+									logger.info("发送重置包：" + sLog.getData());
+									if (r != null && r instanceof BoardResetReplyPackage) {
+										BoardResetReplyPackage reply = (BoardResetReplyPackage) r;
+										Log rLog = createLogByPackage(reply);
+										logger.info("接收重置包：" + rLog.getData());
+										if (!reply.getControlResult().equals(ControlResult.SUCCEED)) {
+											logger.error("关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp()
+													+ "服务器内部错误");
+										} else {
+											logger.info("关闭时重置生产数目成功");
 										}
-										sendHttpClose(line);
+									} else {
+										logger.error("关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp()
+												+ "服务器内部错误");
 									}
-								});
-							}
-							
-							@Override
-							public void onFailed(IOException e) {
-								logger.error("关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp() + "网络连接错误");
-								if (asyncCommunicator != null) {
-									asyncCommunicator.close();
+									if (asyncCommunicator != null) {
+										asyncCommunicator.close();
+									}
+									sendHttpClose(line);
 								}
-								sendHttpClose(line);
+
+								@Override
+								public void onCatchIOException(IOException exception) {
+									logger.error(
+											"关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp() + "网络连接错误");
+									if (asyncCommunicator != null) {
+										asyncCommunicator.close();
+									}
+									sendHttpClose(line);
+								}
+							});
+						}
+
+						@Override
+						public void onFailed(IOException e) {
+							logger.error("关闭时重置工单生产数目失败，取消工单失败，IP:" + asyncCommunicator.getRemoteIp() + "网络连接错误");
+							if (asyncCommunicator != null) {
+								asyncCommunicator.close();
 							}
-						});
-						
-						
-					}
+							sendHttpClose(line);
+						}
+					});
 				}
 			}
 		});
