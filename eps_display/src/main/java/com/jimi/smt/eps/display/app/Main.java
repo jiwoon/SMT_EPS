@@ -59,6 +59,7 @@ public class Main extends Application {
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
+			System.exit(0);
 			
 		}
 	}
